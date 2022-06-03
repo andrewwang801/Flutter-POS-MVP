@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/functions/presentation/functions_screen.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../discount/presentation/discount_screen.dart';
 import '../../../common/widgets/custom_button.dart';
@@ -23,25 +26,26 @@ final List<String> btnTexts = [
   'MNGR',
   'OPT SIGN-IN',
   'TIME ATND',
-  'Close',
+  // 'Close',
 ];
 
-class MainButtonList extends StatefulWidget {
+class MainButtonList extends ConsumerStatefulWidget {
   MainButtonList({Key? key}) : super(key: key);
 
   @override
-  State<MainButtonList> createState() => _MainButtonListState();
+  _MainButtonListState createState() => _MainButtonListState();
 }
 
-class _MainButtonListState extends State<MainButtonList> {
+class _MainButtonListState extends ConsumerState<MainButtonList> {
   @override
   Widget build(BuildContext context) {
+    bool isDark = ref.watch(themeProvider);
     return SizedBox(
       width: 600.w,
       height: 70.h,
       child: GridView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 15,
+        itemCount: btnTexts.length,
         itemBuilder: (BuildContext context, int index) {
           return CustomButton(
             callback: () {
@@ -58,14 +62,18 @@ class _MainButtonListState extends State<MainButtonList> {
               }
             },
             text: btnTexts[index],
-            fillColor: index == 14 ? Colors.red : Colors.white,
-            borderColor: Colors.green,
+            fillColor: index == 14
+                ? Colors.red
+                : isDark
+                    ? primaryDarkColor
+                    : Colors.white,
+            borderColor: isDark ? primaryDarkColor : Colors.green,
           );
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisExtent: 73.w,
-            mainAxisSpacing: 2.w,
+            mainAxisExtent: 78.w,
+            mainAxisSpacing: 5.w,
             crossAxisSpacing: 5.h),
       ),
     );

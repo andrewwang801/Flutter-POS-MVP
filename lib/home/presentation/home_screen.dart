@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../constants/color_constant.dart';
@@ -12,8 +13,6 @@ import '../../common/widgets/checkout.dart';
 import './widgets/main_button_list.dart';
 import './widgets/menu_item_list.dart';
 import './widgets/menu_list.dart';
-
-import '../provider/menu_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -27,6 +26,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   var _showNumPad = false;
 
   @override
+  void initState() {
+    ref.read(orderProvoder.notifier).fetchOrderItems();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     bool isDark = ref.watch(themeProvider);
     return Scaffold(
@@ -35,14 +40,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: AppBarWidget(false),
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _showNumPad = !_showNumPad;
-          });
-        },
-        child: Icon(Icons.numbers),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     setState(() {
+      //       _showNumPad = !_showNumPad;
+      //     });
+      //   },
+      //   child: Icon(Icons.numbers),
+      // ),
       body: Column(
         children: [
           const Header(
@@ -82,14 +87,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               height: 5.h,
                             ),
                             SizedBox(
-                              height: 30.h,
+                              height: 40.h,
                               child: MenuList(),
                             ),
                             SizedBox(
                               height: 10.h,
                             ),
                             Container(
-                              height: 230.h,
+                              height: 220.h,
                               width: 600.w,
                               child: MenuItemList(),
                             ),
