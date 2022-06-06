@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
 
 import '../../constants/text_style_constant.dart';
@@ -14,21 +15,30 @@ class OrderData extends DataTableSource {
     return DataRow(
       cells: <DataCell>[
         DataCell(
-          Text(
-            item.Quantity.toString(),
-            style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+          Container(
+            width: 30.w,
+            child: Text(
+              item.Quantity.toString(),
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            ),
           ),
         ),
         DataCell(
-          Text(
-            item.ItemName ?? '',
-            style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+          Container(
+            width: 180.w,
+            child: Text(
+              item.ItemName ?? '',
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            ),
           ),
         ),
         DataCell(
-          Text(
-            item.ItemAmount.toString(),
-            style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+          Container(
+            width: 70.w,
+            child: Text(
+              item.ItemAmount.toString(),
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            ),
           ),
         ),
       ],

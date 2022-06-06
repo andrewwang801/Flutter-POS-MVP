@@ -21,13 +21,14 @@ class MenuItemDetail extends ConsumerStatefulWidget {
 
 class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
   int qty = 1;
+  double price = 0.0;
   @override
   Widget build(BuildContext context) {
     bool isDark = ref.watch(themeProvider);
     return Center(
       child: Container(
-        width: 250.w,
-        height: 200.h,
+        width: 280.w,
+        height: 230.h,
         child: _shoppingItem(1),
       ),
     );
@@ -38,7 +39,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
     return Card(
       elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
@@ -65,16 +66,19 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
             SizedBox(
               height: 10.h,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _decrementButton(itemIndex),
-                Text(
-                  qty.toString(),
-                  style: TextStyle(fontSize: 18.0),
-                ),
-                _incrementButton(itemIndex),
-              ],
+            FractionallySizedBox(
+              widthFactor: 0.8,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _decrementButton(itemIndex),
+                  Text(
+                    qty.toString(),
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  _incrementButton(itemIndex),
+                ],
+              ),
             ),
             SizedBox(
               height: 20.h,
@@ -85,7 +89,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                     widget.menuItem.pluNumber ?? '', 2, qty.toDouble(), 1);
                 Get.back();
               },
-              text: 'ORDER',
+              text: 'ORDER \$20',
               borderColor: primaryDarkColor,
               fillColor: primaryDarkColor,
               width: 200.w,
@@ -121,6 +125,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
         onPressed: () {
           setState(() {
             qty++;
+            // price = qty * widget.menuItem.
           });
         },
       ),

@@ -22,22 +22,22 @@ class BillButtonList extends ConsumerStatefulWidget {
 class _BillButtonListState extends ConsumerState<BillButtonList> {
   final List<String> billBtnTexts = [
     "CASH",
-    "TENDER",
-    "SUBTOTAL",
-    "TABLE/HOLD",
     "View Trans",
     "DINE-IN",
   ];
+  // "TENDER",
+  // "SUBTOTAL",
+  // "TABLE/HOLD",
 
   @override
   Widget build(BuildContext context) {
     bool isDark = ref.read(themeProvider);
     return SizedBox(
       width: 260.w,
-      height: 70.h,
+      height: 32.5.h,
       child: GridView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 6,
+        itemCount: billBtnTexts.length,
         itemBuilder: (BuildContext context, int index) {
           return CustomButton(
             callback: () {
@@ -64,16 +64,12 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
               }
             },
             text: billBtnTexts[index],
-            fillColor: index == 14
-                ? Colors.red
-                : isDark
-                    ? primaryDarkColor
-                    : Colors.white,
+            fillColor: isDark ? primaryDarkColor : Colors.white,
             borderColor: isDark ? primaryDarkColor : Colors.green,
           );
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+            crossAxisCount: 1,
             mainAxisExtent: 84.w,
             mainAxisSpacing: 3.w,
             crossAxisSpacing: 5.h),

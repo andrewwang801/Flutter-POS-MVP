@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:provider/provider.dart';
+import 'package:raptorpos/home/model/menu_item_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:raptorpos/common/helper/db_helper.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
@@ -486,6 +487,36 @@ class OrderLocalRepository implements IOrderRepository {
 
     return taxData;
   }
+
+  Future<MenuItemModel?> getOrderSelectData(int salesRef) async {
+    final Database db = await database.database;
+    String query = '';
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    return MenuItemModel.fromJson(maps[0]);
+  }
+
+  Future<MenuItemModel?> getModSelectData(int salesRef) async {
+    final Database db = await database.database;
+    String query = '';
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    return MenuItemModel.fromJson(maps[0]);
+  }
+
+  Future<MenuItemModel?> getPrepSelectData(int salesRef) async {
+    final Database db = await database.database;
+    String query = '';
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    return MenuItemModel.fromJson(maps[0]);
+  }
+
+  Future<MenuItemModel?> getLastOrderData(int salesRef) async {
+    final Database db = await database.database;
+    String query = '';
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    return MenuItemModel.fromJson(maps[0]);
+  }
+
+  Future<void> doFOCItem() async {}
 }
 
 final Provider<IOrderRepository> orderLocalRepoProvider =
