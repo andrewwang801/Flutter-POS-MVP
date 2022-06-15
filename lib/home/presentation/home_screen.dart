@@ -35,6 +35,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     bool isDark = ref.watch(themeProvider);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: PreferredSize(
         child: AppBarWidget(false),
@@ -50,13 +51,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       // ),
       body: Column(
         children: [
-          const Header(
-              transID: 'POS001',
-              operator: 'EMENU',
-              mode: 'REG',
-              order: '4',
-              cover: '1',
-              rcp: 'A2200000082'),
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Column(
                   children: [
                     SizedBox(
-                      height: 0.h,
+                      height: 5.h,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0),
@@ -77,15 +71,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                 ),
                 SizedBox(
-                  width: 26.w,
+                  width: 4.w,
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(4.0),
                     child: Stack(
                       children: [
                         Column(
                           children: [
+                            // const Header(
+                            //     transID: 'POS001',
+                            //     operator: 'EMENU',
+                            //     mode: 'REG',
+                            //     order: '4',
+                            //     cover: '1',
+                            //     rcp: 'A2200000082'),
                             SizedBox(
                               height: 5.h,
                             ),
@@ -97,7 +98,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               height: 10.h,
                             ),
                             Container(
-                              height: 220.h,
+                              height: 268.h,
                               width: 600.w,
                               child: MenuItemList(),
                             ),

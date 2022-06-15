@@ -13,19 +13,19 @@ import '../../../common/widgets/numpad.dart';
 
 final List<String> btnTexts = [
   'Trans Table',
-  'Split Bill',
+  // 'Split Bill',
   'Preview Bill',
   'PRINT BILL',
-  'MEM-BER',
-  'PRMN',
+  // 'MEM-BER',
+  // 'PRMN',
   'FUNCT-ION',
-  'CUST MODIFIER',
+  'MODIFIER',
   'VOID',
   'DISC',
-  'RFND',
-  'MNGR',
-  'OPT SIGN-IN',
-  'TIME ATND',
+  // 'RFND',
+  // 'MNGR',
+  // 'OPT SIGN-IN',
+  // 'TIME ATND',
   // 'Close',
 ];
 
@@ -42,7 +42,7 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
     bool isDark = ref.watch(themeProvider);
     return SizedBox(
       width: 600.w,
-      height: 70.h,
+      height: 40.h,
       child: GridView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: btnTexts.length,
@@ -70,8 +70,8 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
           );
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisExtent: 78.w,
+            crossAxisCount: 1,
+            mainAxisExtent: 90.w,
             mainAxisSpacing: 5.w,
             crossAxisSpacing: 5.h),
       ),

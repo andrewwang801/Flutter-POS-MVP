@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:raptorpos/common/extension/color_extension.dart';
 import 'package:raptorpos/home/model/menu_model.dart';
-import 'package:raptorpos/home/provider/menu_provider.dart';
+import 'package:raptorpos/home/provider/menu/menu_provider.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../constants/color_constant.dart';
@@ -32,31 +32,36 @@ class _MenuCardState extends ConsumerState<MenuCard> {
   @override
   Widget build(BuildContext context) {
     bool isDark = ref.watch(themeProvider);
-    return GestureDetector(
-      onTap: () {
-        ref.read(menuIDProvider.notifier).state = widget.menu.MenuID;
-      },
-      child: Container(
-        width: 120.w,
-        padding: EdgeInsets.all(4.0),
-        decoration: BoxDecoration(
-          color: HexColor(widget.menu.RGBColour ?? 'ffffff'),
-          borderRadius: BorderRadius.circular(6.0),
-          boxShadow: [
-            BoxShadow(
-              color: isDark ? primaryDarkColor : Colors.white,
-              spreadRadius: 0.0,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(widget.menu.MenuName ?? '',
-                textAlign: TextAlign.center,
-                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-          ],
+    return Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
+      color: HexColor(widget.menu.RGBColour ?? 'ffffff').withOpacity(0.4),
+      clipBehavior: Clip.hardEdge,
+      child: InkWell(
+        onTap: () {
+          ref.read(menuIDProvider.notifier).state = widget.menu.MenuID;
+        },
+        child: Container(
+          width: 120.w,
+          padding: EdgeInsets.all(4.0),
+          // decoration: BoxDecoration(
+          //   color: Colors.transparent,
+          //   borderRadius: BorderRadius.circular(6.0),
+          //   boxShadow: [
+          //     BoxShadow(
+          //       color: isDark ? primaryDarkColor : Colors.white,
+          //       spreadRadius: 0.0,
+          //     ),
+          //   ],
+          // ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(widget.menu.MenuName ?? '',
+                  textAlign: TextAlign.center,
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+            ],
+          ),
         ),
       ),
     );

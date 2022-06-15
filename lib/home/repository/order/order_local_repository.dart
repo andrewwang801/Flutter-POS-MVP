@@ -1,7 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:raptorpos/home/model/menu_item_model.dart';
+import 'package:raptorpos/home/model/modifier.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:raptorpos/common/helper/db_helper.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
@@ -14,8 +15,16 @@ class OrderLocalRepository implements IOrderRepository {
   OrderLocalRepository({required this.database});
 
   @override
-  bool checkExemptTax(String pluTax, String pluNo) {
-    throw UnimplementedError();
+  Future<bool> checkExemptTax(String pluTax, String pluNo) async {
+    Database db = await database.database;
+    String query =
+        "SELECT $pluTax FROM PLU WHERE PLUNumber = '$pluNo' AND plutaxexempt = 1";
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.length > 0) {
+      int val = maps[0].values.elementAt(0);
+      return val.toBool();
+    }
+    return false;
   }
 
   @override
@@ -51,8 +60,86 @@ class OrderLocalRepository implements IOrderRepository {
   }
 
   @override
-  int getMaxSalesRef(int salesNo, int splitNo, int salesRef) {
-    throw UnimplementedError();
+  Future<int> getPrepStatus(int salesNo, int splitNo, int salesRef) async {
+    Database db = await database.database;
+    String query =
+        "SELECT IFNULL(Preparation,0) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo  AND SalesRef = $salesRef";
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.isNotEmpty) {
+      int val = maps[0].entries.first.value;
+      return val;
+    }
+    return 0;
+  }
+
+  @override
+  Future<String?> getItemData(
+      String pluNo, int salesNo, int splitNo, int salesRef) async {
+    Database db = await database.database;
+
+    String query =
+        "SELECT SeatNo FROM HeldItems WHERE PLUNo = '$pluNo' AND SalesNo = $salesNo AND SplitNo = $splitNo AND SalesRef = $salesRef";
+
+    if (pluNo == "-1") {
+      query =
+          "SELECT PLUNo FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo  AND SalesRef = $salesRef";
+    }
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.isNotEmpty) {
+      return maps[0].values.first.toString();
+    }
+    return null;
+  }
+
+  @override
+  Future<OrderItemModel?> getItemParentData(
+      int salesNo, int splitNo, int salesRef) async {
+    Database db = await database.database;
+    String query =
+        "SELECT PLUNo, CategoryID FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND SalesRef = $salesRef";
+
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.isNotEmpty) {
+      return OrderItemModel.fromJson(maps[0]);
+    }
+    return null;
+  }
+
+  @override
+  Future<int?> getItemSalesRef(int salesNo, int splitNo, String tableNo,
+      int itemSeqNo, int status) async {
+    Database db = await database.database;
+    String query =
+        "SELECT SalesRef FROM HeldItems WHERE TableNo = '$tableNo' AND SalesNo = $salesNo AND SplitNo = $splitNo AND ItemSeqNo = $itemSeqNo";
+    if (status == 1) {
+      query =
+          "SELECT CASE WHEN SetMenuRef = 0 THEN PLUSalesRef ELSE SetMenuRef END FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND SalesRef = $itemSeqNo";
+    }
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.isNotEmpty) {
+      int val = maps[0].values.elementAt(0);
+      return val;
+    }
+    return null;
+  }
+
+  @override
+  Future<int?> getMaxSalesRef(int salesNo, int splitNo, int salesRef) async {
+    Database db = await database.database;
+    String query =
+        "SELECT Max(SalesRef) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo";
+    if (salesRef > 0) {
+      query =
+          "SELECT Max(SalesRef) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND ItemName IN (SELECT ItemName FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND SalesRef = $salesRef)";
+    }
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.isNotEmpty) {
+      int val = maps[0].values.elementAt(0);
+      return val;
+    }
+    return null;
   }
 
   @override
@@ -73,8 +160,16 @@ class OrderLocalRepository implements IOrderRepository {
   }
 
   @override
-  int getTaxCode() {
-    throw UnimplementedError();
+  Future<int?> getTaxCode() async {
+    Database db = await database.database;
+    String query =
+        "SELECT TaxCode FROM TaxRates WHERE TaxRate != 0 AND Exemptable = 1";
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.isNotEmpty) {
+      int val = maps[0].values.elementAt(0);
+      return val;
+    }
+    return null;
   }
 
   @override
@@ -90,7 +185,16 @@ class OrderLocalRepository implements IOrderRepository {
   }
 
   @override
-  void insertKPStatus(int salesNo, int splitNo, int itemSeqNo, int selPluKp) {}
+  Future<void> insertKPStatus(
+      int salesNo, int splitNo, int itemSeqNo, int selPluKp) async {
+    Database db = await database.database;
+
+    String query =
+        "INSERT INTO KPStatus(SalesNo, SplitNo, ItemSeqNo, KPNo, PrintToKp, BVoidPStatus, KPSeqNo, KPOrderNo)";
+    String values =
+        " VALUES ( $salesNo , $splitNo, $itemSeqNo, $selPluKp, 1, 1, 1, 1 )";
+    await db.rawQuery('$query$values');
+  }
 
   @override
   Future<int> insertOrderItem(OrderItemModel orderItem) async {
@@ -100,16 +204,78 @@ class OrderLocalRepository implements IOrderRepository {
   }
 
   @override
-  void updateItemTax() {}
+  Future<void> updateItemTax(
+      String strTax, int salesNo, int splitNo, int salesRef) async {
+    Database db = await database.database;
+    String query =
+        "UPDATE HeldItems SET $strTax WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND SalesRef = $salesRef";
+    await db.rawQuery(query);
+  }
 
   @override
-  void updateOrderStatus(List<String> data, int status) {}
+  Future<void> updateOrderStatus(List<String> data, int status) async {
+    Database db = await database.database;
+    String query;
+    switch (status) {
+      case 1:
+        query =
+            "UPDATE KPStatus SET PrintToKp = 0 WHERE SalesNo = ${data[0]} AND SplitNo = ${data[1]} AND ItemSeqNo = ${data[2]}";
+        break;
+      case 2:
+        query =
+            "UPDATE HeldItems SET TblHold = 1 WHERE SalesNo = ${data[0]} AND SplitNo = ${data[1]} AND SalesRef = ${data[2]}";
+
+        break;
+      case 3:
+      default:
+        query =
+            "UPDATE HeldItems SET TblHold = 1, PLUSalesRef = ${data[0]}, SetMenuRef = ${data[0]} WHERE SalesNo = ${data[1]} AND SplitNo = ${data[2]} AND SalesRef = ${data[3]}";
+
+        break;
+    }
+    await db.rawQuery(query);
+  }
 
   @override
-  void updatePLUSalesRef(List<String> data, int status) {}
+  Future<void> updatePLUSalesRef(List<String> data, int status) async {
+    Database db = await database.database;
+    String query =
+        "UPDATE HeldItems SET PLUSalesRef = SalesRef WHERE TableNo = '${data[2]}' AND SalesNo = ${data[0]} AND SplitNo = ${data[1]} AND ItemSeqNo = ${data[3]}";
+    if (status == 2) {
+      query =
+          "UPDATE HeldItems SET PLUSalesRef = ${data[0]}, SetMenu = 1, SetMenuRef = ${data[0]} WHERE SalesNo = ${data[1]} AND SplitNo = ${data[2]} AND ItemSeqNo = ${data[3]}";
+    }
+    await db.rawQuery(query);
+  }
 
   @override
-  void updateSoldPLU(int pluSold, String pluNumber) {}
+  Future<void> updateSoldPLU(int pluSold, String pluNumber) async {
+    Database db = await database.database;
+    String query =
+        "UPDATE SoldPLU SET PLUSold = $pluSold WHERE PLUNumber = '$pluNumber'";
+    await db.rawQuery(query);
+  }
+
+  @override
+  Future<int> countItem(
+      String pluNo, int salesNo, int splitNo, int salesRef) async {
+    Database db = await database.database;
+
+    String query =
+        "SELECT COUNT(*) FROM HeldItems WHERE PLUNo = '$pluNo' AND SalesNo = $salesNo AND SplitNo = $splitNo AND SalesRef = $salesRef";
+
+    if (pluNo == "1") {
+      query =
+          "SELECT COUNT(*) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND SalesRef = $salesRef";
+    }
+
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.isNotEmpty) {
+      int count = maps[0].values.elementAt(0);
+      return count;
+    }
+    return 0;
+  }
 
   @override
   Future<int> getItemSeqNo(int salesNo) async {
@@ -121,10 +287,11 @@ class OrderLocalRepository implements IOrderRepository {
   }
 
   @override
-  Future<List<OrderItemModel>> fetchOrderItems() async {
+  Future<List<OrderItemModel>> fetchOrderItems(
+      int salesNo, int splitNo, String tableNo) async {
     final Database db = await database.database;
     String query =
-        "SELECT CASE WHEN FunctionID = 26 THEN Quantity ELSE 0 END as Quantity, ItemName, PLUNo, (Quantity * ItemAmount * CASE WHEN (FOCItem = 0 OR FOCItem = 'BuyXFreeY') THEN 1 ELSE 0 END), ItemAmount, SalesRef, PLUSalesRef, TransStatus, IFNULL(SetMenu, 0), IFNULL(LnkTo, ' '), FunctionID, TblHold, A.CategoryID, ItemSeqNo, FOCItem FROM HeldItems A LEFT JOIN SalesCategory B ON A.CategoryID = B.CategoryID AND ItemSeqNo NOT IN (101, 102) AND FunctionID IN (12, 24, 25, 26, 55, 101) AND (TransStatus = ' ' OR TransStatus = 'D') AND Preparation = 0 ORDER BY SalesRef, PLUSalesRef";
+        "SELECT CASE WHEN FunctionID = 26 THEN Quantity ELSE 0 END as Quantity, ItemName, PLUNo, (Quantity * ItemAmount * CASE WHEN (FOCItem = 0 OR FOCItem = 'BuyXFreeY') THEN 1 ELSE 0 END), ItemAmount, SalesRef, PLUSalesRef, TransStatus, IFNULL(SetMenu, 0), IFNULL(LnkTo, ' '), FunctionID, TblHold, A.CategoryID, ItemSeqNo, FOCItem, Preparation FROM HeldItems A LEFT JOIN SalesCategory B ON A.CategoryID = B.CategoryID WHERE SalesNo = $salesNo AND SplitNo = $splitNo  AND TableNo = '$tableNo'  AND ItemSeqNo NOT IN (101, 102) AND FunctionID IN (12, 24, 25, 26, 55, 101) AND (TransStatus = ' ' OR TransStatus = 'D') ORDER BY SalesRef, PLUSalesRef"; //AND Preparation = 0
     List<Map<String, dynamic>> maps = await db.rawQuery(query);
     return maps.map((e) {
       return OrderItemModel.fromJson(e);
@@ -488,35 +655,126 @@ class OrderLocalRepository implements IOrderRepository {
     return taxData;
   }
 
-  Future<MenuItemModel?> getOrderSelectData(int salesRef) async {
-    final Database db = await database.database;
-    String query = '';
+  @override
+  Future<ModifierModel?> getModDtls(String modifier) async {
+    Database db = await database.database;
+    String query =
+        "SELECT msgid, message, message_chinese FROM modifier WHERE message = '$modifier'";
+
     List<Map<String, dynamic>> maps = await db.rawQuery(query);
-    return MenuItemModel.fromJson(maps[0]);
+    if (maps.isNotEmpty) {
+      return ModifierModel.fromJson(maps[0]);
+    }
+    return null;
   }
 
-  Future<MenuItemModel?> getModSelectData(int salesRef) async {
+  @override
+  Future<OrderItemModel?> getOrderSelectData(int salesRef) async {
     final Database db = await database.database;
-    String query = '';
+    String query =
+        "SELECT ItemName, Quantity, ItemAmount, (Quantity * ItemAmount * CASE WHEN (FOCItem = 0 OR FOCType = 'BuyXFreeY') THEN 1 ELSE 0 END) as totalAmount, FOCItem, TblHold, SetMenu FROM HeldItems WHERE SalesRef = $salesRef";
     List<Map<String, dynamic>> maps = await db.rawQuery(query);
-    return MenuItemModel.fromJson(maps[0]);
+    if (maps.length > 0) {
+      return OrderItemModel.fromJson(maps[0]);
+    }
+    return null;
   }
 
-  Future<MenuItemModel?> getPrepSelectData(int salesRef) async {
+  @override
+  Future<OrderItemModel?> getModSelectData(int salesRef) async {
     final Database db = await database.database;
-    String query = '';
+    String query =
+        "SELECT ItemName FROM HeldItems WHERE PLUSalesRef = $salesRef AND TransStatus = 'M' AND Preparation = 1";
     List<Map<String, dynamic>> maps = await db.rawQuery(query);
-    return MenuItemModel.fromJson(maps[0]);
+    if (maps.length > 0) {
+      return OrderItemModel.fromJson(maps[0]);
+    }
+    return null;
   }
 
-  Future<MenuItemModel?> getLastOrderData(int salesRef) async {
+  @override
+  Future<List<OrderItemModel>> getPrepSelectData(int salesRef) async {
     final Database db = await database.database;
-    String query = '';
+    String query =
+        "SELECT PLUNo, Quantity, ItemName, TblHold FROM HeldItems WHERE PLUSalesRef = $salesRef AND Preparation = 1 AND (TransStatus = ' ' OR TransStatus = 'D')";
     List<Map<String, dynamic>> maps = await db.rawQuery(query);
-    return MenuItemModel.fromJson(maps[0]);
+    if (maps.length > 0) {
+      return maps.map((e) {
+        return OrderItemModel.fromJson(e);
+      }).toList();
+    }
+    return [];
   }
 
-  Future<void> doFOCItem() async {}
+  @override
+  Future<OrderItemModel?> getLastOrderData(
+      int salesNo, int splitNo, String tableNo) async {
+    final Database db = await database.database;
+    String query =
+        "SELECT MAX(SalesRef) as SalesRef, MAX(ItemSeqNo) as ItemSeqNo FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo'";
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.length > 0) {
+      return OrderItemModel.fromJson(maps[0]);
+    }
+    return null;
+  }
+
+  Future<void> doFOCItem(
+      int salesNo,
+      int splitNo,
+      String tableNo,
+      String posID,
+      int operatorNo,
+      int pShift,
+      int itemSeqNo,
+      int categoryID,
+      String pluNo,
+      int salesRef) async {
+    Database db = await database.database;
+
+    String itemName = 'FOC Item';
+    DateTime now = DateTime.now();
+    String strCurDate = DateFormat('yyyy-MM-dd').format(now);
+    String strCurTime = DateFormat('HH:mm:ss.0').format(now);
+
+    String query =
+        "SELECT Covers, Department, Quantity, ItemAmount, RecipeId, AvgCost, FOCItem FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo' AND SalesRef = $salesRef";
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.isEmpty) {
+      return;
+    }
+    OrderItemModel orderItemModel = OrderItemModel.fromJson(maps[0]);
+    int cover = orderItemModel.Covers ?? 0;
+    int department = orderItemModel.Department ?? 0;
+    int quantity = orderItemModel.Quantity ?? 0;
+    int amount = orderItemModel.ItemAmount ?? 0;
+    int recipeId = orderItemModel.RecipeId ?? 0;
+    double avgCost = orderItemModel.AvgCost ?? 0.0;
+    bool focItem = (orderItemModel.FOCItem ?? 0).toBool();
+
+    query =
+        "SELECT FunctionID, SubFunctionID FROM SubFunction WHERE Title = '$itemName'";
+    maps = await db.rawQuery(query);
+    if (maps.isEmpty) {
+      return;
+    }
+    Map<String, dynamic> subFunc = maps[0];
+    int funcId = subFunc.values.elementAt(0);
+    int subFuncId = subFunc.values.elementAt(1);
+
+    if (focItem || amount == 0) {
+      throw Exception(['FOC Item Failed']);
+    } else {
+      query =
+          "INSERT INTO HeldItems (PLUSalesRef, SalesNo, POSID, SDate, STime, ItemName, ItemName_Chinese, TableNo, Covers, Department, SplitNo, OperatorNo, Quantity, ItemAmount, PaidAmount, ChangeAmount, AvgCost, RecipeId, PriceShift, PLUNo, PromotionId, FunctionID, SubFunctionID, Discount, DiscountPercent, DiscountType, ItemSeqNo, CategoryID, Preparation, ApplyTax0, ApplyTax1, ApplyTax2, ApplyTax3, ApplyTax4, ApplyTax5, ApplyTax6, ApplyTax7, ApplyTax8, ApplyTax9, Tax0, Tax1, Tax2, Tax3, Tax4, Tax5, Tax6, Tax7, Tax8, Tax9, LnkTo, SetMenu, SetMenuRef, RefundID, FOCItem, FOCType, MembershipID, LoyaltyCardNo, TransMode, TransStatus, TblHold, comments, RentalItem, SalesAreaID, Trackprep, SeatNo, TaxTag, KDSPrint, ServerNo, cc_promo2) VALUES ($salesRef, $salesNo, '$posID', '$strCurDate', '$strCurTime', '$itemName', '$itemName', '$tableNo', $cover, $department, $splitNo, $operatorNo, $quantity, $amount, 0.00, 0.00, $avgCost, $recipeId, $pShift, '$pluNo', 0, $funcId, $subFuncId, 0.00, 0, ' ', $itemSeqNo, $categoryID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'R', 0, 0, 0, 1, '$itemName', 0, ' ', 'REG', ' ', 0, 0, 0, ' ', 0, 0, 'V', 0, $operatorNo, ' ')";
+      await db.rawQuery(query);
+
+      int discFoc = quantity * amount;
+      query =
+          "UPDATE HeldItems SET DiscountType = '$itemName', DiscountPercent = 0, Discount = $discFoc, FOCItem = 1, FOCType = '$itemName', ApplyTax0 = 0, ApplyTax1 = 0, ApplyTax2 = 0, ApplyTax3 = 0, ApplyTax4 = 0, ApplyTax5 = 0, ApplyTax6 = 0, ApplyTax7 = 0, ApplyTax8 = 0, ApplyTax9 = 0 WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo' AND SalesRef = $salesRef AND ItemSeqNo = $itemSeqNo AND PLUNo = '$pluNo'";
+      await db.rawQuery(query);
+    }
+  }
 }
 
 final Provider<IOrderRepository> orderLocalRepoProvider =

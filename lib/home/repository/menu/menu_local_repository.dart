@@ -1,6 +1,7 @@
 // import 'package:injectable/injectable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:raptorpos/home/model/prep/prep_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -49,7 +50,7 @@ class MenuLocalRepository implements IMenuRepository {
   Future<List<String>> getPLUDetails(String pluNo) async {
     final db = await database.database;
     String query =
-        'SELECT PLUName, Sell1, Description, DisplayImage, imagename, PLUOpen, LinkMenu, LinkMenuNo FROM PLU WHERE PLUNumber = \'$pluNo + \'';
+        'SELECT PLUName, Sell1, Description, DisplayImage, imagename, PLUOpen, LinkMenu, LinkMenuNo FROM PLU WHERE PLUNumber = \'$pluNo\'';
     final List<Map<String, dynamic>> maps = await db.rawQuery(query);
     if (maps.length > 0) {
       return maps[0].entries.map((e) {
@@ -57,6 +58,17 @@ class MenuLocalRepository implements IMenuRepository {
       }).toList();
     }
     return <String>[];
+  }
+
+  @override
+  Future<List<PrepModel>> getPrepData(int menuId) async {
+    final Database db = await database.database;
+    String query =
+        "SELECT m.PLUNumber as number, ItemName as name FROM Menu1 m INNER JOIN PLU p ON m.PLUNumber = p.PLUNumber WHERE p.Preparation = 1 AND m.MenuID = $menuId";
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    return maps.map((e) {
+      return PrepModel.fromJson(e);
+    }).toList();
   }
 }
 

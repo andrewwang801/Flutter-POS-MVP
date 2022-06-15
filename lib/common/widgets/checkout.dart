@@ -25,8 +25,15 @@ class _CheckOutState extends ConsumerState<CheckOut> {
   Widget build(BuildContext context) {
     bool isDark = ref.watch(themeProvider);
     OrderState state = ref.watch(orderProvoder);
+
+    double totalTax = 0.0;
+    if (state is OrderSuccessState) {
+      for (var i = 4; i < state.bills.length; i++) {
+        totalTax += state.bills[i];
+      }
+    }
     return Container(
-      width: 300.w,
+      width: 320.w,
       height: 320.h,
       color: isDark ? primaryDarkColor : Colors.white,
       child: Column(
@@ -108,7 +115,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       padding: const EdgeInsets.all(2.0),
                       child: Text(
                           state is OrderSuccessState
-                              ? '\$ ${state.bills[5].toStringAsFixed(2)}'
+                              ? '\$ $totalTax'
                               : "\$ 0.00",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
@@ -147,8 +154,10 @@ class _CheckOutState extends ConsumerState<CheckOut> {
   Widget orderItemsTable() {
     bool isDark = ref.watch(themeProvider);
     OrderState state = ref.watch(orderProvoder);
-    final OrderData orderData = OrderData(isDark,
-        state is OrderSuccessState ? state.orderItems : <OrderItemModel>[]);
+    final OrderData orderData = OrderData(
+        isDark,
+        state is OrderSuccessState ? state.orderItems : <OrderItemModel>[],
+        context);
     return Scrollbar(
       controller: _vScrollController,
       isAlwaysShown: true,
@@ -181,8 +190,8 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                             isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
               ],
               source: orderData,
-              horizontalMargin: 10,
-              // rowsPerPage: 5,
+              horizontalMargin: 6,
+              rowsPerPage: 7,
               showCheckboxColumn: false,
             ),
           )),

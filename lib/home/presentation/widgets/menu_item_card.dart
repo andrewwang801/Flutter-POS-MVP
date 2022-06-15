@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:raptorpos/common/extension/color_extension.dart';
+import 'package:raptorpos/home/model/order_item_model.dart';
 import 'package:raptorpos/home/presentation/widgets/menu_item_detail.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
@@ -22,7 +23,9 @@ List<MaterialColor> menuItemColors = <MaterialColor>[
 
 class MenuItemCard extends ConsumerStatefulWidget {
   final MenuItemModel menuItem;
-  MenuItemCard({required this.menuItem, Key? key}) : super(key: key);
+  final OrderItemModel? orderItem;
+  MenuItemCard(this.orderItem, {required this.menuItem, Key? key})
+      : super(key: key);
 
   @override
   _MenuItemCardState createState() => _MenuItemCardState();
@@ -39,7 +42,11 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
           barrierColor: Colors.black38,
           barrierLabel: 'Label',
           barrierDismissible: true,
-          pageBuilder: (_, __, ___) => MenuItemDetail(widget.menuItem),
+          pageBuilder: (_, __, ___) => MenuItemDetail(
+            widget.menuItem.pluNumber ?? '',
+            0,
+            false,
+          ),
         );
       },
       child: Container(
