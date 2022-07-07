@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import 'package:raptorpos/home/repository/order/i_order_repository.dart';
+import 'package:raptorpos/payment/repository/i_payment_repository.dart';
 import '../../constants/color_constant.dart';
 import '../../theme/theme_model.dart';
 import '../../common/widgets//bill_button_list.dart';
@@ -81,11 +84,14 @@ class _FunctionsScreenState extends State<FunctionsScreen> {
                 SizedBox(
                   height: 5.h,
                 ),
-                CheckOut(),
+                CheckOut(320.h),
                 SizedBox(
                   height: 10.h,
                 ),
-                BillButtonList(),
+                BillButtonList(
+                  paymentRepository: GetIt.I<IPaymentRepository>(),
+                  orderRepository: GetIt.I<IOrderRepository>(),
+                ),
               ],
             ),
             SizedBox(

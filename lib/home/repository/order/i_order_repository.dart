@@ -30,6 +30,8 @@ abstract class IOrderRepository {
   Future<List<double>> fetchAmountOrder(
       int salesNo, int splitNo, int tableNo, bool taxIncl);
   Future<List<List<String>>> getTaxRateData();
+
+  /// Get order items from HeldItems table
   Future<OrderItemModel?> getOrderSelectData(int salesRef);
   Future<OrderItemModel?> getModSelectData(int salesRef);
   Future<List<OrderItemModel>> getPrepSelectData(int salesRef);
@@ -52,4 +54,7 @@ abstract class IOrderRepository {
       int categoryID,
       String pluNo,
       int salesRef);
+
+  Future<void> updateHoldItem(int salesNo, int splitNo, String tableNo,
+      double sTotal, double gTotal, double padiAmount);
 }

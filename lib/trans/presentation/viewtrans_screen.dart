@@ -10,7 +10,7 @@ import '../../constants/text_style_constant.dart';
 import 'adapters/trans_data.dart';
 import '../../theme/theme_model.dart';
 import '../../common/widgets/custom_button.dart';
-import '../../cash/presentation/cash_screen.dart';
+import '../../payment/presentation/cash_screen.dart';
 import 'trans_detail_screen.dart';
 
 const List<String> btns = <String>[

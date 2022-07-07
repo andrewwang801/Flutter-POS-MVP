@@ -11,11 +11,15 @@ import 'package:raptorpos/home/provider/order/order_state.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
 import 'package:sqflite/sqlite_api.dart';
 
+import '../../../payment/repository/i_payment_repository.dart';
+
 @Injectable()
 class OrderStateNotifier extends StateNotifier<OrderState> {
   final IOrderRepository orderRepository;
+  final IPaymentRepository paymentRepository;
 
-  OrderStateNotifier(this.orderRepository) : super(OrderInitialState());
+  OrderStateNotifier(this.orderRepository, this.paymentRepository)
+      : super(OrderInitialState());
 
   late int? _salesRef;
   // create order item
@@ -90,7 +94,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           Quantity: qty.toInt(),
           ItemName: pluName,
           ItemName_Chinese: pluNameCh,
-          ItemAmount: amount.toInt(),
+          ItemAmount: amount.toDouble(),
           PaidAmount: 0,
           ChangeAmount: 0,
           Tax0: 0,
@@ -168,9 +172,9 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
               salesNo, splitNo, itemSeqNo, selPluKp3);
         }
 
-        if (PosDefault.bSplitQunaitiy) {
+        if (POSDefault.blnSplitQuantity) {
           // global blnSplitQuantity
-          if (PosDefault.bSplitKPStatus) {
+          if (POSDefault.blnSplitKPStatus) {
             // global !blnSplitKPStatus
             values = [
               salesNo.toString(),
@@ -187,7 +191,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
             await orderRepository.updateOrderStatus(values, 2);
           }
         }
-        if (PosDefault.taxInclusive) {
+        if (POSDefault.taxInclusive) {
           // global !taxInclusive
           int countExempt = await orderRepository.countPLU(pluNo, 2);
           if (countExempt > 0) {
@@ -471,7 +475,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           Quantity: qty.toInt(),
           ItemName: pluName,
           ItemName_Chinese: pluNameCh,
-          ItemAmount: amount.toInt(),
+          ItemAmount: amount.toDouble(),
           PaidAmount: 0,
           ChangeAmount: 0,
           Tax0: 0,
@@ -549,9 +553,9 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
               salesNo, splitNo, itemSeqNo, selPluKp3);
         }
 
-        if (PosDefault.bSplitQunaitiy) {
+        if (POSDefault.blnSplitQuantity) {
           // global blnSplitQuantity
-          if (PosDefault.bSplitKPStatus) {
+          if (POSDefault.blnSplitKPStatus) {
             // global !blnSplitKPStatus
             values = [
               salesNo.toString(),
@@ -568,7 +572,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
             await orderRepository.updateOrderStatus(values, 2);
           }
         }
-        if (PosDefault.taxInclusive) {
+        if (POSDefault.taxInclusive) {
           // global !taxInclusive
           int countExempt = await orderRepository.countPLU(pluNo, 2);
           if (countExempt > 0) {
@@ -639,7 +643,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
 
         if (modifier.isNotEmpty) {
           await addModifier(
-              GlobalConfig.posID,
+              POSDtls.deviceNo,
               GlobalConfig.operatorNo,
               GlobalConfig.cover,
               GlobalConfig.tableNo,
@@ -652,7 +656,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           Map<String, String> prepDetail = prepSelect[item]!;
           int prepQty = (prepDetail['Quantity'] ?? '0').toInt();
           await prepOrderItem(
-              GlobalConfig.posID,
+              POSDtls.deviceNo,
               GlobalConfig.operatorNo,
               GlobalConfig.tableNo,
               GlobalConfig.salesNo,
@@ -667,11 +671,11 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
               GlobalConfig.salesNo,
               GlobalConfig.splitNo,
               GlobalConfig.tableNo,
-              GlobalConfig.posID,
+              POSDtls.deviceNo,
               GlobalConfig.operatorNo,
               1, // shift
               tempItemSeqNo,
-              GlobalConfig.categoryID,
+              POSDtls.categoryID,
               pluNumber,
               tempSalesRef);
         }
@@ -680,7 +684,9 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
       state = OrderSuccessState(
           await orderRepository.fetchOrderItems(
               GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo),
-          await calcBill());
+          await calcBill(),
+          await paymentRepository.checkPaymentPermission(
+              GlobalConfig.operatorNo, 5));
     } catch (e) {
       state = OrderErrorState(errMsg: e.toString());
     }
@@ -697,12 +703,14 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
     return seqNo;
   }
 
-  void fetchOrderItems() async {
+  Future<void> fetchOrderItems() async {
     try {
       state = OrderSuccessState(
           await orderRepository.fetchOrderItems(
               GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo),
-          await calcBill());
+          await calcBill(),
+          await paymentRepository.checkPaymentPermission(
+              GlobalConfig.operatorNo, 5));
     } catch (e) {
       print('Error: ${e.toString()}');
       state = OrderErrorState(errMsg: e.toString());

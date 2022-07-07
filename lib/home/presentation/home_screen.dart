@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
+import 'package:raptorpos/home/repository/order/i_order_repository.dart';
+import 'package:raptorpos/payment/repository/i_payment_repository.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../constants/color_constant.dart';
@@ -62,12 +65,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0),
-                      child: CheckOut(),
+                      child: CheckOut(320.h),
                     ),
                     SizedBox(
                       height: 10.h,
                     ),
-                    BillButtonList(),
+                    BillButtonList(
+                      paymentRepository: GetIt.I<IPaymentRepository>(),
+                      orderRepository: GetIt.I<IOrderRepository>(),
+                    ),
                   ],
                 ),
                 SizedBox(
@@ -113,6 +119,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             right: 20.w,
                             bottom: 45.h,
                             child: NumPad(
+                                buttonHeight: 60,
+                                buttonWidth: 60,
                                 delete: () {},
                                 onSubmit: () {},
                                 controller: _myController),

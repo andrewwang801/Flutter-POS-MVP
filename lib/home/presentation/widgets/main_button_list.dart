@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:raptorpos/constants/color_constant.dart';
+import 'package:raptorpos/floor_plan/presentation/floor_plan_screen.dart';
 import 'package:raptorpos/functions/presentation/functions_screen.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
@@ -13,15 +14,11 @@ import '../../../common/widgets/numpad.dart';
 
 final List<String> btnTexts = [
   'Trans Table',
-  // 'Split Bill',
   'Preview Bill',
   'PRINT BILL',
-  // 'MEM-BER',
-  // 'PRMN',
   'FUNCT-ION',
-  'MODIFIER',
   'VOID',
-  'DISC',
+  'HOLD TABLE',
   // 'RFND',
   // 'MNGR',
   // 'OPT SIGN-IN',
@@ -50,6 +47,9 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
           return CustomButton(
             callback: () {
               switch (index) {
+                case 5:
+                  Get.to(FloorPlanScreen());
+                  break;
                 case 6:
                   Get.to(FunctionsScreen(), transition: Transition.rightToLeft);
                   break;
@@ -87,7 +87,11 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
             child: IntrinsicHeight(
               child: IntrinsicWidth(
                 child: NumPad(
-                    delete: () {}, onSubmit: () {}, controller: _myController),
+                    buttonWidth: 60,
+                    buttonHeight: 60,
+                    delete: () {},
+                    onSubmit: () {},
+                    controller: _myController),
               ),
             ),
           );
