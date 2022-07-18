@@ -52,7 +52,11 @@ class _CashScreenState extends ConsumerState<CashScreen> {
   Widget build(BuildContext context) {
     bool isDark = ref.watch(themeProvider);
     OrderState state = ref.watch(orderProvoder);
-    state is OrderSuccessState ? billTotal = state.bills[0] : 0.0;
+    if (state is OrderSuccessState) {
+      if (state.bills.isNotEmpty) {
+        billTotal = state.bills[0];
+      }
+    }
 
     paymentState = ref.watch(paymentProvider);
     ref.listen<PaymentState>(paymentProvider, (prev, next) {
@@ -60,7 +64,6 @@ class _CashScreenState extends ConsumerState<CashScreen> {
         switch (next.status) {
           case PaymentStatus.PAID:
             Get.back();
-            Get.to(FloorPlanScreen());
             break;
           case PaymentStatus.SEND_RECEIPT:
             break;
@@ -86,6 +89,8 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                   );
                 });
             break;
+          case PaymentStatus.NONE:
+            break;
         }
       }
     });
@@ -99,89 +104,114 @@ class _CashScreenState extends ConsumerState<CashScreen> {
       body: Row(
         children: [
           CheckOut(429.h),
-          _cashPayment(state),
+          Expanded(child: _cashPayment(state)),
         ],
       ),
     );
   }
 
   Widget _cashPayment(OrderState state) {
-    return SizedBox(
-        width: 606.w,
-        height: 300.h,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  'Bill Total: ',
-                  style: titleTextDarkStyle,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: EdgeInsets.all(20.0),
+          color: primaryDarkColor,
+          child: Column(
+            children: [
+              SizedBox(
+                width: 300.w,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      'Amount Due: ',
+                      style: titleTextDarkStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                    Expanded(
+                      child: Text(
+                        state is OrderSuccessState && state.bills.isNotEmpty
+                            ? '\$ ${state.bills[0].toStringAsFixed(2)}'
+                            : '\$ 0.00',
+                        style: titleTextDarkStyle,
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  state is OrderSuccessState
-                      ? '\$ ${state.bills[0].toStringAsFixed(2)}'
-                      : '\$ 0.00',
-                  style: titleTextDarkStyle,
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              SizedBox(
+                width: 300.w,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      'Balance Due: ',
+                      style: titleTextDarkStyle.copyWith(color: Colors.green),
+                      textAlign: TextAlign.left,
+                    ),
+                    Expanded(
+                      child: Text(
+                        payment.toStringAsFixed(2).currencyString('\$'),
+                        style: titleTextDarkStyle.copyWith(color: Colors.green),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  'Payment: ',
-                  style: titleTextDarkStyle,
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              SizedBox(
+                width: 300.w,
+                child: Row(
+                  children: [
+                    Text(
+                      'Change: ',
+                      style: titleTextDarkStyle.copyWith(color: Colors.red),
+                      textAlign: TextAlign.left,
+                    ),
+                    Expanded(
+                      child: Text(
+                        change.toStringAsFixed(2).currencyString('\$'),
+                        style: titleTextDarkStyle.copyWith(color: Colors.red),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  payment.currencyString('\$'),
-                  style: titleTextDarkStyle,
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  'Change: ',
-                  style: titleTextDarkStyle,
-                ),
-                Text(
-                  change.toStringAsFixed(2).currencyString('\$'),
-                  style: titleTextDarkStyle,
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 30.h,
-            ),
-            OrientationBuilder(
-              builder: (context, orientation) {
-                return SizedBox(
-                  width: orientation == Orientation.landscape ? 400.h : 300.w,
-                  height: orientation == Orientation.landscape ? 400.h : 300.w,
-                  child: NumPad(
-                      buttonWidth:
-                          orientation == Orientation.landscape ? 100.h : 75.w,
-                      buttonHeight:
-                          orientation == Orientation.landscape ? 100.h : 75.w,
-                      delete: () {},
-                      onSubmit: () {
-                        doPayment(payment);
-                      },
-                      controller: _controller),
-                );
-              },
-            )
-          ],
-        ));
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 30.h,
+        ),
+        OrientationBuilder(
+          builder: (context, orientation) {
+            return SizedBox(
+              width: orientation == Orientation.landscape ? 400.h : 300.w,
+              height: orientation == Orientation.landscape ? 400.h : 300.w,
+              child: NumPad(
+                  buttonWidth:
+                      orientation == Orientation.landscape ? 100.h : 75.w,
+                  buttonHeight:
+                      orientation == Orientation.landscape ? 100.h : 75.w,
+                  delete: () {},
+                  onSubmit: () {
+                    doPayment(payment);
+                  },
+                  controller: _controller),
+            );
+          },
+        )
+      ],
+    );
   }
 
   @override

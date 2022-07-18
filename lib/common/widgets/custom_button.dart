@@ -39,27 +39,32 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
     final double _height = widget.height ?? 25.h;
     final double _width = widget.width ?? 80.w;
 
-    return Material(
-      color: _fillColor,
-      child: InkWell(
-        onTap: () {
-          _callback();
-        },
-        child: Container(
-          width: _width,
-          height: _height,
-          padding: EdgeInsets.symmetric(horizontal: 4.0),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: _borderColor,
-              width: 1.0,
+    return Container(
+      width: _width,
+      height: _height,
+      decoration: BoxDecoration(
+        color: _fillColor,
+        border: Border.all(
+          color: _borderColor,
+          width: 1.0,
+        ),
+        borderRadius: BorderRadius.circular(6.0),
+      ),
+      child: Material(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
+        clipBehavior: Clip.hardEdge,
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            _callback();
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 4.0),
+            child: Center(
+              child: Text(_text,
+                  textAlign: TextAlign.center,
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
             ),
-            borderRadius: BorderRadius.circular(3.0),
-          ),
-          child: Center(
-            child: Text(_text,
-                textAlign: TextAlign.center,
-                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
           ),
         ),
       ),

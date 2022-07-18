@@ -1849,7 +1849,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
   Future<double> getPaidAmount(int salesNo, int splitNo, String tableNo) async {
     final Database dbHandler = await dbHelper.database;
     final String query =
-        "SELECT IFNULL(SUM(ItemAmount), 0) FROM HeldItems WHERE TransStatus = ' ' AND SalesNo = $salesNo AND SplitNo = $salesNo AND TableNo = '$tableNo' AND FunctionID IN (1,2,3,4,5,7,8,9)";
+        "SELECT IFNULL(SUM(ItemAmount), 0) FROM HeldItems WHERE TransStatus = ' ' AND SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo' AND FunctionID IN (1,2,3,4,5,7,8,9)";
 
     final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
     final Map<String, dynamic> tempData = data[0];
@@ -1895,7 +1895,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
   Future<List<List<String>>> getPrintBillDisc(int sNo) async {
     final Database dbHandler = await dbHelper.database;
     final String query =
-        'SELECT ItemName, SUM(Discount) FROM SalesItemsTemp WHERE SalesNo = $sNo AND FunctionID = 25';
+        'SELECT ItemName, SUM(Discount) as discount FROM SalesItemsTemp WHERE SalesNo = $sNo AND FunctionID = 25 GROUP BY Discount';
     final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
     return data.map((Map<String, dynamic> e) {
       return e.values.map((dynamic v) => v.toString()).toList();

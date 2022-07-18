@@ -4,6 +4,7 @@ mixin StringUtil {
     for (int i = 0; i < spaceLength; i++) {
       result += ' ';
     }
+    result += textToAddSpace;
     return result;
   }
 
@@ -16,6 +17,7 @@ mixin StringUtil {
   }
 
   String textPrintFormat(String attritube, String align, String size) {
-    return '$attritube]$align]$size]';
+    return '';
+    // return '$attritube]$align]$size]';
   }
 }

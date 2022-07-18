@@ -23,7 +23,7 @@ class _MenuListState extends ConsumerState<MenuList> {
   @override
   Widget build(BuildContext context) {
     final menuHdr = ref.watch(menuHdrProvider);
-    return menuHdr.when(data: ((data) {
+    return menuHdr.when(data: (data) {
       return ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: data.length,
@@ -35,13 +35,14 @@ class _MenuListState extends ConsumerState<MenuList> {
               width: 10.w,
             );
           });
-    }), error: (error, e) {
+    }, error: (error, e) {
       return Center(
         child: Text(e.toString()),
       );
     }, loading: () {
-      return Center(
-        child: CircularProgressIndicator(),
+      return const Center(
+        child:
+            SizedBox(width: 30, height: 30, child: CircularProgressIndicator()),
       );
     });
   }

@@ -1,129 +1,122 @@
+import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
+import '../../common/services/iprinter_service.dart';
 
-import '../../common/GlobalConfig.dart';
-import '../../common/extension/string_extension.dart';
+import '../../common/services/printer_manager.dart';
+import '../model/printer_model.dart';
+import '../model/printer_support_model.dart';
 import '../repository/i_printer_repository.dart';
-import '../utils/printer_util.dart';
 import 'printer_state.dart';
 
 @Injectable()
 class PrinterStateNotifier extends StateNotifier<PrinterState> {
-  PrinterStateNotifier(this.printerRepository) : super(PrinterLoadingState());
+  PrinterStateNotifier(this.printerRepository, this.printerManager)
+      : super(PrinterInitialState());
+
   final IPrinterRepository printerRepository;
-  List<String> printArr = <String>[];
+  final PrinterManager printerManager;
 
-  Future<void> kpPrinting(int kpsNo, int kpsPlNo, String kpTblNo,
-      String tblName, String kpTblName, int transID, int countReprint) async {
-    String tempCtgName = '', tempIName = '', kitchenPrint = '';
-    int kpNo = 0, tempCtgID = 0;
-    bool blnIndividual;
-    double tempQty = 0;
+  Future<void> fetchPrinters() async {
+    state = PrinterLoadingState();
+    try {
+      final List<PrinterModel> printers = await printerRepository.getPrinters();
+      final List<PrinterSupportModel> supportPrinters =
+          await printerRepository.getSupportPrinters();
 
-    List<List<String>> kpscArray = await printerRepository.getKPSalesCategory(
-        kpsNo, kpsPlNo, tblName, kpTblName, transID);
-    for (List<String> kpsc in kpscArray) {
-      tempCtgName = kpsc[0];
-      tempCtgID = kpsc[1].toInt();
-
-      List<List<String>> kpArray = await printerRepository.getKPNo(
-          kpsNo, kpsPlNo, tempCtgName, tblName, kpTblName, transID);
-      for (List<String> kp in kpArray) {
-        kpNo = kp[0].toInt();
-        if (POSDtls.blnKPPartialConsolidate) {
-          kitchenPrint = await printerRepository.generateKP(
-              kpsNo,
-              kpsPlNo,
-              kpTblNo,
-              tempCtgName,
-              kpNo,
-              tblName,
-              kpTblName,
-              transID,
-              countReprint);
-          printArr.add(kitchenPrint);
-        } else {
-          List<List<String>> indvItems =
-              await printerRepository.getKPIndividualItems(kpsNo, kpsPlNo, kpNo,
-                  kpTblNo, tempCtgName, tblName, kpTblName, transID);
-          for (List<String> indvItem in indvItems) {
-            tempIName = indvItem[1];
-            tempQty = indvItem[3].toDouble();
-            blnIndividual = indvItem[7].toBool();
-
-            kitchenPrint = await printerRepository.generateIndividualKP(
-                kpsNo,
-                kpsPlNo,
-                kpTblNo,
-                tempCtgName,
-                kpNo,
-                tempIName,
-                tempQty,
-                blnIndividual,
-                tblName,
-                kpTblName,
-                transID,
-                countReprint);
-            printArr.add(kitchenPrint);
-          }
-
-          kitchenPrint = await printerRepository.generateKPIndividual(
-              kpsNo,
-              kpsPlNo,
-              kpTblNo,
-              tempCtgName,
-              kpNo,
-              tblName,
-              kpTblName,
-              transID,
-              countReprint);
-        }
-        if (kitchenPrint.isNotEmpty) {
-          printArr.add(kitchenPrint);
-        }
-      }
+      state = PrinterSuccessState(
+          printers: printers,
+          printerSupportList: supportPrinters,
+          operation: OPERATION.FETCH);
+    } catch (e) {
+      state = PrinterErrorState(e.toString());
     }
   }
 
-  Future<void> masterKPPrint(int mKpsNo, int mKpSplNo, String mKpTblNo,
-      String tblName, String kpTblName, int transID, int countReprint) async {
-    List<List<String>> data =
-        await printerRepository.getMasterKPID(POSDtls.deviceNo);
-    if (data.isNotEmpty) {
-      for (int i = 0; i < 3; i++) {
-        int masterKPID = data[0][i].toInt();
-        List<List<String>> scArr = await printerRepository.getMasterKPSC(
-            mKpsNo, mKpSplNo, masterKPID, i + 1);
-        for (int i = 0; i < scArr.length; i++) {
-          String ctgName = scArr[i][1];
-          int ctgId = scArr[i][0].toInt();
-          // String strMasterKP = await printerRepository.generateMasterKP(
-          //     masterKPID, ctgName, ctgId, mKpTblNo, mKpsNo, mKpSplNo, i + 1);
-          // printArray.add(strMasterKP);
-        }
+  Future<void> addPrinter(PrinterModel printer) async {
+    try {
+      if (state is PrinterSuccessState) {
+        PrinterSuccessState prevState = state as PrinterSuccessState;
+        state = prevState.copyWith(
+            printers: <PrinterModel>[...prevState.printers, printer],
+            operation: OPERATION.ADD);
+        await printerRepository.addPrinter(printer);
+        state = prevState.copyWith(
+            printers: <PrinterModel>[...prevState.printers, printer],
+            operation: OPERATION.ADD);
       }
+    } catch (e) {
+      state = PrinterErrorState(e.toString());
     }
   }
 
-  Future<void> doPrint() async {
-    List<List<String>> kpscArray = await printerRepository.getKPSalesCategory(
-        GlobalConfig.salesNo, GlobalConfig.splitNo, 'HeldItems', 'KPStatus', 0);
-    if (kpscArray.isNotEmpty) {
-      await kpPrinting(GlobalConfig.salesNo, GlobalConfig.splitNo,
-          GlobalConfig.tableNo, 'HeldItems', 'KPStatus', 0, 0);
+  Future<void> updatePrinter(PrinterModel printer) async {
+    try {
+      if (state is PrinterSuccessState) {
+        final PrinterSuccessState prevState = state as PrinterSuccessState;
+        final int targetPrinterID = prevState.printers.indexWhere(
+            (PrinterModel element) => element.printerID == printer.printerID);
+        prevState.printers.removeAt(targetPrinterID);
+        prevState.printers.insert(targetPrinterID, printer);
+        state = prevState.copyWith(
+            printers: prevState.printers, operation: OPERATION.UPDATE);
+        await printerRepository.updatePrinter(printer);
+      }
+    } catch (e) {
+      state = PrinterErrorState(e.toString());
+    }
+  }
 
-      if (POSDtls.blnKPPrintMaster) {
-        await masterKPPrint(GlobalConfig.salesNo, GlobalConfig.splitNo,
-            GlobalConfig.tableNo, 'HeldItems', 'KPStatus', 0, 0);
+  Future<void> deletePrinter(int printerID) async {
+    try {
+      if (state is PrinterSuccessState) {
+        final PrinterSuccessState prevState = state as PrinterSuccessState;
+        List<PrinterModel> newPrinters = prevState.printers
+            .where((element) => element.printerID != printerID)
+            .toList();
+        state = prevState.copyWith(
+            printers: newPrinters, operation: OPERATION.UPDATE);
+        await printerRepository.deletePrinter(printerID);
       }
-      PrinterUtil printerUtil = PrinterUtil();
-      for (String printData in printArr) {
-        // Print Action
-        printerUtil.print(2, 0, printData);
+    } catch (e) {
+      state = PrinterErrorState(e.toString());
+    }
+  }
+
+  Future<void> connectPrinter(PrinterModel printer) async {
+    final IPrinterService printerService = printerManager.createPrinter(0);
+    try {
+      final PosPrintResult res =
+          await printerService.connect(printer.address, printer.port);
+      if (res == PosPrintResult.success) {
+        printerManager.add(printerService);
+        if (state is PrinterSuccessState) {
+          final PrinterSuccessState prevState = state as PrinterSuccessState;
+          state = prevState.copyWith(operation: OPERATION.CONNECT_SUCCESS);
+        }
+      } else {
+        if (state is PrinterSuccessState) {
+          final PrinterSuccessState prevState = state as PrinterSuccessState;
+          state = prevState.copyWith(operation: OPERATION.CONNECT_FAIL);
+        }
       }
-      printArr.clear();
-      await printerRepository.updateKPPrintItem(
-          GlobalConfig.salesNo, GlobalConfig.splitNo);
+    } catch (e) {
+      state = PrinterErrorState(e.toString());
+    }
+  }
+
+  Future<void> disconnectPrinter(PrinterModel printer) async {
+    final IPrinterService? printerService =
+        printerManager.getPrinterByIP(printer.address);
+    try {
+      printerService?.disconnect();
+      printerManager.removeByIP(printer.address);
+      if (state is PrinterSuccessState) {
+        final PrinterSuccessState prevState = state as PrinterSuccessState;
+        state = prevState.copyWith(operation: OPERATION.DISCONNECT_SUCCESS);
+      }
+    } catch (e) {
+      state = PrinterErrorState(e.toString());
     }
   }
 }

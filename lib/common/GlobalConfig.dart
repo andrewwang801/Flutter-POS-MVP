@@ -1,26 +1,27 @@
 import 'dart:core';
 
+// ignore: avoid_classes_with_only_static_members
 class GlobalConfig {
-  static String token = "";
-  static String username = "";
+  static String token = '';
+  static String username = '';
 
   static String PLUNumber = '';
   static String PLUName = '';
 
-  static int salesNo = 1;
+  static int salesNo = 114;
   static int splitNo = 1;
-  static int cover = 0;
-  static String tableNo = "3";
-  static String rcptNo = "A2200000014";
+  static int cover = 2;
+  static String tableNo = '3';
+  static String rcptNo = 'A2200000014';
   //static bool ShowFunc = false;
   //static bool ShowPromo = false;
   //static bool ShowBillFOC = false;
   //static bool ShowDisc = false;
 
-  static String TransMode = "REG";
+  static String TransMode = 'REG';
 
   static int operatorNo = 1;
-  static String operatorName = "Admin";
+  static String operatorName = 'Admin';
   static int MaxVoids = 9999;
   static int MaxVoidsPerSale = 9999;
   static bool AllVoid = true;
@@ -36,10 +37,10 @@ class GlobalConfig {
   static bool OpPrinterSetting = true;
 
   static int TableNoInt = 0;
-  static String ErrMsg = "";
-  static String ErrMsg2 = "";
+  static String ErrMsg = '';
+  static String ErrMsg2 = '';
 
-  static String CategoryName = "";
+  static String CategoryName = '';
   static int checkTableOpen = 0;
   static int checkItemOrder = 0;
   static int PrinterLength = 0;
@@ -57,8 +58,9 @@ class GlobalConfig {
   static bool IsPrintInit = false;
 }
 
+// ignore: avoid_classes_with_only_static_members
 class POSDefault {
-  static late bool taxInclusive = true;
+  static late bool taxInclusive = false;
   static bool blnSplitQuantity = false;
   static bool blnSplitKPStatus = false;
 
@@ -144,11 +146,13 @@ class POSDefault {
   static bool PLUImageDB = false;
 }
 
+// ignore: avoid_classes_with_only_static_members
 class POSDtls {
   static late int categoryID = 1;
-  static late String deviceNo = "1";
+  static late String deviceNo = '1';
   static late String posType;
-  static late String strSalesAreaID = "LOUN";
+  static late String strSalesAreaID = 'LOUN';
+  static late String strPOSTitle = '';
   static late String selTermDSN;
   static late String srvrDSN;
   static late String printRcpt;
@@ -186,37 +190,37 @@ class POSDtls {
   static late bool blnForceSalesCategory;
   static late bool DualFnPrinter;
   static late bool EnableSysSetUp;
-  static late bool PrintVoids;
-  static late bool PrintFreeItems;
-  static late bool PrintUnitPrice;
-  static late bool PrintGroupsubtotal;
-  static late bool PrintSalesCategory;
-  static late bool PrintDeptSubTotal;
-  static late bool PrintSalesCtgSubTotal;
-  static late bool PrintGroup;
-  static late bool PrintDepartment;
-  static late bool KPPrintGroup;
-  static late bool KPPrintDepartment;
-  static late bool KPOrderRemarks;
-  static late bool PrintRounding;
-  static late bool PrintTax;
-  static late bool PrintTotalTax;
-  static late String TotalTaxTitle;
+  static late bool PrintVoids = true;
+  static late bool PrintFreeItems = true;
+  static late bool PrintUnitPrice = true;
+  static late bool PrintGroupsubtotal = true;
+  static late bool PrintSalesCategory = true;
+  static late bool PrintDeptSubTotal = true;
+  static late bool PrintSalesCtgSubTotal = true;
+  static late bool PrintGroup = true;
+  static late bool PrintDepartment = true;
+  static late bool KPPrintGroup = true;
+  static late bool KPPrintDepartment = true;
+  static late bool KPOrderRemarks = true;
+  static late bool PrintRounding = true;
+  static late bool PrintTax = true;
+  static late bool PrintTotalTax = true;
+  static late String TotalTaxTitle = 'TotalTaxTitle';
   static late bool EnBell;
   static late String BColor;
   static late String FColor;
-  static late bool PrintPrmnDtls;
-  static late bool PrintPrmnSummary;
-  static late bool PrintFreePrep;
-  static late bool PrintFreePLU;
-  static late bool PrintPrepWithPrice;
-  static late bool PrintTimeAttend;
+  static late bool PrintPrmnDtls = true;
+  static late bool PrintPrmnSummary = true;
+  static late bool PrintFreePrep = true;
+  static late bool PrintFreePLU = true;
+  static late bool PrintPrepWithPrice = true;
+  static late bool PrintTimeAttend = true;
   static late int AutoTblStart;
   static late int AutoTblEnd;
   static late bool Kitchen;
   static late bool ApplyPrmn;
   static late int DefPShift = 1;
-  static late String PShift = "1";
+  static late String PShift = '1';
   static late bool CustDisplay;
   static late String CustDisp1;
   static late String CustDisp2;
@@ -256,25 +260,25 @@ class POSDtls {
   static late bool PrintTableNo;
   static late bool blnKPPrintConsolidate;
   static late bool blnKPPrintIndividual;
-  static late bool blnKPPrintMaster;
+  static late bool blnKPPrintMaster = true;
   static late bool blnKPPrintTransferTable;
   static late bool blnKPPrintStickerRcpt;
   static late bool blnKPPrintID = true;
   static late bool blnKPMasterPrintID;
   static late bool blnKPPrintPrepQty;
-  static late bool blnKPPrintCover;
+  static late bool blnKPPrintCover = true;
   static late bool blnKPPrintPLUNo;
   static late bool blnKPPrintPrice;
   static late bool blnKPPrintPriceTotal;
   static late bool blnKPPrintSideway;
   static late bool blnKPPrintBarcode;
   static late bool blnKPPrintAutoSplitQty;
-  static late bool blnKPPartialConsolidate = true;
+  static late bool blnKPPartialConsolidate = false;
   static late bool blnKPPrintBigTableNo;
   static late bool blnKPPrintRefundItem;
   static late bool blnKPPrintCounter;
   static late bool blnPrint;
-  static late bool PrintTblRemarks;
+  static late bool PrintTblRemarks = true;
   static late bool MasterKPPrintTblRemarks;
   static late bool blnMultiDrawer;
   static late String DrawerName;
@@ -326,9 +330,9 @@ class POSDtls {
   static late String SecondPic;
   static late String CompanyPic;
   static late String TablePic;
-  static late String ScreenHeader1;
-  static late String ScreenHeader2;
-  static late String ScreenHeader3;
+  static late String ScreenHeader1 = 'Admin';
+  static late String ScreenHeader2 = 'Admin1';
+  static late String ScreenHeader3 = 'Admin2';
   static late bool blnSmartCard;
   static late int SmartcardPort;
   static late bool blnAutoReceivedPOS;
@@ -343,7 +347,7 @@ class POSDtls {
   static late bool blnXPA;
   static late bool blnForceSalesCategorySellband;
   static late int RentalWarning;
-  static late bool printZeroPrice;
+  static late bool printZeroPrice = true;
   static late bool blnEzlink;
   static late int EzlinkPort;
   static late bool blnViewTableNo;
@@ -399,11 +403,11 @@ class POSDtls {
 
 class InitSalesVar {
   static late int NCover = 0;
-  static late String TransMode = "REG";
-  static late String LoyaltyCardNo = "";
+  static late String TransMode = 'REG';
+  static late String LoyaltyCardNo = '';
   static late int SeatNo = 0;
   static late int RefundID = 0;
-  static late String strTableName = "";
+  static late String strTableName = '';
 
   //Tax
   static late bool ApplyTax0 = false;
