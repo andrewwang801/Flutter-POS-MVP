@@ -1,27 +1,26 @@
+// ignore_for_file: prefer_relative_imports
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
-import 'package:raptorpos/home/provider/order/order_provider.dart';
-import 'package:raptorpos/home/provider/order/order_state.dart';
-import 'package:raptorpos/payment/presentation/cash_screen.dart';
+import 'package:raptorpos/common/GlobalConfig.dart';
+import 'package:raptorpos/common/widgets/custom_button.dart';
 import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/floor_plan/presentation/floor_plan_screen.dart';
-import 'package:raptorpos/theme/theme_state_notifier.dart';
-
-import 'package:raptorpos/trans/presentation/trans.dart';
-import 'package:raptorpos/sales_category/sales_category_screen.dart';
-import 'package:raptorpos/payment/presentation/tender_screen.dart';
-import 'package:raptorpos/payment/repository/i_payment_repository.dart';
-import 'package:raptorpos/common/GlobalConfig.dart';
-import 'package:raptorpos/payment/repository/payment_local_repository.dart';
+import 'package:raptorpos/home/provider/order/order_provider.dart';
+import 'package:raptorpos/home/provider/order/order_state.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
-import 'package:raptorpos/print/provider/print_provider.dart';
+import 'package:raptorpos/payment/presentation/cash_screen.dart';
+import 'package:raptorpos/payment/presentation/tender_screen.dart';
 import 'package:raptorpos/payment/provider/payment_provider.dart';
-import './custom_button.dart';
+import 'package:raptorpos/payment/repository/i_payment_repository.dart';
+import 'package:raptorpos/print/provider/print_provider.dart';
+import 'package:raptorpos/sales_category/sales_category_screen.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
+import 'package:raptorpos/trans/presentation/trans.dart';
+
 import 'alert_dialog.dart';
 
 class BillButtonList extends ConsumerStatefulWidget {

@@ -6,6 +6,8 @@ const double _virtualKeyboardDefaultHeight = 300;
 
 const int _virtualKeyboardBackspaceEventPerioud = 250;
 
+typedef CALLBACK = Function(String custID);
+
 /// Virtual Keyboard widget.
 class VirtualKeyboard extends StatefulWidget {
   /// Keyboard Type: Should be inited in creation time.
@@ -29,6 +31,8 @@ class VirtualKeyboard extends StatefulWidget {
   /// Set to true if you want only to show Caps letters.
   final bool alwaysCaps;
 
+  final CALLBACK callback;
+
   VirtualKeyboard(
       {Key? key,
       required this.type,
@@ -37,6 +41,7 @@ class VirtualKeyboard extends StatefulWidget {
       this.height = _virtualKeyboardDefaultHeight,
       this.textColor = Colors.black,
       this.fontSize = 14,
+      required this.callback,
       this.alwaysCaps = false})
       : super(key: key);
 
@@ -220,7 +225,8 @@ class _VirtualKeyboardState extends State<VirtualKeyboard> {
               textController.text.substring(0, textController.text.length - 1);
           break;
         case VirtualKeyboardKeyAction.Return:
-          textController.text += '\n';
+          widget.callback(textController.text);
+          // textController.text += '\n';
           break;
         case VirtualKeyboardKeyAction.Space:
           textController.text += key.text!;

@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:raptorpos/common/widgets/appbar.dart';
-import 'package:raptorpos/constants/color_constant.dart';
-import 'package:raptorpos/home/provider/order/order_provider.dart';
-import 'package:raptorpos/home/provider/order/order_state.dart';
-import 'package:raptorpos/payment/provider/payment_state.dart';
-import 'package:raptorpos/theme/theme_state_notifier.dart';
 
-import 'package:raptorpos/common/extension/string_extension.dart';
-import 'package:raptorpos/common/widgets/alert_dialog.dart';
-import 'package:raptorpos/common/widgets/checkout.dart';
-import 'package:raptorpos/common/widgets/numpad.dart';
-import 'package:raptorpos/constants/text_style_constant.dart';
-import 'package:raptorpos/payment/provider/payment_provider.dart';
-
+import '../../common/GlobalConfig.dart';
+import '../../common/extension/string_extension.dart';
+import '../../common/widgets/alert_dialog.dart';
+import '../../common/widgets/appbar.dart';
+import '../../common/widgets/checkout.dart';
+import '../../common/widgets/numpad.dart';
+import '../../constants/color_constant.dart';
+import '../../constants/text_style_constant.dart';
 import '../../floor_plan/presentation/floor_plan_screen.dart';
+import '../../home/provider/order/order_provider.dart';
+import '../../home/provider/order/order_state.dart';
+import '../../print/provider/print_provider.dart';
+import '../../theme/theme_state_notifier.dart';
+import '../provider/payment_provider.dart';
+import '../provider/payment_state.dart';
 
 class CashScreen extends ConsumerStatefulWidget {
   CashScreen({Key? key}) : super(key: key);
@@ -59,11 +60,15 @@ class _CashScreenState extends ConsumerState<CashScreen> {
     }
 
     paymentState = ref.watch(paymentProvider);
-    ref.listen<PaymentState>(paymentProvider, (prev, next) {
+    ref.listen<PaymentState>(paymentProvider, (prev, next) async {
       if (next is PaymentSuccessState && next.paid) {
         switch (next.status) {
           case PaymentStatus.PAID:
+            await ref
+                .read(printProvider.notifier)
+                .doPrint(3, GlobalConfig.salesNo, '');
             Get.back();
+            Get.to(FloorPlanScreen());
             break;
           case PaymentStatus.SEND_RECEIPT:
             break;

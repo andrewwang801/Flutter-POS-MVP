@@ -57,4 +57,6 @@ abstract class IOrderRepository {
 
   Future<void> updateHoldItem(int salesNo, int splitNo, String tableNo,
       double sTotal, double gTotal, double padiAmount);
+
+  Future<List<List<String>>> getIndexOrder(String tableNo);
 }

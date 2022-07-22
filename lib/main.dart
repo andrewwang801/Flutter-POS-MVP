@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import 'constants/color_constant.dart';
+import 'di/injection.dart';
+import 'floor_plan/presentation/floor_plan_screen.dart';
 import 'home/presentation/home_screen.dart';
-
-import 'package:raptorpos/di/injection.dart';
+import 'theme/theme_state_notifier.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,7 +57,7 @@ class MyApp extends ConsumerWidget {
                     primaryColor: primaryLightColor,
                     backgroundColor: backgroundColor),
             debugShowCheckedModeBanner: false,
-            home: HomeScreen(),
+            home: FloorPlanScreen(),
           );
         });
   }

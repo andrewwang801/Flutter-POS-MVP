@@ -12,8 +12,8 @@ import '../../../constants/text_style_constant.dart';
 import 'package:raptorpos/common/adapters/order_data.dart';
 
 class CheckOut extends ConsumerStatefulWidget {
+  const CheckOut(this.height, {Key? key}) : super(key: key);
   final double height;
-  CheckOut(this.height, {Key? key}) : super(key: key);
 
   @override
   _CheckOutState createState() => _CheckOutState();
@@ -21,10 +21,10 @@ class CheckOut extends ConsumerStatefulWidget {
 
 class _CheckOutState extends ConsumerState<CheckOut> {
   final ScrollController _vScrollController = ScrollController();
-
+  bool isDark = true;
   @override
   Widget build(BuildContext context) {
-    bool isDark = ref.watch(themeProvider);
+    isDark = ref.watch(themeProvider);
     OrderState state = ref.watch(orderProvoder);
 
     double totalTax = 0.0;
@@ -169,7 +169,6 @@ class _CheckOutState extends ConsumerState<CheckOut> {
   }
 
   Widget orderItemsTable() {
-    bool isDark = ref.watch(themeProvider);
     OrderState state = ref.watch(orderProvoder);
     final OrderData orderData = OrderData(
         isDark,

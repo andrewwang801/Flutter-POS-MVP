@@ -25,7 +25,7 @@ class PaymentStateNotifer extends StateNotifier<PaymentState> {
           payType,
           payment,
           '' /*customID */);
-      state = PaymentSuccessState(paid: true, status: PaymentStatus.SHOW_ALERT);
+      state = PaymentSuccessState(paid: true, status: PaymentStatus.PAID);
     } on Exception catch (_, e) {
       state = PaymentErrorState(msg: e.toString());
     }
