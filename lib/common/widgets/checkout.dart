@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../constants/color_constant.dart';
+import '../../../constants/text_style_constant.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
-
-import '../../../constants/color_constant.dart';
-import '../../../constants/text_style_constant.dart';
 import 'package:raptorpos/common/adapters/order_data.dart';
 
 class CheckOut extends ConsumerStatefulWidget {
@@ -45,7 +44,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
           Expanded(
               child: Container(
                   decoration: BoxDecoration(
-                    color: primaryDarkColor,
+                    color: isDark ? primaryDarkColor : Colors.white,
                   ),
                   child: _orderItemList())),
           Container(
@@ -241,7 +240,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
             },
             itemCount: state.orderItemTree!.length,
             itemBuilder: (BuildContext context, int index) {
-              return state.orderItemTree![index].render(context, 4);
+              return state.orderItemTree![index].render(context, 4, isDark);
             });
       }
     } else {

@@ -96,6 +96,8 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
 
   @override
   void initState() {
+    ref.read(paymentProvider.notifier).fetchPaymentData(0, 0);
+
     _paymentRepository = widget.paymentRepository;
     _controller.addListener(() {
       setState(() {
@@ -121,7 +123,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
     PaymentState state = ref.watch(paymentProvider);
 
     ref.listen<PaymentState>(paymentProvider, (prev, next) async {
-      if (next is PaymentSuccessState && next.paid) {
+      if (next is PaymentSuccessState) {
         switch (next.status) {
           case PaymentStatus.PAID:
             await ref
@@ -205,7 +207,9 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
             child: Center(
               child: Text(
                 'Tender Modes',
-                style: titleTextDarkStyle.copyWith(fontWeight: FontWeight.bold),
+                style: isDark
+                    ? titleTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                    : titleTextLightStyle.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -257,8 +261,14 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                     width: 300.w,
                     height: 25.h,
                     child: ListTile(
-                      leading: Text('Media Type'),
-                      trailing: Text('Amount'),
+                      leading: Text(
+                        'Media Type',
+                        style: bodyTextDarkStyle,
+                      ),
+                      trailing: Text(
+                        'Amount',
+                        style: bodyTextDarkStyle,
+                      ),
                     ),
                   ),
                   Container(
@@ -336,8 +346,14 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
       color:
           index.isEven ? primaryDarkColor : primaryDarkColor.withOpacity(0.6),
       child: ListTile(
-        leading: Text('${tenderDetail[index].name}'),
-        trailing: Text('${tenderDetail[index].amount}'),
+        leading: Text(
+          '${tenderDetail[index].name}',
+          style: bodyTextDarkStyle,
+        ),
+        trailing: Text(
+          '${tenderDetail[index].amount}',
+          style: bodyTextDarkStyle,
+        ),
       ),
     );
   }
