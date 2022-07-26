@@ -154,11 +154,6 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
             GlobalConfig.splitNo, GlobalConfig.tableNo, sTotal, gTotal, 0);
         // fetch updated order items
         ref.read(orderProvoder.notifier).fetchOrderItems();
-
-        // Print
-        await ref.read(printProvider.notifier).kpPrint();
-        // End of Print
-
         if (bTender) {
         } else {}
         Get.to(CashScreen());
@@ -185,7 +180,6 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
         // fetch updated order items
         ref.read(orderProvoder.notifier).fetchOrderItems();
         // Print
-        await ref.read(printProvider.notifier).kpPrint();
         Get.to(TenderScreen(
           gTotal: gTotal,
           paymentRepository: GetIt.I<IPaymentRepository>(),

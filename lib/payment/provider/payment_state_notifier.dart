@@ -2,6 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../common/GlobalConfig.dart';
+import '../../home/provider/order/order_provider.dart';
+import '../../home/provider/order/order_state_notifier.dart';
+import '../../home/repository/order/i_order_repository.dart';
+import '../../print/provider/print_controller.dart';
+import '../../print/provider/print_provider.dart';
+import '../../print/provider/print_state.dart';
+import '../../printer/provider/printer_state_notifier.dart';
 import '../model/media_data_model.dart';
 import '../model/payment_details_data_model.dart';
 import '../repository/i_payment_repository.dart';
@@ -11,7 +18,8 @@ import 'payment_state.dart';
 @Injectable()
 class PaymentStateNotifer extends StateNotifier<PaymentState> {
   final IPaymentRepository paymentLocalRepository;
-  PaymentStateNotifer(this.paymentLocalRepository)
+  final IOrderRepository orderRepository;
+  PaymentStateNotifer(this.paymentLocalRepository, this.orderRepository)
       : super(PaymentInitialState());
 
   Future<void> doPayment(int payType, double payment) async {

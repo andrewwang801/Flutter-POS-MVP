@@ -15,6 +15,8 @@ import '../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../home/provider/order/order_provider.dart';
 import '../../home/provider/order/order_state.dart';
 import '../../print/provider/print_provider.dart';
+import '../../print/provider/print_state.dart';
+import '../../printer/provider/printer_state.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../provider/payment_provider.dart';
 import '../provider/payment_state.dart';
@@ -38,6 +40,10 @@ class _CashScreenState extends ConsumerState<CashScreen> {
   void initState() {
     super.initState();
 
+    // Print
+    ref.read(printProvider.notifier).kpPrint();
+    // End of Print
+
     _controller.addListener(() {
       setState(() {
         payment = _controller.text.toDouble();
@@ -59,6 +65,21 @@ class _CashScreenState extends ConsumerState<CashScreen> {
       }
     }
 
+    ref.listen(printProvider, (previous, next) {
+      if (next is PrintSuccessState) {
+      } else if (next is PrintErrorState) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                insetPadding: EdgeInsets.all(20),
+                title: 'Error',
+                message: next.errMsg,
+                onConfirm: () {},
+              );
+            });
+      }
+    });
     paymentState = ref.watch(paymentProvider);
     ref.listen<PaymentState>(paymentProvider, (prev, next) async {
       if (next is PaymentSuccessState && next.paid) {

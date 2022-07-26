@@ -43,20 +43,6 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
   @override
   Widget build(BuildContext context) {
     bool isDark = ref.watch(themeProvider);
-    ref.listen(printProvider, (previous, next) {
-      if (next is PrintSuccessState) {
-      } else if (next is PrintErrorState) {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AppAlertDialog(
-                title: 'Error',
-                message: next.errMsg,
-                onConfirm: () {},
-              );
-            });
-      }
-    });
     return SizedBox(
       width: 600.w,
       height: 40.h,
