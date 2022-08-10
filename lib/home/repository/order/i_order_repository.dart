@@ -59,4 +59,7 @@ abstract class IOrderRepository {
       double sTotal, double gTotal, double padiAmount);
 
   Future<List<List<String>>> getIndexOrder(String tableNo);
+
+  Future<void> updateCovers(
+      int salesNo, int splitNo, String tableNo, int cover);
 }

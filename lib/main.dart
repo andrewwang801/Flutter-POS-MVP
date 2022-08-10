@@ -5,10 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import 'auth/presentation/login_screen.dart';
+import 'common/GlobalConfig.dart';
 import 'constants/color_constant.dart';
 import 'di/injection.dart';
-import 'floor_plan/presentation/floor_plan_screen.dart';
-import 'home/presentation/home_screen.dart';
 import 'theme/theme_state_notifier.dart';
 
 void main() async {
@@ -16,6 +15,9 @@ void main() async {
 
   // Dependency Injection
   await configureInjection();
+
+  await POSDtls.initPOSDtls();
+  await POSDefault.initPOSDefaults();
 
   SystemChrome.setPreferredOrientations(
           [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])

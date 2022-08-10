@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:raptorpos/print/provider/print_state.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/string_extension.dart';
@@ -19,6 +19,7 @@ import '../../constants/text_style_constant.dart';
 import '../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../home/provider/order/order_provider.dart';
 import '../../print/provider/print_provider.dart';
+import '../../print/provider/print_state.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../model/media_data_model.dart';
 import '../model/payment_details_data_model.dart';
@@ -26,52 +27,17 @@ import '../provider/payment_provider.dart';
 import '../provider/payment_state.dart';
 import '../repository/i_payment_repository.dart';
 
-List<MaterialColor> functionColors = <MaterialColor>[
-  Colors.green,
-  Colors.red,
-  Colors.orange,
-  Colors.yellow,
-  Colors.pink,
-  Colors.blue,
-  Colors.grey,
-  Colors.teal,
-];
-
-class FunctionModel {
-  final String? label;
-  final int color;
-
-  FunctionModel(this.label, this.color);
-}
-
-final List<FunctionModel> cashMethods = [
-  FunctionModel('CASH', 1),
-  FunctionModel('CREDIT BCA', 1),
-  FunctionModel('DEBIT LAIN', 1),
-  FunctionModel('GO RESTO', 1),
-  FunctionModel('GOPAY', 6),
-  FunctionModel('GRAB', 6),
-  FunctionModel('OVO', 6),
-  FunctionModel('SHOPPE', 6),
-  FunctionModel('SHOPPE FOOD', 6),
-  FunctionModel('TRANSFER', 6),
-  FunctionModel('VISA/MASTER', 7),
-  FunctionModel('VOUCHER 100K', 7),
-  FunctionModel('VOUCHER 50K', 7),
-];
-
 class TenderScreen extends ConsumerStatefulWidget {
-  TenderScreen(
-      {Key? key, required this.gTotal, required this.paymentRepository})
-      : super(key: key);
+  TenderScreen({Key? key, required this.gTotal}) : super(key: key);
   final double gTotal;
-  final IPaymentRepository paymentRepository;
 
   @override
   _CashScreenState createState() => _CashScreenState();
 }
 
 class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
+  late IPaymentRepository paymentRepository;
+
   bool isDark = true;
   // Total Remaining
   double gtAmount = 0;
@@ -95,15 +61,17 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
 
   late IPaymentRepository _paymentRepository;
 
+  int? selectedPayment;
+
   @override
   void initState() {
+    _paymentRepository = GetIt.I<IPaymentRepository>();
     ref.read(paymentProvider.notifier).fetchPaymentData(0, 0);
 
     // Print
     ref.read(printProvider.notifier).kpPrint();
     // End of Print
 
-    _paymentRepository = widget.paymentRepository;
     _controller.addListener(() {
       setState(() {
         payValue = _controller.text.toDouble();
@@ -165,7 +133,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                 builder: (BuildContext context) {
                   return AppAlertDialog(
                     insetPadding: EdgeInsets.all(20),
-                    title: 'Cash Payment',
+                    title: 'Tender Payment',
                     message:
                         'Payment: $payValue, Total Bill: $gtAmount, Change: ${change.toStringAsFixed(2)}',
                     onCancel: () {},
@@ -179,7 +147,33 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
             break;
           case PaymentStatus.NONE:
             break;
+          case PaymentStatus.PERMISSION_ERROR:
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AppAlertDialog(
+                    insetPadding: EdgeInsets.all(20),
+                    title: 'Remove Payment',
+                    message: 'Not Enough Permission to Remove Payment',
+                    onConfirm: () {},
+                  );
+                });
+            break;
+          case PaymentStatus.PAYMENT_REMOVED:
+            ref.read(paymentProvider.notifier).fetchPaymentData(payTag, funcID);
+            break;
         }
+      } else if (next is PaymentErrorState) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                insetPadding: EdgeInsets.all(20),
+                title: 'Error',
+                message: next.msg,
+                onConfirm: () {},
+              );
+            });
       }
     });
 
@@ -206,13 +200,6 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
 
   Widget _leftSide() {
     return CheckOut(428.h - AppBar().preferredSize.height);
-    // SizedBox(
-    //   height: 10.h,
-    // ),
-    // BillButtonList(
-    //   paymentRepository: GetIt.I<IPaymentRepository>(),
-    //   orderRepository: GetIt.I<IOrderRepository>(),
-    // ),
   }
 
   Widget _rightSide(PaymentState state) {
@@ -363,17 +350,30 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
   }
 
   Widget _payentDetailListItem(int index) {
-    return Container(
-      color:
-          index.isEven ? primaryDarkColor : primaryDarkColor.withOpacity(0.6),
-      child: ListTile(
-        leading: Text(
-          '${tenderDetail[index].name}',
-          style: bodyTextDarkStyle,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedPayment = index;
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: index.isEven
+              ? primaryDarkColor
+              : primaryDarkColor.withOpacity(0.6),
+          border: (selectedPayment != null && selectedPayment == index)
+              ? Border.all(width: 2, color: Colors.green)
+              : Border.all(width: 0, color: Colors.transparent),
         ),
-        trailing: Text(
-          '${tenderDetail[index].amount}',
-          style: bodyTextDarkStyle,
+        child: ListTile(
+          leading: Text(
+            '${tenderDetail[index].name}',
+            style: bodyTextDarkStyle,
+          ),
+          trailing: Text(
+            '${tenderDetail[index].amount}',
+            style: bodyTextDarkStyle,
+          ),
         ),
       ),
     );
@@ -392,7 +392,12 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
           height: 40.h,
         ),
         CustomButton(
-          callback: () {},
+          callback: () {
+            if (selectedPayment != null)
+              ref
+                  .read(paymentProvider.notifier)
+                  .removePayment(tenderDetail[selectedPayment!]);
+          },
           text: 'REMOVE PAYMENT',
           fillColor: isDark ? primaryDarkColor : Colors.white,
           borderColor: isDark ? primaryDarkColor : Colors.green,
@@ -427,16 +432,11 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
   Future<void> mediaSelect(MediaData list) async {
     funcID = list.funcID;
     if (payTag == 1) {
-      // var _tenderArray = await _paymentRepository.getMediaByType(
-      //     funcID, GlobalConfig.operatorNo);
       ref.read(paymentProvider.notifier).fetchPaymentData(payTag, funcID);
       payTag = 2;
     } else {
-      String title = list.title;
+      final String title = list.title;
       if (title == 'Back') {
-        // setState(() {
-        //   tenderArray = _state.tenderArray!;
-        // });
         ref.read(paymentProvider.notifier).fetchPaymentData(payTag, funcID);
         payTag = 1;
       } else {
@@ -539,11 +539,6 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               payTag = 1;
 
               if (payValue >= gtAmount) {
-                // payment notify
-                ref
-                    .read(paymentProvider.notifier)
-                    .updatePaymentStatus(PaymentStatus.PAID);
-
                 Map<String, dynamic> paidDetails = await _paymentRepository
                     .getPopUpAmount(GlobalConfig.salesNo);
                 double totalPaidAmount =
@@ -560,7 +555,10 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                             'Amount Due: $billTotalAmount,  Paid: $totalPaidAmount,  Change: $changesAmount',
                         title: 'Payment',
                         onConfirm: () {
-                          Get.back();
+                          // payment notify
+                          ref
+                              .read(paymentProvider.notifier)
+                              .updatePaymentStatus(PaymentStatus.PAID);
                         },
                       );
                     });

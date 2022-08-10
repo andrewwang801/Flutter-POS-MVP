@@ -16,13 +16,19 @@ abstract class ITableMangementRepository {
       String sTime,
       String rcptNo,
       String salesAreaID);
-  Future<void> updateTableStatus(String tableNo);
+  Future<void> updateTableStatusToO(String tableNo);
 
   // global db handler
   Future<List<List<String>>> getRcptNo();
   Future<void> updateRcptNoCtrl(String tempRcptNo, String dateTime, int status);
   Future<int> getSNoCtrl();
   Future<void> updateSalesNo(int salesNo);
+  Future<void> updateTableStatus(String tableNO, String status);
   Future<void> insertRcptDlts(
       String rcptNo, int salesNo, int splitNo, String tableNo, int operatorNo);
+
+  Future<int> nextSalesNumber();
+  Future<int> getSalesNumber();
+  Future<String> nextReceiptNumber();
+  Future<List<String>> getReceiptNumber(int salesOnTmpServer, String deviceNo);
 }

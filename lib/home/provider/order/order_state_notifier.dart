@@ -756,4 +756,11 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
     }).toList();
     return parentItemWidgets;
   }
+
+  Future<void> updateHeldItem(double sTotal, double gTotal) async {
+    // update order items in HeldItems table
+    await orderRepository.updateHoldItem(GlobalConfig.salesNo,
+        GlobalConfig.splitNo, GlobalConfig.tableNo, sTotal, gTotal, 0);
+    // fetch updated order items
+  }
 }

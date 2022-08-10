@@ -2,31 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
-import 'package:riverpod/riverpod.dart';
 
+import '../../common/widgets/custom_button.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
-import 'adapters/trans_data.dart';
-import '../../theme/theme_model.dart';
-import '../../common/widgets/custom_button.dart';
-import '../../payment/presentation/cash_screen.dart';
+import '../application/trans_provider.dart';
+import '../application/trans_state.dart';
+import '../data/trans_model.dart';
+import '../data/trans_sales_data_model.dart';
 import 'trans_detail_screen.dart';
+import 'widgets/kitchen_reprint_widget.dart';
 
 const List<String> btns = <String>[
   'Open',
   'View',
-  'New Table',
-  'Tender',
-  'Release Table',
-  'Print',
+  'Refund',
   'Kitchen Re-Print',
-  'Re-Print All',
+  'Print',
   'Close',
 ];
 
 class ViewTransScreen extends ConsumerStatefulWidget {
-  ViewTransScreen({Key? key}) : super(key: key);
+  const ViewTransScreen({Key? key}) : super(key: key);
 
   @override
   _ViewTransScreenState createState() => _ViewTransScreenState();
@@ -34,7 +34,7 @@ class ViewTransScreen extends ConsumerStatefulWidget {
 
 class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   final ScrollController _vScrollController = ScrollController();
-  final TransData transData = TransData();
+  // final TransData transData = TransData();
 
   // Radio Group Value for Trans filter
   int filterGroupValue = 0;
@@ -44,11 +44,32 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   bool tblOpenDate = false;
   bool posID = false;
 
+  // theme
   late bool isDark;
+
+  // Date Format, Start Date, End Date
+  DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+  DateFormat timeFormat = DateFormat('HH:mm:ss');
+  DateTime startDate = DateTime.now(), endDate = DateTime.now();
+
+  @override
+  void initState() {
+    // fetch trans data
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      ref.read(transProvider.notifier).fetchTransData(
+          dateFormat.format(startDate),
+          dateFormat.format(endDate),
+          '00:00:00.0',
+          '00:00:00.0');
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
+
     return Scaffold(
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: AppBar(
@@ -81,38 +102,98 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     );
   }
 
+  Widget transListView() {
+    return Container();
+  }
+
+  // trans array
+  List<TransSalesData> transArray = <TransSalesData>[];
   Widget transTable() {
-    return Scrollbar(
-      controller: _vScrollController,
-      isAlwaysShown: true,
-      child: SingleChildScrollView(
-          controller: _vScrollController,
-          physics: const ClampingScrollPhysics(),
-          child: SizedBox(
-            child: PaginatedDataTable(
-              columns: <DataColumn>[
-                DataColumn(label: Text('Rcptno', style: bodyTextLightStyle)),
-                DataColumn(label: Text('POSID', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Table', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Remarks', style: bodyTextLightStyle)),
-                DataColumn(label: Text('First Op', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Total', style: bodyTextLightStyle)),
-                DataColumn(label: Text('OpenDate', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Time', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Split', style: bodyTextLightStyle)),
-                DataColumn(label: Text('OP No', style: bodyTextLightStyle)),
-                DataColumn(
-                    label: Text('Table Status', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Mode', style: bodyTextLightStyle)),
-              ],
-              source: transData,
-              columnSpacing: 40,
-              horizontalMargin: 10,
-              rowsPerPage: 8,
-              showCheckboxColumn: false,
-            ),
-          )),
-    );
+    TransState state = ref.watch(transProvider);
+
+    if (state.workable == Workable.loading) {
+      return const Center(
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else if (state.workable == Workable.ready) {
+      TransData? data = state.transData;
+      if (data != null) {
+        transArray.clear();
+        if (salesStatue == 'Open Tables') {
+          transArray.addAll(data.transArrayOpened);
+        } else if (salesStatue == 'Closed Tables') {
+          transArray.addAll(data.transArrayClosed);
+        } else if (salesStatue == 'All') {
+          transArray.addAll(data.transArrayOpened);
+          transArray.addAll(data.transArrayClosed);
+        }
+      }
+      return Scrollbar(
+        controller: _vScrollController,
+        isAlwaysShown: true,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              controller: _vScrollController,
+              physics: const ClampingScrollPhysics(),
+              child: SizedBox(
+                child: DataTable(
+                  columns: <DataColumn>[
+                    DataColumn(
+                        label: Text('Rcptno', style: bodyTextLightStyle)),
+                    DataColumn(label: Text('POSID', style: bodyTextLightStyle)),
+                    DataColumn(label: Text('Table', style: bodyTextLightStyle)),
+                    DataColumn(
+                        label: Text('Remarks', style: bodyTextLightStyle)),
+                    DataColumn(
+                        label: Text('First Op', style: bodyTextLightStyle)),
+                    DataColumn(label: Text('Total', style: bodyTextLightStyle)),
+                    DataColumn(
+                        label: Text('OpenDate', style: bodyTextLightStyle)),
+                    DataColumn(label: Text('Time', style: bodyTextLightStyle)),
+                    DataColumn(label: Text('Split', style: bodyTextLightStyle)),
+                    DataColumn(label: Text('OP No', style: bodyTextLightStyle)),
+                    DataColumn(
+                        label: Text('Table Status', style: bodyTextLightStyle)),
+                    DataColumn(label: Text('Mode', style: bodyTextLightStyle)),
+                  ],
+                  rows: List.generate(transArray.length, (index) {
+                    return DataRow(cells: <DataCell>[
+                      DataCell(Text(transArray[index].rcptNo)),
+                      DataCell(Text(transArray[index].posID)),
+                      DataCell(Text(transArray[index].tableNo)),
+                      DataCell(Text(transArray[index].firstOp)),
+                      DataCell(Text(transArray[index].total.toString())),
+                      DataCell(Text(transArray[index].openDate)),
+                      DataCell(Text(transArray[index].openTime)),
+                      DataCell(Text(transArray[index].closeDate ?? '')),
+                      DataCell(Text(transArray[index].closeTime ?? '')),
+                      DataCell(Text(transArray[index].splitNo.toString())),
+                      DataCell(Text(transArray[index].transMode)),
+                      DataCell(Text(transArray[index].salesNo.toString())),
+                    ]);
+                  }),
+                  // source: transData,
+                  // columnSpacing: 40,
+                  // horizontalMargin: 10,
+                  // rowsPerPage: 10,
+                  // showCheckboxColumn: false,
+                ),
+              )),
+        ),
+      );
+    } else if (state.workable == Workable.failure) {
+      return Center(
+        child: Text(state.failiure?.errMsg ?? ''),
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget operationSideBar() {
@@ -155,71 +236,9 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                Radio(value: 0, groupValue: 0, onChanged: (int? value) {}),
-                Text('All',
-                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Radio(value: 0, groupValue: 0, onChanged: (int? value) {}),
-                Text('Selected Operator',
-                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 4,
-                  child: Row(
-                    children: [
-                      Radio(
-                          value: 0, groupValue: 0, onChanged: (int? value) {}),
-                      Text('RFID',
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  flex: 6,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 20.h,
-                          child: TextFormField(
-                            decoration: const InputDecoration(
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(4.0)),
-                              ),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 2.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 4.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          height: 20.h,
-                          width: 40.w,
-                          child: const Icon(Icons.folder_open),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            rfidWidget(),
+            operatorDropDown(),
+            salesStatusDropDown(),
             Row(
               children: [
                 Checkbox(value: false, onChanged: (bool? value) {}),
@@ -227,18 +246,21 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                     style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
               ],
             ),
-            Row(
-              children: [
-                Checkbox(value: false, onChanged: (bool? value) {}),
-                Text('POSID',
-                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-              ],
-            ),
+            startDateWidget(),
+            endDateWidget(),
+            // Row(
+            //   children: [
+            //     Checkbox(value: false, onChanged: (bool? value) {}),
+            //     Text('POSID',
+            //         style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+            //   ],
+            // ),
+            verticalSpaceTiny,
             Row(
               children: [
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: CustomButton(
                         callback: () {},
                         text: 'Refresh',
@@ -248,7 +270,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: CustomButton(
                         callback: () {},
                         text: 'Copy Bill',
@@ -264,19 +286,260 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     );
   }
 
+  // Operator Drop Down
+  String operator = 'All';
+  Widget operatorDropDown() {
+    List<String> operators = <String>['All', 'Cashier'];
+    final List<DropdownMenuItem<String>> dropDownMenuItems = List.generate(
+        operators.length,
+        (int index) => DropdownMenuItem<String>(
+            value: operators[index], child: Text(operators[index])));
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        const Expanded(flex: 4, child: Text('Operator')),
+        Expanded(
+          flex: 6,
+          child: Container(
+            height: 20.h,
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            decoration: BoxDecoration(
+              color: primaryDarkColor,
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+            child: DropdownButton<String>(
+                underline: const SizedBox(),
+                isExpanded: true,
+                iconSize: iconSize,
+                value: operator,
+                items: dropDownMenuItems,
+                onChanged: (String? value) {
+                  setState(() {
+                    operator = value!;
+                  });
+                }),
+          ),
+        ),
+      ]),
+    );
+  }
+
+  // Sales Status Drop Down
+  String salesStatue = 'Open Tables';
+  Widget salesStatusDropDown() {
+    List<String> status = <String>['Open Tables', 'Closed Tables', 'All'];
+    final List<DropdownMenuItem<String>> dropDownMenuItems = List.generate(
+        status.length,
+        (int index) => DropdownMenuItem<String>(
+            value: status[index], child: Text(status[index])));
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          const Expanded(flex: 4, child: Text('Sales Status')),
+          Expanded(
+            flex: 6,
+            child: Container(
+              height: 20.h,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0),
+              decoration: BoxDecoration(
+                color: primaryDarkColor,
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              child: DropdownButton<String>(
+                  underline: const SizedBox(),
+                  iconSize: iconSize,
+                  isExpanded: true,
+                  value: salesStatue,
+                  items: dropDownMenuItems,
+                  onChanged: (String? value) {
+                    setState(() {
+                      salesStatue = value!;
+                    });
+                  }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // show Date Picker and select start date
+  Future<void> _selectStartDate() async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2022),
+        lastDate: DateTime(2022, 12));
+
+    if (picked != null && picked != startDate) {
+      setState(() {
+        startDate = DateTime.parse(dateFormat.format(picked));
+        ref.read(transProvider.notifier).fetchTransData(
+            dateFormat.format(startDate),
+            dateFormat.format(endDate),
+            '00:00:00.0',
+            '00:00:00.0');
+      });
+    }
+  }
+
+  // show Date Picker and select end date
+  Future<void> _selectEndDate() async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2022),
+        lastDate: DateTime(2022, 12));
+
+    if (picked != null && picked != endDate) {
+      setState(() {
+        endDate = DateTime.parse(dateFormat.format(picked));
+        ref.read(transProvider.notifier).fetchTransData(
+            dateFormat.format(startDate),
+            dateFormat.format(endDate),
+            '00:00:00.0',
+            '00:00:00.0');
+      });
+    }
+  }
+
+  // Start Date Widget
+  Widget startDateWidget() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          const Expanded(flex: 4, child: Text('From Date')),
+          Expanded(
+            flex: 6,
+            child: GestureDetector(
+              onTap: () {
+                _selectStartDate();
+              },
+              child: Container(
+                height: 20.h,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+                child: Center(
+                  child: Text(
+                    dateFormat.format(startDate),
+                    style: bodyTextLightStyle,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // End date widget
+  Widget endDateWidget() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          const Expanded(flex: 4, child: Text('To Date')),
+          Expanded(
+            flex: 6,
+            child: GestureDetector(
+              onTap: () {
+                _selectEndDate();
+              },
+              child: Container(
+                height: 20.h,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+                child: Center(
+                  child: Text(
+                    dateFormat.format(endDate),
+                    style: bodyTextLightStyle,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Rfid wdiget
+  Widget rfidWidget() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          flex: 4,
+          child: Row(
+            children: [
+              Radio(value: 0, groupValue: 0, onChanged: (int? value) {}),
+              Text('RFID',
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 6,
+          child: Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 20.h,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                      ),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 4.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(4.0),
+                  ),
+                  height: 20.h,
+                  width: 40.w,
+                  child: const Icon(Icons.folder_open),
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  // Bottom btn group
   Widget buttonGroup() {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: GridView.builder(
           itemCount: btns.length,
-          physics: ScrollPhysics(),
+          physics: const ScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisExtent: 25.h,
             mainAxisSpacing: 5.h,
             crossAxisSpacing: 5.w,
           ),
-          itemBuilder: (context, index) {
+          itemBuilder: (BuildContext context, int index) {
             return CustomButton(
                 callback: () {
                   switch (index) {
@@ -284,7 +547,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                       Get.to(TransDetailScreen());
                       break;
                     case 3:
-                      // Get.to(CashScreen());
+                      showKitchenReprint();
                       break;
                     default:
                       break;
@@ -295,5 +558,34 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 fillColor: Colors.green);
           }),
     );
+  }
+
+  int salesNo = 0;
+  int splitNo = 0;
+  String rcptNo = '';
+  String tableNo = '';
+
+  showKitchenReprint() {
+    if (transArray.isNotEmpty) {
+      if (salesNo == 0) {
+        rcptNo = transArray[0].rcptNo;
+        salesNo = transArray[0].salesNo;
+        splitNo = transArray[0].splitNo;
+        tableNo = transArray[0].tableNo;
+      }
+    }
+
+    showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (context) {
+          return Dialog(
+            child: KitchenReprint(
+              salesNo: salesNo,
+              splitNo: splitNo,
+              tableNo: tableNo,
+            ),
+          );
+        });
   }
 }

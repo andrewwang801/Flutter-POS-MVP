@@ -4,20 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get_it/get_it.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/common/widgets/custom_button.dart';
 import 'package:raptorpos/constants/color_constant.dart';
-import 'package:raptorpos/floor_plan/presentation/floor_plan_screen.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
 import 'package:raptorpos/payment/presentation/cash_screen.dart';
 import 'package:raptorpos/payment/presentation/tender_screen.dart';
-import 'package:raptorpos/payment/provider/payment_provider.dart';
 import 'package:raptorpos/payment/repository/i_payment_repository.dart';
-import 'package:raptorpos/print/provider/print_provider.dart';
-import 'package:raptorpos/sales_category/sales_category_screen.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 import 'package:raptorpos/trans/presentation/trans.dart';
 
@@ -150,8 +145,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
         final double sTotal = state.bills[2];
         final double gTotal = state.bills[0];
         // update order items in HeldItems table
-        await _orderRepository.updateHoldItem(GlobalConfig.salesNo,
-            GlobalConfig.splitNo, GlobalConfig.tableNo, sTotal, gTotal, 0);
+        await ref.read(orderProvoder.notifier).updateHeldItem(sTotal, gTotal);
         // fetch updated order items
         ref.read(orderProvoder.notifier).fetchOrderItems();
         if (bTender) {
@@ -175,14 +169,12 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
         final double sTotal = state.bills[2];
         final double gTotal = state.bills[0];
         // update order items in HeldItems table
-        await _orderRepository.updateHoldItem(GlobalConfig.salesNo,
-            GlobalConfig.splitNo, GlobalConfig.tableNo, sTotal, gTotal, 0);
+        await ref.read(orderProvoder.notifier).updateHeldItem(sTotal, gTotal);
         // fetch updated order items
         ref.read(orderProvoder.notifier).fetchOrderItems();
         // Print
         Get.to(TenderScreen(
           gTotal: gTotal,
-          paymentRepository: GetIt.I<IPaymentRepository>(),
         ));
       } else {
         showDialog(

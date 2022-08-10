@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../constants/text_style_constant.dart';
-import '../../model/trans_model.dart';
+import '../../data/trans_model.dart';
 
 class TransData extends DataTableSource {
   @override
