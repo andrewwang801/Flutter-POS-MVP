@@ -83,7 +83,8 @@ class TableController extends StateNotifier<TableState>
     } catch (_e) {
       if (state is TableSuccessState) {
         TableSuccessState prevState = state as TableSuccessState;
-        state = prevState.copyWith(notify_type: NOTIFY_TYPE.COVER_SELECT_ERROR);
+        state = prevState.copyWith(
+            notify_type: NOTIFY_TYPE.COVER_SELECT_ERROR, errMsg: _e.toString());
       } else {
         state = TableErrorState(_e.toString());
       }
@@ -111,7 +112,8 @@ class TableController extends StateNotifier<TableState>
     } catch (e) {
       if (state is TableSuccessState) {
         TableSuccessState prevState = state as TableSuccessState;
-        state = prevState.copyWith(notify_type: NOTIFY_TYPE.COVER_SELECT_ERROR);
+        state = prevState.copyWith(
+            notify_type: NOTIFY_TYPE.COVER_SELECT_ERROR, errMsg: e.toString());
       } else {
         state = TableErrorState(e.toString());
       }
@@ -165,7 +167,8 @@ class TableController extends StateNotifier<TableState>
     } catch (_e) {
       if (state is TableSuccessState) {
         TableSuccessState prevState = state as TableSuccessState;
-        state = prevState.copyWith(notify_type: NOTIFY_TYPE.COVER_SELECT_ERROR);
+        state = prevState.copyWith(
+            notify_type: NOTIFY_TYPE.COVER_SELECT_ERROR, errMsg: _e.toString());
       } else {
         state = TableErrorState(_e.toString());
       }

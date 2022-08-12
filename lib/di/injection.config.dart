@@ -34,7 +34,8 @@ import '../printer/provider/printer_state_notifier.dart' as _i26;
 import '../printer/repository/i_printer_repository.dart' as _i18;
 import '../printer/repository/printer_local_repository.dart' as _i19;
 import '../trans/application/kitchen_reprint_controller.dart' as _i31;
-import '../trans/application/trans_controller.dart' as _i32;
+import '../trans/application/refund_controller.dart' as _i32;
+import '../trans/application/trans_controller.dart' as _i33;
 import '../trans/domain/trans_local_repository.dart' as _i28;
 import '../zday_report/domain/report_local_repository.dart'
     as _i6; // ignore_for_file: unnecessary_lambdas
@@ -85,9 +86,15 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       _i29.XPrinterService(paymentRepository: get<_i14.IPaymentRepository>()));
   gh.factory<_i30.AuthController>(
       () => _i30.AuthController(get<_i10.IOperatorRepository>()));
-  gh.factory<_i31.KitchenReprintController>(
-      () => _i31.KitchenReprintController(get<_i28.TransLocalRepository>()));
-  gh.factory<_i32.TransController>(
-      () => _i32.TransController(get<_i28.TransLocalRepository>()));
+  gh.factoryParam<_i31.KitchenReprintController, _i25.PrintController, dynamic>(
+      (printController, _) => _i31.KitchenReprintController(
+          get<_i28.TransLocalRepository>(),
+          printController: printController));
+  gh.factoryParam<_i32.RefundController, _i25.PrintController, dynamic>(
+      (printController, _) => _i32.RefundController(
+          get<_i28.TransLocalRepository>(),
+          printController: printController));
+  gh.factory<_i33.TransController>(
+      () => _i33.TransController(get<_i28.TransLocalRepository>()));
   return get;
 }

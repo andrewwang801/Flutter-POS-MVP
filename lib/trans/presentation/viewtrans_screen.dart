@@ -6,22 +6,23 @@ import 'package:intl/intl.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
+import '../../common/widgets/alert_dialog.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../application/trans_provider.dart';
 import '../application/trans_state.dart';
-import '../data/trans_model.dart';
 import '../data/trans_sales_data_model.dart';
 import 'trans_detail_screen.dart';
 import 'widgets/kitchen_reprint_widget.dart';
+import 'widgets/refund_widget.dart';
 
 const List<String> btns = <String>[
   'Open',
   'View',
   'Refund',
   'Kitchen Re-Print',
-  'Print',
+  'Print Bill',
   'Close',
 ];
 
@@ -70,6 +71,27 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
 
+    ref.listen(
+      transProvider,
+      (previous, TransState next) {
+        if (next.failiure != null) {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AppAlertDialog(
+                  onConfirm: () {},
+                  title: 'Error',
+                  message: next.failiure?.errMsg ?? '',
+                );
+              });
+        } else if (next.operation == Operation.KITCHEN_REPRINT) {
+          showKitchenReprint();
+        } else if (next.operation == Operation.REFUND) {
+          showRefundWidget();
+        }
+      },
+    );
+
     return Scaffold(
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: AppBar(
@@ -108,6 +130,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
 
   // trans array
   List<TransSalesData> transArray = <TransSalesData>[];
+  TransSalesData? selectedTrans;
+  int selectedTransId = -1;
   Widget transTable() {
     TransState state = ref.watch(transProvider);
 
@@ -163,20 +187,40 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                     DataColumn(label: Text('Mode', style: bodyTextLightStyle)),
                   ],
                   rows: List.generate(transArray.length, (index) {
-                    return DataRow(cells: <DataCell>[
-                      DataCell(Text(transArray[index].rcptNo)),
-                      DataCell(Text(transArray[index].posID)),
-                      DataCell(Text(transArray[index].tableNo)),
-                      DataCell(Text(transArray[index].firstOp)),
-                      DataCell(Text(transArray[index].total.toString())),
-                      DataCell(Text(transArray[index].openDate)),
-                      DataCell(Text(transArray[index].openTime)),
-                      DataCell(Text(transArray[index].closeDate ?? '')),
-                      DataCell(Text(transArray[index].closeTime ?? '')),
-                      DataCell(Text(transArray[index].splitNo.toString())),
-                      DataCell(Text(transArray[index].transMode)),
-                      DataCell(Text(transArray[index].salesNo.toString())),
-                    ]);
+                    return DataRow(
+                        onSelectChanged: (bool? value) {
+                          selectedTrans = transArray[index];
+                          rcptNo = selectedTrans!.rcptNo;
+                          salesNo = selectedTrans!.salesNo;
+                          splitNo = selectedTrans!.splitNo;
+                          tableNo = selectedTrans!.tableNo;
+                          setState(() {
+                            selectedTransId = index;
+                          });
+                        },
+                        color: MaterialStateProperty.resolveWith((states) {
+                          if (selectedTransId == index) {
+                            return Colors.green;
+                          } else if (index.isEven) {
+                            return primaryDarkColor;
+                          } else {
+                            return backgroundDarkColor;
+                          }
+                        }),
+                        cells: <DataCell>[
+                          DataCell(Text(transArray[index].rcptNo)),
+                          DataCell(Text(transArray[index].posID)),
+                          DataCell(Text(transArray[index].tableNo)),
+                          DataCell(Text(transArray[index].firstOp)),
+                          DataCell(Text(transArray[index].total.toString())),
+                          DataCell(Text(transArray[index].openDate)),
+                          DataCell(Text(transArray[index].openTime)),
+                          DataCell(Text(transArray[index].closeDate ?? '')),
+                          DataCell(Text(transArray[index].closeTime ?? '')),
+                          DataCell(Text(transArray[index].splitNo.toString())),
+                          DataCell(Text(transArray[index].transMode)),
+                          DataCell(Text(transArray[index].salesNo.toString())),
+                        ]);
                   }),
                   // source: transData,
                   // columnSpacing: 40,
@@ -546,8 +590,18 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                     case 1:
                       Get.to(TransDetailScreen());
                       break;
+                    case 2:
+                      if (selectedTrans != null) {
+                        ref
+                            .read(transProvider.notifier)
+                            .refund(salesNo, splitNo, rcptNo);
+                      }
+                      break;
                     case 3:
-                      showKitchenReprint();
+                      if (selectedTrans != null) {
+                        ref.read(transProvider.notifier).kitchenReprint(
+                            transArray, salesNo, salesStatue, selectedTrans!);
+                      }
                       break;
                     default:
                       break;
@@ -566,13 +620,11 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   String tableNo = '';
 
   showKitchenReprint() {
-    if (transArray.isNotEmpty) {
-      if (salesNo == 0) {
-        rcptNo = transArray[0].rcptNo;
-        salesNo = transArray[0].salesNo;
-        splitNo = transArray[0].splitNo;
-        tableNo = transArray[0].tableNo;
-      }
+    if (salesNo == 0 && selectedTrans != null) {
+      rcptNo = selectedTrans!.rcptNo;
+      salesNo = selectedTrans!.salesNo;
+      splitNo = selectedTrans!.splitNo;
+      tableNo = selectedTrans!.tableNo;
     }
 
     showDialog(
@@ -587,5 +639,21 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
             ),
           );
         });
+  }
+
+  showRefundWidget() {
+    if (selectedTrans != null) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              child: RefundWidget(
+                salesNo: salesNo,
+                splitNo: splitNo,
+                rcptNo: rcptNo,
+              ),
+            );
+          });
+    }
   }
 }

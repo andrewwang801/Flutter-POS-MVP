@@ -36,8 +36,8 @@ class TransController extends StateNotifier<TransState> {
     }
   }
 
-  Future<void> kitchenReprint(
-      List<TransSalesData> transArray, int salesNo, String salesStatue) async {
+  Future<void> kitchenReprint(List<TransSalesData> transArray, int salesNo,
+      String salesStatue, TransSalesData transSalesData) async {
     if (transArray.isNotEmpty) {
       bool opReprintPermission = await transRepository.checkOperatorReprint();
       String rcpt = '';
@@ -45,10 +45,10 @@ class TransController extends StateNotifier<TransState> {
       String tableNo = '';
       if (opReprintPermission) {
         if (salesNo == 0) {
-          rcpt = transArray[0].rcptNo;
-          salesNo = transArray[0].salesNo;
-          splitNo = transArray[0].splitNo;
-          tableNo = transArray[0].tableNo;
+          rcpt = transSalesData.rcptNo;
+          salesNo = transSalesData.salesNo;
+          splitNo = transSalesData.splitNo;
+          tableNo = transSalesData.tableNo;
         }
 
         List<List<String>> dataArray = await transRepository.getDataSales(
@@ -77,5 +77,16 @@ class TransController extends StateNotifier<TransState> {
     }
   }
 
-  Future<void> refund() async {}
+  Future<void> refund(int salesNo, int splitNo, String rcptNo) async {
+    try {
+      await transRepository.checkRefundFunction(
+          salesNo, splitNo, POSDtls.strSalesAreaID, POSDtls.deviceNo, rcptNo);
+
+      state = state.copyWith(operation: Operation.REFUND);
+    } on OperationFailedException catch (e) {
+      state = state.copyWith(failiure: Failiure(errMsg: e.errDetailMsg));
+    } catch (e) {
+      state = state.copyWith(failiure: Failiure(errMsg: e.toString()));
+    }
+  }
 }
