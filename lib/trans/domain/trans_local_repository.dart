@@ -161,7 +161,7 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
   Future<List<List<String>>> getDataSales(
       int salesNo, int splitNo, String tableNo, String tableStatus) async {
     String query = '';
-    if (tableStatus == 'Close Tables') {
+    if (tableStatus == 'Closed Tables') {
       query =
           "SELECT Quantity, ItemName, IFNULL(ItemAmount,0.00), IFNULL(DiscountType,''), IFNULL(Discount,0.00), OperatorName, TransMode, TransStatus, IFNULL(SubFunctionID,0), TableNo, IFNULL(Covers,1), POSID, FunctionID, ItemSeqNo, SalesRef FROM SalesItemsTemp INNER JOIN Operator ON SalesItemsTemp.OperatorNo = Operator.OperatorNo WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo' AND TransStatus = ' ' ORDER BY SalesRef, ItemSeqNo";
     } else {
@@ -174,7 +174,7 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
   }
 
   Future<List<List<String>>> getMediaData() async {
-    final String query =
+    const String query =
         "SELECT Title, FunctionID, SubFunctionID, TenderValue, Maximum FROM Media WHERE FunctionID IN (1,2,4,7) AND MActive = 1 ORDER BY FunctionID, Title";
 
     final Database db = await dbHelper.database;

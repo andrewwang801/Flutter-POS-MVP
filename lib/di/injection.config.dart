@@ -36,6 +36,7 @@ import '../printer/repository/printer_local_repository.dart' as _i19;
 import '../trans/application/kitchen_reprint_controller.dart' as _i31;
 import '../trans/application/refund_controller.dart' as _i32;
 import '../trans/application/trans_controller.dart' as _i33;
+import '../trans/application/trans_detail_controller.dart' as _i34;
 import '../trans/domain/trans_local_repository.dart' as _i28;
 import '../zday_report/domain/report_local_repository.dart'
     as _i6; // ignore_for_file: unnecessary_lambdas
@@ -94,7 +95,12 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       (printController, _) => _i32.RefundController(
           get<_i28.TransLocalRepository>(),
           printController: printController));
-  gh.factory<_i33.TransController>(
-      () => _i33.TransController(get<_i28.TransLocalRepository>()));
+  gh.factory<_i33.TransController>(() => _i33.TransController(
+      get<_i28.TransLocalRepository>(),
+      get<_i12.IOrderRepository>(),
+      get<_i14.IPaymentRepository>(),
+      get<_i25.PrintController>()));
+  gh.factory<_i34.TransDetailController>(
+      () => _i34.TransDetailController(get<_i28.TransLocalRepository>()));
   return get;
 }

@@ -22,7 +22,7 @@ class TransSalesData extends Equatable {
       this.transStatus);
 
   @JsonKey(name: 'RcptNo')
-  final String rcptNo;
+  final String? rcptNo;
   @JsonKey(name: 'TableNo')
   final String tableNo;
   @JsonKey(name: 'OperatorName')

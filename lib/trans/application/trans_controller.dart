@@ -2,17 +2,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../common/GlobalConfig.dart';
-import '../data/trans_model.dart';
+import '../../common/extension/string_extension.dart';
+import '../../home/repository/order/i_order_repository.dart';
+import '../../payment/repository/i_payment_repository.dart';
+import '../../print/provider/print_controller.dart';
+import '../../printer/provider/printer_state.dart';
 import '../data/trans_sales_data_model.dart';
 import '../domain/trans_local_repository.dart';
 import 'trans_state.dart';
 
 @Injectable()
 class TransController extends StateNotifier<TransState> {
-  TransController(this.transRepository)
+  TransController(this.transRepository, this.orderRepository,
+      this.paymentRepository, this.printController)
       : super(TransState(workable: Workable.initial));
 
   final TransLocalRepository transRepository;
+  final PrintController printController;
+  final IOrderRepository orderRepository;
+  final IPaymentRepository paymentRepository;
 
   Future<void> fetchTransData(
       String date1, String date2, String time1, String time2) async {
@@ -45,7 +53,7 @@ class TransController extends StateNotifier<TransState> {
       String tableNo = '';
       if (opReprintPermission) {
         if (salesNo == 0) {
-          rcpt = transSalesData.rcptNo;
+          rcpt = transSalesData.rcptNo ?? '';
           salesNo = transSalesData.salesNo;
           splitNo = transSalesData.splitNo;
           tableNo = transSalesData.tableNo;
@@ -83,6 +91,84 @@ class TransController extends StateNotifier<TransState> {
           salesNo, splitNo, POSDtls.strSalesAreaID, POSDtls.deviceNo, rcptNo);
 
       state = state.copyWith(operation: Operation.REFUND);
+    } on OperationFailedException catch (e) {
+      state = state.copyWith(failiure: Failiure(errMsg: e.errDetailMsg));
+    } catch (e) {
+      state = state.copyWith(failiure: Failiure(errMsg: e.toString()));
+    }
+  }
+
+  Future<void> openTrans(int tempSNo, int tempSplit, int tempCover,
+      String tempTableNo, String tempRcptNo) async {
+    bool showBFOC = false,
+        showDisc = false,
+        showFunc = false,
+        showPromo = false;
+    double gTotal = 0.0;
+    double sTotal = 0.0;
+    List<String> printArr = <String>[];
+    try {
+      if (GlobalConfig.checkItemOrder > 0) {
+        List<double> paymentData = await paymentRepository.getAmountOrder(
+            GlobalConfig.salesNo,
+            GlobalConfig.splitNo,
+            GlobalConfig.tableNo.toInt(),
+            POSDefault.taxInclusive);
+        if (paymentData.length > 2) {
+          gTotal = paymentData[0];
+          sTotal = paymentData[2];
+        }
+        if (POSDefault.printKPWhenHoldTable) {
+          List<List<String>> scArray = await printController.printRepository
+              .getKPSalesCategory(GlobalConfig.salesNo, GlobalConfig.splitNo,
+                  'HeldItems', 'KPStatus', 0);
+          if (scArray.isNotEmpty) {
+            await printController.kpPrinting(
+                GlobalConfig.salesNo,
+                GlobalConfig.splitNo,
+                GlobalConfig.tableNo,
+                'HeldItems',
+                'KpStatus',
+                0,
+                0);
+            if (POSDtls.blnKPPrintMaster) {
+              await printController.masterKPPrint(
+                  GlobalConfig.salesNo,
+                  GlobalConfig.splitNo,
+                  GlobalConfig.tableNo,
+                  'HeldItems',
+                  'KpStatus',
+                  0,
+                  0);
+            }
+            for (String printData in printArr) {
+              await printController.doPrint(2, 0, printData);
+            }
+            printArr.clear();
+            await printController.printRepository
+                .updateKPPrintItem(GlobalConfig.salesNo, GlobalConfig.splitNo);
+          }
+        }
+        // update hold item
+        await orderRepository.updateHoldItem(GlobalConfig.salesNo,
+            GlobalConfig.salesNo, GlobalConfig.tableNo, sTotal, gTotal, 0);
+      } else {
+        // update hold item
+        await orderRepository.updateHoldItem(GlobalConfig.salesNo,
+            GlobalConfig.salesNo, GlobalConfig.tableNo, sTotal, 0, 0);
+      }
+
+      GlobalConfig.tableNo = tempTableNo;
+      GlobalConfig.rcptNo = tempRcptNo;
+      GlobalConfig.salesNo = tempSNo;
+      GlobalConfig.cover = tempCover;
+      POSDtls.categoryID = POSDtls.defCtgryID;
+
+      await orderRepository.updateOpenHoldTrans(
+          GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
+
+      state =
+          state.copyWith(workable: Workable.loading, operation: Operation.OPEN);
     } on OperationFailedException catch (e) {
       state = state.copyWith(failiure: Failiure(errMsg: e.errDetailMsg));
     } catch (e) {
