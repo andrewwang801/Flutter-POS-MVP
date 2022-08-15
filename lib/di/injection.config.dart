@@ -95,11 +95,12 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       (printController, _) => _i32.RefundController(
           get<_i28.TransLocalRepository>(),
           printController: printController));
-  gh.factory<_i33.TransController>(() => _i33.TransController(
-      get<_i28.TransLocalRepository>(),
-      get<_i12.IOrderRepository>(),
-      get<_i14.IPaymentRepository>(),
-      get<_i25.PrintController>()));
+  gh.factoryParam<_i33.TransController, _i25.PrintController, dynamic>(
+      (printController, _) => _i33.TransController(
+          get<_i28.TransLocalRepository>(),
+          get<_i12.IOrderRepository>(),
+          get<_i14.IPaymentRepository>(),
+          printController: printController));
   gh.factory<_i34.TransDetailController>(
       () => _i34.TransDetailController(get<_i28.TransLocalRepository>()));
   return get;
