@@ -23,24 +23,24 @@ List<MaterialColor> functionColors = [
   Colors.teal,
 ];
 
-class FunctionModel {
+class FakeDiscountModel {
   final String? label;
   final int color;
 
-  FunctionModel(this.label, this.color);
+  FakeDiscountModel(this.label, this.color);
 }
 
-final List<FunctionModel> functions = [
-  FunctionModel('ITEM DISC 10%', 0),
-  FunctionModel('ITEM DISC 15%', 0),
-  FunctionModel('ITEM DISC 15%', 0),
-  FunctionModel('ITEM DISC 15%', 0),
-  FunctionModel('ITEM DISC 15%', 1),
-  FunctionModel('ITEM DISC 15%', 2),
-  FunctionModel('ITEM DISC 15%', 3),
-  FunctionModel('ITEM DISC 15%', 3),
-  FunctionModel('ITEM DISC 15%', 3),
-  FunctionModel('ITEM DISC 15%', 3),
+final List<FakeDiscountModel> functions = [
+  FakeDiscountModel('ITEM DISC 10%', 0),
+  FakeDiscountModel('ITEM DISC 15%', 0),
+  FakeDiscountModel('ITEM DISC 15%', 0),
+  FakeDiscountModel('ITEM DISC 15%', 0),
+  FakeDiscountModel('ITEM DISC 15%', 1),
+  FakeDiscountModel('ITEM DISC 15%', 2),
+  FakeDiscountModel('ITEM DISC 15%', 3),
+  FakeDiscountModel('ITEM DISC 15%', 3),
+  FakeDiscountModel('ITEM DISC 15%', 3),
+  FakeDiscountModel('ITEM DISC 15%', 3),
 ];
 
 class DiscountScreen extends StatefulWidget {
@@ -110,7 +110,7 @@ class _DiscountScreenState extends State<DiscountScreen> {
                     child: GridView.builder(
                       itemCount: functions.length,
                       itemBuilder: (BuildContext context, int index) {
-                        FunctionModel function = functions[index];
+                        FakeDiscountModel function = functions[index];
                         return InkWell(
                           onTap: () {},
                           child: Container(

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart';
 
 import '../../common/widgets//bill_button_list.dart';
 import '../../common/widgets//checkout.dart';
@@ -11,10 +10,12 @@ import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../home/repository/order/i_order_repository.dart';
 import '../../payment/repository/i_payment_repository.dart';
-import '../../theme/theme_model.dart';
+import '../../printer/presentation/printer_setting_screen.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../../trans/presentation/trans.dart';
-import '../../transfer_items/transfer_items_screen.dart';
+import '../application/function_provider.dart';
+import '../application/function_state.dart';
+import '../model/function_model.dart';
 
 List<MaterialColor> functionColors = [
   Colors.green,
@@ -27,27 +28,6 @@ List<MaterialColor> functionColors = [
   Colors.teal,
 ];
 
-class FunctionModel {
-  final String? label;
-  final int color;
-
-  FunctionModel(this.label, this.color);
-}
-
-final List<FunctionModel> functions = <FunctionModel>[
-  FunctionModel('All Void', 6),
-  FunctionModel('Change Category', 6),
-  FunctionModel('Change Cover', 6),
-  FunctionModel('Kitchen Talk', 6),
-  FunctionModel('Preview Bill', 6),
-  FunctionModel('Transfer Items', 6),
-  FunctionModel('Remarks', 6),
-  FunctionModel('Split Bill', 5),
-  FunctionModel('View Trans', 5),
-  FunctionModel('X Day', 5),
-  FunctionModel('XZ Report', 5),
-];
-
 class FunctionsScreen extends ConsumerStatefulWidget {
   FunctionsScreen({Key? key}) : super(key: key);
 
@@ -57,6 +37,15 @@ class FunctionsScreen extends ConsumerStatefulWidget {
 
 class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
   late bool isDark;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      ref.read(functionProvider.notifier).fetchFunctions();
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
@@ -81,7 +70,10 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               SizedBox(
                 height: 5.h,
               ),
-              CheckOut(320.h),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CheckOut(320.h),
+              ),
               SizedBox(
                 height: 10.h,
               ),
@@ -102,54 +94,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               Expanded(
                 child: SizedBox(
                   width: 550.w,
-                  child: GridView.builder(
-                    itemCount: functions.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final FunctionModel function = functions[index];
-                      return InkWell(
-                        onTap: () {
-                          switch (index) {
-                            case 5:
-                              Get.to(TransferItemsScreen());
-                              break;
-                            case 8:
-                              Get.to(ViewTransScreen());
-                              break;
-                            case 17:
-                              break;
-                            default:
-                          }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: functionColors[function.color],
-                              border: Border.all(
-                                color: Colors.green,
-                              ),
-                              borderRadius: BorderRadius.circular(3.0),
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                  color: isDark
-                                      ? backgroundDarkColor
-                                      : Colors.white,
-                                  spreadRadius: 1.0,
-                                  blurRadius: 1.0,
-                                )
-                              ]),
-                          child: Center(
-                            child: Text(function.label ?? '',
-                                textAlign: TextAlign.center,
-                                style: bodyTextLightStyle),
-                          ),
-                        ),
-                      );
-                    },
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 5,
-                        mainAxisSpacing: 1,
-                        mainAxisExtent: 60.h,
-                        crossAxisSpacing: 1),
-                  ),
+                  child: funcGridView(),
                 ),
               ),
               SizedBox(
@@ -160,5 +105,68 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
         ],
       ),
     );
+  }
+
+  Widget funcGridView() {
+    FunctionState state = ref.watch(functionProvider);
+
+    if (state.workable == Workable.loading) {
+      return Container();
+    } else if (state.workable == Workable.ready) {
+      List<FunctionModel> functions =
+          state.data?.functionList ?? <FunctionModel>[];
+      return GridView.builder(
+        itemCount: functions.length,
+        itemBuilder: (BuildContext context, int index) {
+          final FunctionModel function = functions[index];
+          return InkWell(
+            onTap: () {
+              switch (function.functionID) {
+                case 109:
+                  Get.to(PrinterSettingScreen());
+                  break;
+                case 111:
+                  Get.to(const ViewTransScreen());
+                  break;
+                case 17:
+                  break;
+                default:
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  color: primaryDarkColor,
+                  border: Border.all(
+                    color: isDark
+                        ? primaryDarkColor.withOpacity(0.7)
+                        : Colors.green,
+                  ),
+                  borderRadius: BorderRadius.circular(3.0),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: isDark
+                          ? primaryDarkColor.withOpacity(0.7)
+                          : Colors.white,
+                      spreadRadius: 1.0,
+                      blurRadius: 1.0,
+                    )
+                  ]),
+              child: Center(
+                child: Text(function.title,
+                    textAlign: TextAlign.center,
+                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+              ),
+            ),
+          );
+        },
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 5,
+            mainAxisSpacing: 1,
+            mainAxisExtent: 60.h,
+            crossAxisSpacing: 1),
+      );
+    } else {
+      return Container();
+    }
   }
 }

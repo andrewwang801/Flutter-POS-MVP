@@ -23,16 +23,16 @@ List<MaterialColor> functionColors = [
   Colors.teal,
 ];
 
-class FunctionModel {
+class FakeSalesCategoryModel {
   final String? label;
   final int color;
 
-  FunctionModel(this.label, this.color);
+  FakeSalesCategoryModel(this.label, this.color);
 }
 
-final List<FunctionModel> functions = [
-  FunctionModel('DINE IN', 0),
-  FunctionModel('TAKE AWAY', 0),
+final List<FakeSalesCategoryModel> functions = [
+  FakeSalesCategoryModel('DINE IN', 0),
+  FakeSalesCategoryModel('TAKE AWAY', 0),
 ];
 
 class SalesCategoryScreen extends StatefulWidget {
