@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
-import 'package:raptorpos/functions/domain/function_local_repository.dart';
 
+import '../../common/extension/workable.dart';
+import '../domain/function_local_repository.dart';
 import '../model/function_model.dart';
 import 'function_state.dart';
 

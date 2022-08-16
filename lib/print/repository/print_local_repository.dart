@@ -1020,15 +1020,15 @@ class PrintLocalRepository extends IPrintRepository
   Future<List<List<String>>> getMasterKPSC(
       int salesNo, int splitNo, int masterKPID, int masterID) async {
     final Database dbHandler = await dbHelper.database;
-    String MasterKPPrint = '';
+    String masterKPPrint = '';
     if (masterID == 1) {
-      MasterKPPrint = 'MasterKPPrint';
+      masterKPPrint = 'MasterKPPrint';
     } else {
-      MasterKPPrint = 'MasterKPPrint $masterID';
+      masterKPPrint = 'MasterKPPrint $masterID';
     }
 
     final String query =
-        "SELECT DISTINCT IFNULL(h.CategoryId,''), IFNULL(CategoryName,'DINE IN') FROM HeldItems h INNER JOIN SalesCategory s ON h.CategoryId = s.CategoryId INNER JOIN PLU ON h.PLUNo = PLU.PLUNumber WHERE SalesNo = $salesNo AND SplitNo = splitNo And masterKPPrint = $masterKPID ORDER BY CategoryName";
+        "SELECT DISTINCT IFNULL(h.CategoryId,''), IFNULL(CategoryName,'DINE IN') FROM HeldItems h INNER JOIN SalesCategory s ON h.CategoryId = s.CategoryId INNER JOIN PLU ON h.PLUNo = PLU.PLUNumber WHERE SalesNo = $salesNo AND SplitNo = splitNo And $masterKPPrint = $masterKPID ORDER BY CategoryName";
     final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
     return data.map((Map<String, dynamic> e) {
       return e.values.map((dynamic v) => v.toString()).toList();

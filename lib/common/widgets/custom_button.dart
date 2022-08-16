@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:raptorpos/constants/dimension_constant.dart';
 
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';

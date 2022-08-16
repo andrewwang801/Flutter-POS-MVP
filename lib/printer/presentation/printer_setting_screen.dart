@@ -20,6 +20,7 @@ import '../provider/printer_provider.dart';
 import '../provider/printer_state.dart';
 import '../widgets/printer_add_widget.dart';
 import '../widgets/printer_update_widget.dart';
+import 'widget/empty_printers_widget.dart';
 
 class PrinterSettingScreen extends ConsumerStatefulWidget {
   PrinterSettingScreen({Key? key}) : super(key: key);
@@ -123,7 +124,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           AppBarWidget(false),
-          _header(),
+          if (printers.isNotEmpty) _header(),
           Expanded(child: _printerListView()),
           _bottomBtnGroup(),
         ],
@@ -138,6 +139,8 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CustomButton(
+              height: 25.h,
+              width: 120.w,
               callback: () {
                 showDialog(
                     barrierDismissible: true,
@@ -160,6 +163,8 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
+              height: 25.h,
+              width: 120.w,
               callback: () {
                 if (selectedPrinter == null) return;
                 showDialog(
@@ -183,6 +188,8 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
+              height: 25.h,
+              width: 120.w,
               callback: () {
                 if (selectedPrinter != null) {
                   deletePrinter(printers[selectedPrinter!].printerID);
@@ -195,6 +202,8 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
+              height: 25.h,
+              width: 120.w,
               callback: () {
                 Get.back();
               },
@@ -210,6 +219,12 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
     PrinterState state = ref.read(printerProvider.notifier).state;
 
     if (state is PrinterSuccessState) {
+      if (printers.isEmpty) {
+        return EmptyPrintersWidget(
+          message: 'There are no printers connected. Please add printers.',
+          icon: Icons.print_rounded,
+        );
+      }
       return ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: printers.length,

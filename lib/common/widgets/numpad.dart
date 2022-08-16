@@ -221,7 +221,8 @@ class NumberButton extends StatelessWidget {
             switch (type) {
               case ButtonType.DEL:
                 final String text = controller.text;
-                controller.text = text.substring(0, text.length - 1);
+                if (text.isNotEmpty)
+                  controller.text = text.substring(0, text.length - 1);
                 break;
               case ButtonType.RESET:
                 controller.text = '';

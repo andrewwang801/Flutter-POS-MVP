@@ -16,7 +16,6 @@ import '../../home/provider/order/order_provider.dart';
 import '../../home/provider/order/order_state.dart';
 import '../../print/provider/print_provider.dart';
 import '../../print/provider/print_state.dart';
-import '../../printer/provider/printer_state.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../provider/payment_provider.dart';
 import '../provider/payment_state.dart';

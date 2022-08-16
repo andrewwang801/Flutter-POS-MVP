@@ -5,14 +5,18 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../common/GlobalConfig.dart';
+import '../../common/extension/workable.dart';
 import '../../common/widgets//bill_button_list.dart';
 import '../../common/widgets//checkout.dart';
+import '../../common/widgets/alert_dialog.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../home/repository/order/i_order_repository.dart';
 import '../../payment/repository/i_payment_repository.dart';
 import '../../print/provider/print_controller.dart';
 import '../../printer/presentation/printer_setting_screen.dart';
+import '../../promo/application/promo_provider.dart';
+import '../../promo/application/promo_state.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../../trans/presentation/trans.dart';
 import '../application/function_provider.dart';
@@ -50,6 +54,20 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(promoProvider, (previous, PromoState next) {
+      if (next.failiure != null) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AppAlertDialog(
+                onConfirm: () {},
+                title: 'Error',
+                message: next.failiure!.errMsg,
+              );
+            });
+      }
+    });
+
     isDark = ref.watch(themeProvider);
     return Scaffold(
       backgroundColor: isDark
@@ -151,6 +169,14 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                   break;
                 case 17:
                   break;
+                // All Void
+                case 32:
+                  break;
+
+                // Void Promo
+                case 65:
+                  voidPromotion();
+                  break;
                 default:
               }
             },
@@ -189,5 +215,9 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
     } else {
       return Container();
     }
+  }
+
+  void voidPromotion() {
+    ref.read(promoProvider.notifier).voidPromotion();
   }
 }

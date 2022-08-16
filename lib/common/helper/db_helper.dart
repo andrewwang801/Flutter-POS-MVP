@@ -34,14 +34,14 @@ class LocalDBHelper {
     return database;
   }
 
-  void _onCreate(Database db, int newVersion) async {
-    await db.execute('MenuHdr create sql');
-  }
+  // void _onCreate(Database db, int newVersion) async {
+  //   await db.execute('MenuHdr create sql');
+  // }
 
-  Future<void> _close() async {
-    var db = await database;
-    db.close();
-  }
+  // Future<void> _close() async {
+  //   var db = await database;
+  //   db.close();
+  // }
 }
 
 // final databaseProvider = Provider<Future<Database>>(((ref) async {

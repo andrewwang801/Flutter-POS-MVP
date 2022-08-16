@@ -3,7 +3,6 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:raptorpos/common/services/xprinter_service.dart';
 
-import '../../printer/model/printer_model.dart';
 import 'iprinter_service.dart';
 
 @singleton

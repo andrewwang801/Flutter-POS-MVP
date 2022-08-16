@@ -12,7 +12,6 @@ import '../../common/widgets/alert_dialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/checkout.dart';
 import '../../common/widgets/custom_button.dart';
-import '../../common/widgets/header.dart';
 import '../../common/widgets/numpad.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
@@ -146,6 +145,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                 });
             break;
           case PaymentStatus.NONE:
+          case null:
             break;
           case PaymentStatus.PERMISSION_ERROR:
             showDialog(
@@ -418,15 +418,15 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
     );
   }
 
-  Widget _header() {
-    return const Header(
-        transID: 'POS001',
-        operator: 'EMENU',
-        mode: 'REG',
-        order: '4',
-        cover: '1',
-        rcp: 'A2200000082');
-  }
+  // Widget _header() {
+  //   return const Header(
+  //       transID: 'POS001',
+  //       operator: 'EMENU',
+  //       mode: 'REG',
+  //       order: '4',
+  //       cover: '1',
+  //       rcp: 'A2200000082');
+  // }
 
 // Do partial Payment when tap Media
   Future<void> mediaSelect(MediaData list) async {

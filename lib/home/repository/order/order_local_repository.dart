@@ -2,6 +2,8 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:raptorpos/common/GlobalConfig.dart';
+import 'package:raptorpos/common/utils/datetime_util.dart';
 import 'package:raptorpos/home/model/modifier.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:raptorpos/common/helper/db_helper.dart';
@@ -12,7 +14,9 @@ import 'package:raptorpos/common/extension/string_extension.dart';
 import 'package:raptorpos/common/utils/type_util.dart';
 
 @Injectable(as: IOrderRepository)
-class OrderLocalRepository with TypeUtil implements IOrderRepository {
+class OrderLocalRepository
+    with TypeUtil, DateTimeUtil
+    implements IOrderRepository {
   final LocalDBHelper database;
   OrderLocalRepository({required this.database});
 
@@ -786,7 +790,7 @@ class OrderLocalRepository with TypeUtil implements IOrderRepository {
   Future<void> updateHoldItem(int salesNo, int splitNo, String tableNo,
       double sTotal, double gTotal, double paidAmount) async {
     final Database dbHandler = await database.database;
-    double balance = gTotal - paidAmount;
+    final double balance = gTotal - paidAmount;
 
     String query =
         "UPDATE HeldTables SET STotal = $sTotal, GTotal = $gTotal, PaidAmount = $paidAmount, Balance = $balance, TransStatus = 'H' WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo'";
@@ -799,18 +803,18 @@ class OrderLocalRepository with TypeUtil implements IOrderRepository {
 
   @override
   Future<List<List<String>>> getIndexOrder(String tableNo) async {
-    String query =
+    final String query =
         "SELECT SalesNo, SplitNo, TableNo, Covers, RcptNo FROM HeldTables WHERE TableNo = '$tableNo'";
 
-    Database db = await database.database;
-    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    final Database db = await database.database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery(query);
     return mapListToString2D(maps);
   }
 
   @override
   Future<void> updateCovers(
       int salesNo, int splitNo, String tableNo, int cover) async {
-    Database db = await database.database;
+    final Database db = await database.database;
 
     String query =
         "UPDATE HeldTables SET Covers = $cover WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo'";
@@ -824,9 +828,72 @@ class OrderLocalRepository with TypeUtil implements IOrderRepository {
   Future<void> updateOpenHoldTrans(
       int salesNo, int splitNo, String tableNo) async {
     final Database db = await database.database;
-    String query =
+    final String query =
         "UPDATE HeldTables SET TransStatus = ' ' WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo'";
     await db.rawQuery(query);
+  }
+
+  @override
+  Future<void> voidOrder(int salesNo, int splitNo, String tableNo, int salesRef,
+      String remarks, int operatorNo) async {
+    final Database dbHandler = await database.database;
+
+    final String dateIn = currentDateTime('yyyy-MM-dd');
+    final String timeIn = currentDateTime('HH:mm:ss');
+    final String sDate = currentDateTime('yyyy-MM-dd');
+    final String sTime = currentDateTime('HH:mm:ss');
+
+    final String dateTime = '$dateIn $timeIn';
+
+    String query =
+        "SELECT IFNULL(SUM(VoidCount), 0) FROM OpHistory WHERE (DateIn || ' ' || TimeIn) = '$dateTime' AND OperatorNo = $operatorNo";
+    List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+    Map<String, dynamic> tempData = data[0];
+    int vCount = dynamicToInt(tempData.get(0));
+
+    if (salesRef == 0) {
+      query =
+          'SELECT Max(SalesRef) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (SetMenuRef = 0 OR PLUSalesRef = $salesRef)';
+      data = await dbHandler.rawQuery(query);
+      tempData = data[0];
+      salesRef = dynamicToInt(tempData.get(0));
+    }
+
+    query =
+        "SELECT COUNT(*) FROM HeldItems WHERE SalesRef = $salesRef AND SalesNo = $salesNo AND TransStatus = ' ' AND TblHold = 1";
+    data = await dbHandler.rawQuery(query);
+    tempData = data[0];
+    final int postVoidCount = dynamicToInt(tempData.get(0));
+    String addquery = "";
+
+    if (postVoidCount > 0) {
+      query =
+          "UPDATE HeldItems SET Instruction = '$remarks' WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (SalesRef = $salesRef OR PLUSalesRef = $salesRef OR SetMenuRef = $salesRef)";
+      await dbHandler.rawQuery(query);
+
+      addquery = ', PostSendVoid = 1';
+    }
+
+    vCount++;
+    query =
+        "UPDATE OpHistory SET VoidCount = $vCount WHERE LstLogin = 1 AND POSID = '${POSDtls.deviceNo}' AND OperatorNo = $operatorNo";
+    await dbHandler.rawQuery(query);
+
+    query =
+        "UPDATE HeldItems SET DiscountType = '', DiscountPercent = 0, Discount = 0.00 WHERE SalesRef IN (SELECT PLUSalesRef FROM HeldItems WHERE SalesRef = $salesRef AND TransStatus = ' ' AND FunctionID = 24)";
+    await dbHandler.rawQuery(query);
+
+    query =
+        "UPDATE HeldItems SET PromotionID = 0, PromotionType = '', PromotionSaving = 0.00 WHERE SalesRef IN (SELECT PLUSalesRef FROM HeldItems WHERE SalesRef = $salesRef AND TransStatus = ' ' AND FunctionID = 12)";
+    await dbHandler.rawQuery(query);
+
+    query =
+        "UPDATE HeldItems SET TransStatus = 'V' $addquery  WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (SalesRef = $salesRef OR PLUSalesRef = $salesRef OR SetMenuRef = $salesRef)";
+    await dbHandler.rawQuery(query);
+
+    query =
+        "INSERT INTO HeldItems (POSID, Covers, TableNo, SalesNo, SplitNo, PLUSalesRef, PLUNo, Department, Quantity, ItemName, ItemName_Chinese, ItemAmount, PaidAmount, ChangeAmount, Gratuity, Tax0, Tax1, Tax2, Tax3, Tax4, Tax5, Tax6, Tax7, Tax8, Tax9, Adjustment, DiscountType, DiscountPercent, Discount, PromotionId, PromotionType, PromotionSaving, TransMode, RefundID, MembershipID, LoyaltyCardNo, CustomerID, CardScheme, CreditCardNo, AvgCost, RecipeId, PriceShift, CategoryId, TransferredTable, TransferredOp, KitchenPrint1, KitchenPrint2, KitchenPrint3, RedemptionItem, PointsRedeemed, ShiftID, PrintFreePrep, PrintPrepWithPrice, Preparation, FOCItem, FOCType, ApplyTax0, ApplyTax1, ApplyTax2, ApplyTax3, ApplyTax4, ApplyTax5, ApplyTax6, ApplyTax7, ApplyTax8, ApplyTax9, LnkTo, BuyXfreeYapplied, RndingAdjustments, PostSendVoid, TblHold, DepositID, SeatNo, OperatorNo, ItemSeqNo, SDate, STime, TransStatus, FunctionID, SubFunctionID, RentalItem, RentToDate, RentToTime, MinsRented, ServerNo, comments, Switchid, TrackPrep, Instruction, SalesAreaID, SetMenu, SetMenuRef, TaxTag, KDSPrint) SELECT HeldItems.POSID, HeldItems.Covers, HeldItems.TableNo, HeldItems.SalesNo, HeldItems.SplitNo, HeldItems.SalesRef, HeldItems.PLUNo, HeldItems.Department, HeldItems.Quantity, HeldItems.ItemName, HeldItems.ItemName_Chinese, HeldItems.ItemAmount, HeldItems.PaidAmount, HeldItems.ChangeAmount, HeldItems.Gratuity, HeldItems.Tax0, HeldItems.Tax1, HeldItems.Tax2, HeldItems.Tax3, HeldItems.Tax4, HeldItems.Tax5, HeldItems.Tax6, HeldItems.Tax7, HeldItems.Tax8, HeldItems.Tax9, HeldItems.Adjustment, HeldItems.DiscountType, HeldItems.DiscountPercent, HeldItems.Discount, HeldItems.PromotionId, HeldItems.PromotionType, HeldItems.PromotionSaving, HeldItems.TransMode, HeldItems.RefundID, HeldItems.MembershipID, HeldItems.LoyaltyCardNo, HeldItems.CustomerID, HeldItems.CardScheme, HeldItems.CreditCardNo, HeldItems.AvgCost, HeldItems.RecipeId, HeldItems.PriceShift, HeldItems.CategoryId, HeldItems.TransferredTable, HeldItems.TransferredOp, HeldItems.KitchenPrint1, HeldItems.KitchenPrint2, HeldItems.KitchenPrint3, HeldItems.RedemptionItem, HeldItems.PointsRedeemed, HeldItems.ShiftID, HeldItems.PrintFreePrep, HeldItems.PrintPrepWithPrice, HeldItems.Preparation, HeldItems.FOCItem, HeldItems.FOCType, HeldItems.ApplyTax0, HeldItems.ApplyTax1, HeldItems.ApplyTax2, HeldItems.ApplyTax3, HeldItems.ApplyTax4, HeldItems.ApplyTax5, HeldItems.ApplyTax6, HeldItems.ApplyTax7, HeldItems.ApplyTax8, HeldItems.ApplyTax9, HeldItems.LnkTo, HeldItems.BuyXfreeYapplied, HeldItems.RndingAdjustments, HeldItems.PostSendVoid, HeldItems.TblHold, HeldItems.DepositID, HeldItems.SeatNo, $operatorNo, HeldItems.ItemSeqNo, '$sDate', '$sTime', 'N', HeldItems.FunctionID, HeldItems.SubFunctionID, HeldItems.RentalItem, HeldItems.RentToDate, HeldItems.RentToTime, HeldItems.MinsRented, HeldItems.ServerNo, HeldItems.comments, HeldItems.Switchid, HeldItems.TrackPrep, HeldItems.Instruction, HeldItems.SalesAreaID, 0, 0, HeldItems.TaxTag, HeldItems.KDSPrint FROM HeldItems WHERE (HeldItems.SalesRef = $salesRef OR HeldItems.PLUSalesRef = $salesRef OR HeldItems.SetMenuRef = $salesRef) AND HeldItems.SalesRef NOT IN (SELECT PLUSalesRef FROM HeldItems WHERE TransStatus = 'N' AND SalesNo = $salesNo AND SplitNo = $splitNo)";
+    await dbHandler.rawQuery(query);
   }
 }
 
