@@ -4,12 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../common/GlobalConfig.dart';
 import '../../common/widgets//bill_button_list.dart';
 import '../../common/widgets//checkout.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../home/repository/order/i_order_repository.dart';
 import '../../payment/repository/i_payment_repository.dart';
+import '../../print/provider/print_controller.dart';
 import '../../printer/presentation/printer_setting_screen.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../../trans/presentation/trans.dart';
@@ -120,10 +122,29 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
         itemBuilder: (BuildContext context, int index) {
           final FunctionModel function = functions[index];
           return InkWell(
-            onTap: () {
+            onTap: () async {
               switch (function.functionID) {
                 case 109:
                   Get.to(PrinterSettingScreen());
+                  break;
+                case 73:
+                  String bill = await GetIt.I<PrintController>()
+                      .getBillForPreview(
+                          GlobalConfig.salesNo,
+                          GlobalConfig.splitNo,
+                          GlobalConfig.cover,
+                          GlobalConfig.tableNo,
+                          GlobalConfig.rcptNo);
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(bill),
+                          ),
+                        );
+                      });
                   break;
                 case 111:
                   Get.to(const ViewTransScreen());
