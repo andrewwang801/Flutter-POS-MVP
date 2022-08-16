@@ -176,80 +176,91 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           transArray.addAll(data.transArrayClosed);
         }
       }
-      return Scrollbar(
-        controller: _vScrollController,
-        isAlwaysShown: true,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
+      return Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Scrollbar(
+          controller: _vScrollController,
+          isAlwaysShown: true,
           child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              controller: _vScrollController,
-              physics: const ClampingScrollPhysics(),
-              child: SizedBox(
-                child: DataTable(
-                  columns: <DataColumn>[
-                    DataColumn(
-                        label: Text('Rcptno', style: bodyTextLightStyle)),
-                    DataColumn(label: Text('POSID', style: bodyTextLightStyle)),
-                    DataColumn(label: Text('Table', style: bodyTextLightStyle)),
-                    DataColumn(
-                        label: Text('Remarks', style: bodyTextLightStyle)),
-                    DataColumn(
-                        label: Text('First Op', style: bodyTextLightStyle)),
-                    DataColumn(label: Text('Total', style: bodyTextLightStyle)),
-                    DataColumn(
-                        label: Text('OpenDate', style: bodyTextLightStyle)),
-                    DataColumn(label: Text('Time', style: bodyTextLightStyle)),
-                    DataColumn(label: Text('Split', style: bodyTextLightStyle)),
-                    DataColumn(label: Text('OP No', style: bodyTextLightStyle)),
-                    DataColumn(
-                        label: Text('Table Status', style: bodyTextLightStyle)),
-                    DataColumn(label: Text('Mode', style: bodyTextLightStyle)),
-                  ],
-                  rows: List.generate(transArray.length, (index) {
-                    return DataRow(
-                        onSelectChanged: (bool? value) {
-                          selectedTrans = transArray[index];
-                          rcptNo = selectedTrans!.rcptNo ?? '';
-                          salesNo = selectedTrans!.salesNo;
-                          splitNo = selectedTrans!.splitNo;
-                          covers = selectedTrans!.covers;
-                          tableNo = selectedTrans!.tableNo;
-                          setState(() {
-                            selectedTransId = index;
-                          });
-                        },
-                        color: MaterialStateProperty.resolveWith((states) {
-                          if (selectedTransId == index) {
-                            return Colors.green;
-                          } else if (index.isEven) {
-                            return primaryDarkColor;
-                          } else {
-                            return backgroundDarkColor;
-                          }
-                        }),
-                        cells: <DataCell>[
-                          DataCell(Text(transArray[index].rcptNo ?? '')),
-                          DataCell(Text(transArray[index].posID)),
-                          DataCell(Text(transArray[index].tableNo)),
-                          DataCell(Text(transArray[index].firstOp)),
-                          DataCell(Text(transArray[index].total.toString())),
-                          DataCell(Text(transArray[index].openDate)),
-                          DataCell(Text(transArray[index].openTime)),
-                          DataCell(Text(transArray[index].closeDate ?? '')),
-                          DataCell(Text(transArray[index].closeTime ?? '')),
-                          DataCell(Text(transArray[index].splitNo.toString())),
-                          DataCell(Text(transArray[index].transMode)),
-                          DataCell(Text(transArray[index].salesNo.toString())),
-                        ]);
-                  }),
-                  // source: transData,
-                  // columnSpacing: 40,
-                  // horizontalMargin: 10,
-                  // rowsPerPage: 10,
-                  // showCheckboxColumn: false,
-                ),
-              )),
+            scrollDirection: Axis.vertical,
+            child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _vScrollController,
+                physics: const ClampingScrollPhysics(),
+                child: SizedBox(
+                  child: DataTable(
+                    columns: <DataColumn>[
+                      DataColumn(
+                          label: Text('Rcptno', style: bodyTextDarkStyle)),
+                      DataColumn(
+                          label: Text('POSID', style: bodyTextDarkStyle)),
+                      DataColumn(
+                          label: Text('Table', style: bodyTextDarkStyle)),
+                      DataColumn(
+                          label: Text('Remarks', style: bodyTextDarkStyle)),
+                      DataColumn(
+                          label: Text('First Op', style: bodyTextDarkStyle)),
+                      DataColumn(
+                          label: Text('Total', style: bodyTextDarkStyle)),
+                      DataColumn(
+                          label: Text('OpenDate', style: bodyTextDarkStyle)),
+                      DataColumn(label: Text('Time', style: bodyTextDarkStyle)),
+                      DataColumn(
+                          label: Text('Split', style: bodyTextDarkStyle)),
+                      DataColumn(
+                          label: Text('OP No', style: bodyTextDarkStyle)),
+                      DataColumn(
+                          label:
+                              Text('Table Status', style: bodyTextDarkStyle)),
+                      DataColumn(label: Text('Mode', style: bodyTextDarkStyle)),
+                    ],
+                    rows: List.generate(transArray.length, (index) {
+                      return DataRow(
+                          onSelectChanged: (bool? value) {
+                            selectedTrans = transArray[index];
+                            rcptNo = selectedTrans!.rcptNo ?? '';
+                            salesNo = selectedTrans!.salesNo;
+                            splitNo = selectedTrans!.splitNo;
+                            covers = selectedTrans!.covers;
+                            tableNo = selectedTrans!.tableNo;
+                            setState(() {
+                              selectedTransId = index;
+                            });
+                          },
+                          color: MaterialStateProperty.resolveWith((states) {
+                            if (selectedTransId == index) {
+                              return Colors.green;
+                            } else if (index.isEven) {
+                              return primaryDarkColor;
+                            } else {
+                              return backgroundDarkColor;
+                            }
+                          }),
+                          cells: <DataCell>[
+                            DataCell(Text(transArray[index].rcptNo ?? '')),
+                            DataCell(Text(transArray[index].posID)),
+                            DataCell(Text(transArray[index].tableNo)),
+                            DataCell(Text(transArray[index].firstOp)),
+                            DataCell(Text(transArray[index].total.toString())),
+                            DataCell(Text(transArray[index].openDate)),
+                            DataCell(Text(transArray[index].openTime)),
+                            DataCell(Text(transArray[index].closeDate ?? '')),
+                            DataCell(Text(transArray[index].closeTime ?? '')),
+                            DataCell(
+                                Text(transArray[index].splitNo.toString())),
+                            DataCell(Text(transArray[index].transMode)),
+                            DataCell(
+                                Text(transArray[index].salesNo.toString())),
+                          ]);
+                    }),
+                    // source: transData,
+                    // columnSpacing: 40,
+                    // horizontalMargin: 10,
+                    // rowsPerPage: 10,
+                    // showCheckboxColumn: false,
+                  ),
+                )),
+          ),
         ),
       );
     } else if (state.workable == Workable.failure) {
@@ -295,7 +306,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     return Container(
       margin: EdgeInsets.only(top: marginTop),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.green),
+        border: Border.all(color: primaryDarkColor),
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -329,8 +340,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                     child: CustomButton(
                         callback: () {},
                         text: 'Refresh',
-                        borderColor: Colors.green,
-                        fillColor: Colors.green),
+                        borderColor: primaryDarkColor,
+                        fillColor: primaryDarkColor),
                   ),
                 ),
                 Expanded(
@@ -339,8 +350,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                     child: CustomButton(
                         callback: () {},
                         text: 'Copy Bill',
-                        borderColor: Colors.green,
-                        fillColor: Colors.green),
+                        borderColor: primaryDarkColor,
+                        fillColor: primaryDarkColor),
                   ),
                 ),
               ],
@@ -576,7 +587,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 padding: const EdgeInsets.only(left: 4.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.green,
+                    color: primaryDarkColor,
                     borderRadius: BorderRadius.circular(4.0),
                   ),
                   height: 20.h,
@@ -631,8 +642,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                   }
                 },
                 text: btns[index],
-                borderColor: Colors.green,
-                fillColor: Colors.green);
+                borderColor: primaryDarkColor,
+                fillColor: primaryDarkColor);
           }),
     );
   }
