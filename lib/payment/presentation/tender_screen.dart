@@ -184,7 +184,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
-        child: AppBarWidget(false),
+        child: AppBarWidget(true),
       ),
       body: Row(
         children: [
@@ -223,7 +223,9 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
           ),
           Container(
             decoration: BoxDecoration(
-                border: Border.all(color: primaryDarkColor, width: 1.0)),
+                border: Border.all(
+                    color: isDark ? primaryDarkColor : primaryLightColor,
+                    width: 1.0)),
             padding: const EdgeInsets.all(0.0),
             width: 550.w,
             height: 100.h,
@@ -232,8 +234,11 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               itemBuilder: (BuildContext context, int index) {
                 MediaData mediaData = tenderArray[index];
                 return Container(
-                  color:
-                      mediaData.title == 'Back' ? Colors.red : primaryDarkColor,
+                  color: mediaData.title == 'Back'
+                      ? Colors.red
+                      : isDark
+                          ? primaryDarkColor
+                          : primaryLightColor,
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -265,22 +270,26 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               Column(
                 children: [
                   Container(
-                    color: primaryDarkColor.withOpacity(0.8),
+                    color: isDark
+                        ? primaryDarkColor.withOpacity(0.8)
+                        : primaryLightColor.withOpacity(0.8),
                     width: 300.w,
                     height: 25.h,
                     child: ListTile(
                       leading: Text(
                         'Media Type',
-                        style: bodyTextDarkStyle,
+                        style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                       ),
                       trailing: Text(
                         'Amount',
-                        style: bodyTextDarkStyle,
+                        style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                       ),
                     ),
                   ),
                   Container(
-                      color: primaryDarkColor.withOpacity(0.6),
+                      color: isDark
+                          ? primaryDarkColor.withOpacity(0.6)
+                          : primaryLightColor.withOpacity(0.6),
                       width: 300.w,
                       height: 130.h,
                       child: ListView.builder(
@@ -316,12 +325,15 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                     width: 250.w,
                     height: 25.h,
                     decoration: BoxDecoration(
-                      color: primaryDarkColor.withOpacity(0.8),
+                      color: isDark
+                          ? primaryDarkColor.withOpacity(0.8)
+                          : primaryLightColor.withOpacity(0.8),
                     ),
                     child: Center(
                       child: Text(
                         '$payValue',
-                        style: titleTextDarkStyle,
+                        style:
+                            isDark ? titleTextDarkStyle : titleTextLightStyle,
                       ),
                     ),
                   ),
@@ -332,6 +344,9 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                     child: NumPad(
                         buttonWidth: 250.w / 4,
                         buttonHeight: 130.h / 4,
+                        buttonColor: isDark
+                            ? primaryButtonDarkColor
+                            : primaryButtonColor,
                         delete: () {},
                         onSubmit: () {},
                         controller: _controller),

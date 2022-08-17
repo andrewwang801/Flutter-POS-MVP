@@ -8,6 +8,7 @@ import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/widgets/alert_dialog.dart';
+import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
@@ -115,15 +116,9 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
 
     return Scaffold(
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
-      appBar: AppBar(
-        title: Text('Raptor POS', style: titleTextDarkStyle),
-        actions: [
-          IconButton(
-              icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
-              onPressed: () {
-                isDark ? isDark = false : isDark = true;
-              })
-        ],
+      appBar: PreferredSize(
+        child: AppBarWidget(false),
+        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,6 +176,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         return EmptyPrintersWidget(
           message: 'There are no transactions',
           icon: Icons.search,
+          isDark: isDark,
         );
       }
       return Padding(
@@ -198,28 +194,65 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                   child: DataTable(
                     columns: <DataColumn>[
                       DataColumn(
-                          label: Text('Rcptno', style: bodyTextDarkStyle)),
+                          label: Text('Rcptno',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('POSID', style: bodyTextDarkStyle)),
+                          label: Text('POSID',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('Table', style: bodyTextDarkStyle)),
+                          label: Text('Table',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('Remarks', style: bodyTextDarkStyle)),
+                          label: Text('Remarks',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('First Op', style: bodyTextDarkStyle)),
+                          label: Text('First Op',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('Total', style: bodyTextDarkStyle)),
+                          label: Text('Total',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('OpenDate', style: bodyTextDarkStyle)),
-                      DataColumn(label: Text('Time', style: bodyTextDarkStyle)),
+                          label: Text('OpenDate',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('Split', style: bodyTextDarkStyle)),
+                          label: Text('Time',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('OP No', style: bodyTextDarkStyle)),
+                          label: Text('Split',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                       DataColumn(
-                          label:
-                              Text('Table Status', style: bodyTextDarkStyle)),
-                      DataColumn(label: Text('Mode', style: bodyTextDarkStyle)),
+                          label: Text('OP No',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
+                      DataColumn(
+                          label: Text('Table Status',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
+                      DataColumn(
+                          label: Text('Mode',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
                     ],
                     rows: List.generate(transArray.length, (index) {
                       return DataRow(
@@ -238,26 +271,64 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                             if (selectedTransId == index) {
                               return Colors.green;
                             } else if (index.isEven) {
-                              return primaryDarkColor;
+                              return isDark
+                                  ? primaryDarkColor
+                                  : backgroundColor.withOpacity(0.7);
                             } else {
-                              return backgroundDarkColor;
+                              return isDark
+                                  ? backgroundDarkColor
+                                  : backgroundColor;
                             }
                           }),
                           cells: <DataCell>[
-                            DataCell(Text(transArray[index].rcptNo ?? '')),
-                            DataCell(Text(transArray[index].posID)),
-                            DataCell(Text(transArray[index].tableNo)),
-                            DataCell(Text(transArray[index].firstOp)),
-                            DataCell(Text(transArray[index].total.toString())),
-                            DataCell(Text(transArray[index].openDate)),
-                            DataCell(Text(transArray[index].openTime)),
-                            DataCell(Text(transArray[index].closeDate ?? '')),
-                            DataCell(Text(transArray[index].closeTime ?? '')),
-                            DataCell(
-                                Text(transArray[index].splitNo.toString())),
-                            DataCell(Text(transArray[index].transMode)),
-                            DataCell(
-                                Text(transArray[index].salesNo.toString())),
+                            DataCell(Text(transArray[index].rcptNo ?? '',
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].posID,
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].tableNo,
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].firstOp,
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].total.toString(),
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].openDate,
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].openTime,
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].closeDate ?? '',
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].closeTime ?? '',
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].splitNo.toString(),
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].transMode,
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
+                            DataCell(Text(transArray[index].salesNo.toString(),
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle)),
                           ]);
                     }),
                     // source: transData,
@@ -345,20 +416,24 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: CustomButton(
-                        callback: () {},
-                        text: 'Refresh',
-                        borderColor: primaryDarkColor,
-                        fillColor: primaryDarkColor),
+                      callback: () {},
+                      text: 'Refresh',
+                      borderColor:
+                          isDark ? primaryDarkColor : primaryLightColor,
+                      fillColor: isDark ? primaryDarkColor : primaryLightColor,
+                    ),
                   ),
                 ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: CustomButton(
-                        callback: () {},
-                        text: 'Copy Bill',
-                        borderColor: primaryDarkColor,
-                        fillColor: primaryDarkColor),
+                      callback: () {},
+                      text: 'Copy Bill',
+                      borderColor:
+                          isDark ? primaryDarkColor : primaryLightColor,
+                      fillColor: isDark ? primaryDarkColor : primaryLightColor,
+                    ),
                   ),
                 ),
               ],
@@ -387,7 +462,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
             height: 20.h,
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             decoration: BoxDecoration(
-              color: primaryDarkColor,
+              color: isDark ? primaryDarkColor : primaryLightColor,
               borderRadius: BorderRadius.circular(4.0),
             ),
             child: DropdownButton<String>(
@@ -428,7 +503,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0),
               decoration: BoxDecoration(
-                color: primaryDarkColor,
+                color: isDark ? primaryDarkColor : primaryLightColor,
                 borderRadius: BorderRadius.circular(4.0),
               ),
               child: DropdownButton<String>(
@@ -506,13 +581,13 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               child: Container(
                 height: 20.h,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? primaryDarkColor : secondaryBackgroundColor,
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 child: Center(
                   child: Text(
                     dateFormat.format(startDate),
-                    style: bodyTextLightStyle,
+                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                   ),
                 ),
               ),
@@ -540,13 +615,13 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               child: Container(
                 height: 20.h,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? primaryDarkColor : secondaryBackgroundColor,
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 child: Center(
                   child: Text(
                     dateFormat.format(endDate),
-                    style: bodyTextLightStyle,
+                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                   ),
                 ),
               ),
@@ -594,12 +669,15 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 padding: const EdgeInsets.only(left: 4.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: primaryDarkColor,
+                    color: isDark ? primaryDarkColor : primaryLightColor,
                     borderRadius: BorderRadius.circular(4.0),
                   ),
                   height: 20.h,
                   width: 40.w,
-                  child: const Icon(Icons.folder_open),
+                  child: Icon(
+                    Icons.folder_open,
+                    color: backgroundColor,
+                  ),
                 ),
               ),
             ],
@@ -624,33 +702,34 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           ),
           itemBuilder: (BuildContext context, int index) {
             return CustomButton(
-                callback: () {
-                  switch (index) {
-                    case 0:
-                      openTrans();
-                      break;
-                    case 1:
-                      viewTrans();
-                      break;
-                    case 2:
-                      refundTrans();
-                      break;
-                    case 3:
-                      kitchenReprint();
-                      break;
-                    case 4:
-                      // print bill
-                      reprintBill();
-                      break;
-                    case 5:
-                    default:
-                      Get.back();
-                      break;
-                  }
-                },
-                text: btns[index],
-                borderColor: primaryDarkColor,
-                fillColor: primaryDarkColor);
+              callback: () {
+                switch (index) {
+                  case 0:
+                    openTrans();
+                    break;
+                  case 1:
+                    viewTrans();
+                    break;
+                  case 2:
+                    refundTrans();
+                    break;
+                  case 3:
+                    kitchenReprint();
+                    break;
+                  case 4:
+                    // print bill
+                    reprintBill();
+                    break;
+                  case 5:
+                  default:
+                    Get.back();
+                    break;
+                }
+              },
+              text: btns[index],
+              borderColor: isDark ? primaryDarkColor : primaryLightColor,
+              fillColor: isDark ? primaryDarkColor : primaryLightColor,
+            );
           }),
     );
   }

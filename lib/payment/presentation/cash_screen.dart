@@ -34,6 +34,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
   TextEditingController _controller = TextEditingController();
 
   late PaymentState paymentState;
+  late bool isDark;
 
   @override
   void initState() {
@@ -56,7 +57,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = ref.watch(themeProvider);
+    isDark = ref.watch(themeProvider);
     OrderState state = ref.watch(orderProvoder);
     if (state is OrderSuccessState) {
       if (state.bills.isNotEmpty) {
@@ -161,7 +162,8 @@ class _CashScreenState extends ConsumerState<CashScreen> {
       children: [
         Container(
           padding: EdgeInsets.all(20.0),
-          color: primaryDarkColor,
+          color:
+              isDark ? secondaryBackgroundDarkColor : secondaryBackgroundColor,
           child: Column(
             children: [
               SizedBox(
@@ -247,6 +249,8 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                       orientation == Orientation.landscape ? 100.h : 75.w,
                   buttonHeight:
                       orientation == Orientation.landscape ? 100.h : 75.w,
+                  buttonColor:
+                      isDark ? primaryButtonDarkColor : primaryButtonColor,
                   delete: () {},
                   onSubmit: () {
                     doPayment(payment);
