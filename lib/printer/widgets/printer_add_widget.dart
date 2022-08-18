@@ -53,32 +53,35 @@ class PrinterAddWidget extends ConsumerWidget {
       },
     );
 
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      child: Column(
-        children: [
-          header(),
-          SizedBox(
-            height: 10.h,
-          ),
-          printerNameRow(),
-          SizedBox(
-            height: 10.h,
-          ),
-          printerTypeRow(ref),
-          SizedBox(
-            height: 10.h,
-          ),
-          printerAddrRow(),
-          SizedBox(
-            height: 10.h,
-          ),
-          printerPortRow(),
-          SizedBox(
-            height: 20.h,
-          ),
-          btnGroup(ref),
-        ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Container(
+        padding: EdgeInsets.all(20.w),
+        child: Column(
+          children: [
+            header(),
+            SizedBox(
+              height: 10.h,
+            ),
+            printerNameRow(),
+            SizedBox(
+              height: 10.h,
+            ),
+            printerTypeRow(ref),
+            SizedBox(
+              height: 10.h,
+            ),
+            printerAddrRow(),
+            SizedBox(
+              height: 10.h,
+            ),
+            printerPortRow(),
+            SizedBox(
+              height: 20.h,
+            ),
+            btnGroup(ref),
+          ],
+        ),
       ),
     );
   }

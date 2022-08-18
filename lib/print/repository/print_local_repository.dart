@@ -1024,7 +1024,7 @@ class PrintLocalRepository extends IPrintRepository
     if (masterID == 1) {
       masterKPPrint = 'MasterKPPrint';
     } else {
-      masterKPPrint = 'MasterKPPrint $masterID';
+      masterKPPrint = 'masterkpprint$masterID';
     }
 
     final String query =

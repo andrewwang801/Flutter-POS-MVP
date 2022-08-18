@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/constants/text_style_constant.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../common/widgets/alert_dialog.dart';
 import '../../../home/presentation/home_screen.dart';
@@ -19,8 +21,11 @@ class FloorLayout extends ConsumerStatefulWidget {
 }
 
 class _FloorLayoutState extends ConsumerState<FloorLayout> {
+  late bool isDark;
+
   @override
   Widget build(BuildContext context) {
+    isDark = ref.watch(themeProvider);
     final TableState state = ref.watch(tableProvider);
 
     ref.listen(tableProvider, (Object? previous, Object? next) {
@@ -113,8 +118,14 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(table.tableNo),
-              Text(table.tableStatus),
+              Text(
+                table.tableNo,
+                style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
+              ),
+              Text(
+                table.tableStatus,
+                style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
+              ),
             ],
           ),
         ),

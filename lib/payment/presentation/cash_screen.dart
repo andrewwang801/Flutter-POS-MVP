@@ -162,8 +162,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
       children: [
         Container(
           padding: EdgeInsets.all(20.0),
-          color:
-              isDark ? secondaryBackgroundDarkColor : secondaryBackgroundColor,
+          color: isDark ? primaryDarkColor : primaryLightColor,
           child: Column(
             children: [
               SizedBox(
@@ -198,13 +197,13 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                   children: [
                     Text(
                       'Balance Due: ',
-                      style: titleTextDarkStyle.copyWith(color: Colors.green),
+                      style: titleTextDarkStyle,
                       textAlign: TextAlign.left,
                     ),
                     Expanded(
                       child: Text(
                         payment.toStringAsFixed(2).currencyString('\$'),
-                        style: titleTextDarkStyle.copyWith(color: Colors.green),
+                        style: titleTextDarkStyle,
                         textAlign: TextAlign.right,
                       ),
                     ),

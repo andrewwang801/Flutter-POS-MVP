@@ -13,15 +13,16 @@ import '../../../functions/presentation/functions_screen.dart';
 import '../../../print/provider/print_provider.dart';
 import '../../../printer/presentation/printer_setting_screen.dart';
 import '../../../theme/theme_state_notifier.dart';
+import '../../../trans/presentation/viewtrans_screen.dart';
 
 final List<String> btnTexts = [
-  'Trans Table',
+  'View Trans',
   'Preview Bill',
   'PRINT BILL',
   'FUNCT-ION',
   'VOID',
   'HOLD TABLE',
-  'ADD PRINTER',
+  'PRINTER SETTING',
 ];
 
 class MainButtonList extends ConsumerStatefulWidget {
@@ -52,6 +53,9 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
           return CustomButton(
             callback: () async {
               switch (index) {
+                case 0:
+                  Get.to(const ViewTransScreen());
+                  break;
                 case 2:
                   await ref
                       .read(printProvider.notifier)

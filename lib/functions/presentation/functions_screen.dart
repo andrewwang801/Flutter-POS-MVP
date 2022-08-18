@@ -176,6 +176,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               }
             },
             child: Container(
+              margin: EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                   color: isDark ? primaryDarkColor : primaryLightColor,
                   border: Border.all(
@@ -196,7 +197,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               child: Center(
                 child: Text(function.title,
                     textAlign: TextAlign.center,
-                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                    style: isDark ? buttonTextDarkStyle : buttonTextLightStyle),
               ),
             ),
           );

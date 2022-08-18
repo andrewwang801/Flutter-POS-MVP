@@ -58,32 +58,35 @@ class PrinterUpdateWidget extends ConsumerWidget {
       },
     );
 
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      child: Column(
-        children: [
-          header(),
-          SizedBox(
-            height: 10.h,
-          ),
-          printerNameRow(),
-          SizedBox(
-            height: 10.h,
-          ),
-          printerTypeRow(ref),
-          SizedBox(
-            height: 10.h,
-          ),
-          printerAddrRow(),
-          SizedBox(
-            height: 10.h,
-          ),
-          printerPortRow(),
-          SizedBox(
-            height: 20.h,
-          ),
-          btnGroup(ref),
-        ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Container(
+        padding: EdgeInsets.all(20.w),
+        child: Column(
+          children: [
+            header(),
+            SizedBox(
+              height: 10.h,
+            ),
+            printerNameRow(),
+            SizedBox(
+              height: 10.h,
+            ),
+            printerTypeRow(ref),
+            SizedBox(
+              height: 10.h,
+            ),
+            printerAddrRow(),
+            SizedBox(
+              height: 10.h,
+            ),
+            printerPortRow(),
+            SizedBox(
+              height: 20.h,
+            ),
+            btnGroup(ref),
+          ],
+        ),
       ),
     );
   }
@@ -150,11 +153,17 @@ class PrinterUpdateWidget extends ConsumerWidget {
     PrinterState state = ref.read(printerProvider.notifier).state;
     if (state is PrinterSuccessState) {
       items = state.printerSupportList
+          .toSet()
+          .toList()
           .map((e) => DropdownMenuItem<String>(
               value: e.printerModel, child: Text(e.printerModel)))
           .toList();
     }
 
+    String? curType = printerModel;
+    if (items?.indexWhere((element) => element.value == curType) == -1) {
+      curType = items?[0].value;
+    }
     return Row(
       children: [
         Expanded(flex: 1, child: Text('Printer Model')),
@@ -162,7 +171,7 @@ class PrinterUpdateWidget extends ConsumerWidget {
         Expanded(
             flex: 3,
             child: DropdownButton(
-              value: printerModel,
+              value: curType,
               items: items,
               onChanged: (String? item) {},
             )),
