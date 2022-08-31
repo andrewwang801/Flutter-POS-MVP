@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
 
 import '../../common/extension/string_extension.dart';
 import '../../common/widgets/alert_dialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_button.dart';
+import '../../common/widgets/responsive.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../printer/presentation/widget/empty_printers_widget.dart';
@@ -113,6 +115,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
       body: Column(
         children: [
           Expanded(child: transTable()),
+          verticalSpaceMedium,
           SizedBox(
               height: 150.h,
               child: Row(
@@ -164,6 +167,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                               },
                               child: Text('Select'),
                             ),
+                            verticalSpaceMedium,
                           ])
                         : Container(),
                   ),
@@ -507,7 +511,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
           physics: const ScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisExtent: 25.h,
+            mainAxisExtent: Responsive.isMobile(context) ? 35.h : 25.h,
             mainAxisSpacing: 5.h,
             crossAxisSpacing: 5.w,
           ),

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:raptorpos/common/extension/color_extension.dart';
 import 'package:raptorpos/common/extension/string_extension.dart';
 import 'package:raptorpos/common/widgets/custom_button.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/home/presentation/widgets/prep_list.dart';
@@ -69,11 +70,13 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
       elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Expanded(
-              child: Container(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Container(
+                height: 80.h,
                 padding: const EdgeInsets.all(4.0),
                 decoration: BoxDecoration(
                   color: HexColor('49152').withOpacity(1),
@@ -90,135 +93,140 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                           : bodyTextLightStyle.copyWith(color: Colors.black)),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            FractionallySizedBox(
-              widthFactor: 0.8,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _decrementButton(itemIndex),
-                  Text(
-                    qty.toString(),
-                    style: TextStyle(fontSize: 18.0),
-                  ),
-                  _incrementButton(itemIndex),
-                ],
+              SizedBox(
+                height: 10.h,
               ),
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            TextFormField(
-              controller: _modifierController,
-              decoration: const InputDecoration(
-                hintText: 'Custome Modifer',
-                hintStyle: TextStyle(fontStyle: FontStyle.italic),
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              FractionallySizedBox(
+                widthFactor: 0.8,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _decrementButton(itemIndex),
+                    Text(
+                      qty.toString(),
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    _incrementButton(itemIndex),
+                  ],
                 ),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               ),
-              minLines: 3,
-              maxLines: 5,
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            FractionallySizedBox(
-              widthFactor: 0.7,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'FOC Item',
-                        style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+              SizedBox(
+                height: 20.h,
+              ),
+              TextFormField(
+                controller: _modifierController,
+                decoration: const InputDecoration(
+                  hintText: 'Custome Modifer',
+                  hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                ),
+                minLines: 3,
+                maxLines: 5,
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              FractionallySizedBox(
+                widthFactor: 0.7,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'FOC Item',
+                          style:
+                              isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                        ),
+                        Checkbox(
+                            value: foc,
+                            onChanged: (value) {
+                              setState(() {
+                                foc = value!;
+                              });
+                            }),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Sub Total ',
+                            style: isDark
+                                ? bodyTextDarkStyle
+                                : bodyTextLightStyle),
+                        Text((foc ? '0.0' : '$subTotal').currencyString('\$'),
+                            style: isDark
+                                ? bodyTextDarkStyle
+                                : bodyTextLightStyle),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Price ',
+                            style: isDark
+                                ? bodyTextDarkStyle
+                                : bodyTextLightStyle),
+                        Text((foc ? '0.0' : '$price').currencyString('\$'),
+                            style: isDark
+                                ? bodyTextDarkStyle
+                                : bodyTextLightStyle),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              if (state.preps.isNotEmpty)
+                CustomButton(
+                  callback: () {
+                    showGeneralDialog(
+                      context: context,
+                      barrierColor: Colors.black38,
+                      barrierLabel: 'Label',
+                      barrierDismissible: true,
+                      pageBuilder: (_, __, ___) => PreListWidget(
+                        state.preps,
+                        widget.update ? state.prepSelect : {},
+                        callback,
                       ),
-                      Checkbox(
-                          value: foc,
-                          onChanged: (value) {
-                            setState(() {
-                              foc = value!;
-                            });
-                          }),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Sub Total ',
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                      Text((foc ? '0.0' : '$subTotal').currencyString('\$'),
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Price ',
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                      Text((foc ? '0.0' : '$price').currencyString('\$'),
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                    ],
-                  ),
-                ],
+                    );
+                  },
+                  text: 'Prep Item',
+                  borderColor: isDark ? primaryDarkColor : primaryLightColor,
+                  fillColor: isDark ? primaryDarkColor : primaryLightColor,
+                  width: 200.w,
+                  height: Responsive.isMobile(context) ? 35.h : 25.h,
+                ),
+              SizedBox(
+                height: 5.h,
               ),
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            if (state.preps.isNotEmpty)
               CustomButton(
                 callback: () {
-                  showGeneralDialog(
-                    context: context,
-                    barrierColor: Colors.black38,
-                    barrierLabel: 'Label',
-                    barrierDismissible: true,
-                    pageBuilder: (_, __, ___) => PreListWidget(
-                      state.preps,
-                      widget.update ? state.prepSelect : {},
-                      callback,
-                    ),
-                  );
+                  // create order item && modifier
+                  ref.read(orderProvoder.notifier).createOrderItem(widget.pluNo,
+                      _modifierController.text, qty, foc, prepSelect);
+                  // foc item
+                  Get.back();
                 },
-                text: 'Prep Item',
+                text: 'ORDER',
                 borderColor: isDark ? primaryDarkColor : primaryLightColor,
                 fillColor: isDark ? primaryDarkColor : primaryLightColor,
                 width: 200.w,
-                height: 25.h,
+                height: Responsive.isMobile(context) ? 35.h : 25.h,
               ),
-            SizedBox(
-              height: 5.h,
-            ),
-            CustomButton(
-              callback: () {
-                // create order item && modifier
-                ref.read(orderProvoder.notifier).createOrderItem(widget.pluNo,
-                    _modifierController.text, qty, foc, prepSelect);
-                // foc item
-                Get.back();
-              },
-              text: 'ORDER',
-              borderColor: isDark ? primaryDarkColor : primaryLightColor,
-              fillColor: isDark ? primaryDarkColor : primaryLightColor,
-              width: 200.w,
-              height: 25.h,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

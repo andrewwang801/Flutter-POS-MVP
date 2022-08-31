@@ -14,6 +14,7 @@ import '../../common/services/iprinter_service.dart';
 import '../../common/services/printer_manager.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_button.dart';
+import '../../common/widgets/responsive.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../model/printer_model.dart';
@@ -143,7 +144,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CustomButton(
-              height: 25.h,
+              height: Responsive.isMobile(context) ? 35.h : 25.h,
               width: 120.w,
               callback: () {
                 showDialog(
@@ -170,7 +171,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
-              height: 25.h,
+              height: Responsive.isMobile(context) ? 35.h : 25.h,
               width: 120.w,
               callback: () {
                 if (selectedPrinter == null) return;
@@ -198,7 +199,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
-              height: 25.h,
+              height: Responsive.isMobile(context) ? 35.h : 25.h,
               width: 120.w,
               callback: () {
                 if (selectedPrinter != null) {
@@ -214,7 +215,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
-              height: 25.h,
+              height: Responsive.isMobile(context) ? 35.h : 25.h,
               width: 120.w,
               callback: () {
                 Get.back();
@@ -337,7 +338,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
               },
               borderColor: Colors.amber,
               fillColor: Colors.amber,
-              height: 20.h,
+              height: Responsive.isMobile(context) ? 35.h : 25.h,
               width: 100.w,
             )
           ],

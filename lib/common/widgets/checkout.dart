@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 
 import '../../../constants/color_constant.dart';
 import '../../../constants/text_style_constant.dart';
@@ -33,9 +34,11 @@ class _CheckOutState extends ConsumerState<CheckOut> {
       }
     }
     return Container(
-      width: 320.w,
+      width: Responsive.isMobile(context) ? 400.w : 320.w,
       height: widget.height,
-      color: isDark ? primaryDarkColor : Colors.white,
+      color: isDark
+          ? primaryDarkColor.withOpacity(0.9)
+          : Colors.white.withOpacity(0.6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -241,13 +244,13 @@ class _CheckOutState extends ConsumerState<CheckOut> {
             dense: true,
             child: ExpansionTile(
               title: Container(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 14),
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                 child: Row(
                   children: [
                     Expanded(
-                      flex: 2,
+                      flex: 3,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 0.0),
                         child: Text(
                           'QTY',
                           textAlign: TextAlign.left,
@@ -262,7 +265,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                     Expanded(
                       flex: 7,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 0.0),
                         child: Text(
                           'Description',
                           textAlign: TextAlign.left,
@@ -277,7 +280,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                     Expanded(
                       flex: 3,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 0.0),
                         child: Text(
                           'Price',
                           textAlign: TextAlign.left,
@@ -292,7 +295,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                     Expanded(
                       flex: 2,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 0.0),
                         child: Text(
                           'SC',
                           textAlign: TextAlign.left,

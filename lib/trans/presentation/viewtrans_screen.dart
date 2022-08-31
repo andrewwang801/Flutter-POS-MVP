@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
@@ -119,7 +120,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: PreferredSize(
         child: AppBarWidget(false),
-        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
+        preferredSize:
+            Size(926.w, 53.h - MediaQuery.of(context).padding.top - 5.h),
       ),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,9 +134,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           ),
           SizedBox(
             width: 300.w,
-            child: Container(
-              child: operationSideBar(),
-            ),
+            height: 380.h,
+            child: operationSideBar(),
           ),
         ],
       ),
@@ -352,15 +353,16 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   }
 
   Widget operationSideBar() {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Stack(
               children: [
-                filterGroup(),
+                Expanded(child: filterGroup()),
                 Positioned(
                   child: Container(
                     color: isDark ? backgroundDarkColor : backgroundColor,
@@ -373,7 +375,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
             SizedBox(
               height: 20.h,
             ),
-            Expanded(child: buttonGroup()),
+            buttonGroup(),
           ],
         ),
       ),
@@ -468,7 +470,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         Expanded(
           flex: 6,
           child: Container(
-            height: 20.h,
+            height: Responsive.isMobile(context) ? 35.h : 20.h,
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             decoration: BoxDecoration(
               color: isDark ? primaryDarkColor : primaryLightColor,
@@ -478,6 +480,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 underline: const SizedBox(),
                 isExpanded: true,
                 iconSize: iconSize,
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                 value: operator,
                 items: dropDownMenuItems,
                 onChanged: (String? value) {
@@ -513,7 +516,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           Expanded(
             flex: 6,
             child: Container(
-              height: 20.h,
+              height: Responsive.isMobile(context) ? 35.h : 20.h,
               padding:
                   const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0),
               decoration: BoxDecoration(
@@ -524,6 +527,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                   underline: const SizedBox(),
                   iconSize: iconSize,
                   isExpanded: true,
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                   value: salesStatue,
                   items: dropDownMenuItems,
                   onChanged: (String? value) {
@@ -598,7 +602,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 _selectStartDate();
               },
               child: Container(
-                height: 20.h,
+                height: Responsive.isMobile(context) ? 35.h : 20.h,
                 decoration: BoxDecoration(
                   color: isDark ? primaryDarkColor : secondaryBackgroundColor,
                   borderRadius: BorderRadius.circular(4.0),
@@ -637,7 +641,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 _selectEndDate();
               },
               child: Container(
-                height: 20.h,
+                height: Responsive.isMobile(context) ? 35.h : 20.h,
                 decoration: BoxDecoration(
                   color: isDark ? primaryDarkColor : secondaryBackgroundColor,
                   borderRadius: BorderRadius.circular(4.0),
@@ -676,7 +680,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
             children: [
               Expanded(
                 child: SizedBox(
-                  height: 20.h,
+                  height: Responsive.isMobile(context) ? 35.h : 20.h,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       fillColor: Colors.white,
@@ -696,7 +700,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                     color: isDark ? primaryDarkColor : primaryLightColor,
                     borderRadius: BorderRadius.circular(4.0),
                   ),
-                  height: 20.h,
+                  height: Responsive.isMobile(context) ? 35.h : 20.h,
                   width: 40.w,
                   child: Icon(
                     Icons.folder_open,
@@ -716,11 +720,12 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: GridView.builder(
+          shrinkWrap: true,
           itemCount: btns.length,
           physics: const ScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisExtent: 25.h,
+            mainAxisExtent: Responsive.isMobile(context) ? 40.h : 25.h,
             mainAxisSpacing: 5.h,
             crossAxisSpacing: 5.w,
           ),

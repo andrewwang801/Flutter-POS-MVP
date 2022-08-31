@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:raptorpos/common/widgets/appbar.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/workable.dart';
@@ -76,7 +77,8 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
           : const Color.fromARGB(255, 244, 238, 233),
       appBar: PreferredSize(
         child: AppBarWidget(true),
-        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
+        preferredSize:
+            Size(926.w, 53.h - MediaQuery.of(context).padding.top - 5.h),
       ),
       body: Row(
         children: [
@@ -87,7 +89,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: CheckOut(320.h),
+                child: CheckOut(320.h - 16),
               ),
               SizedBox(
                 height: 10.h,
@@ -104,11 +106,11 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
           Column(
             children: [
               SizedBox(
-                height: 5.h,
+                height: 5.h + 8,
               ),
               Expanded(
                 child: SizedBox(
-                  width: 550.w,
+                  width: Responsive.isMobile(context) ? 470.w : 550.w,
                   child: funcGridView(),
                 ),
               ),

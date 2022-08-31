@@ -9,6 +9,7 @@ import '../../common/widgets/alert_dialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/numpad.dart';
+import '../../common/widgets/responsive.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
@@ -96,7 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       children: [
         Container(
           width: 250.w,
-          height: 25.h,
+          height: Responsive.isMobile(context) ? 40.h : 25.h,
           decoration: BoxDecoration(
             color: isDark
                 ? primaryDarkColor.withOpacity(0.8)
@@ -115,11 +116,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         Container(
           width: 250.w,
-          height: 130.h,
+          height: Responsive.isMobile(context) ? 220.h : 130.h,
           color: Colors.transparent,
           child: NumPad(
               buttonWidth: 250.w / 4,
-              buttonHeight: 130.h / 4,
+              buttonHeight:
+                  Responsive.isMobile(context) ? 220.h / 4 : 130.h / 4,
               delete: () {},
               onSubmit: () {},
               buttonColor: isDark ? primaryButtonDarkColor : primaryButtonColor,
@@ -130,7 +132,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         CustomButton(
             width: 250.w,
-            height: 25.h,
+            height: Responsive.isMobile(context) ? 40.h : 25.h,
             callback: pinSignIn,
             text: 'Sign In',
             borderColor: isDark ? primaryDarkColor : primaryLightColor,
