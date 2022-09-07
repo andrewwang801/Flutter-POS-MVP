@@ -8,6 +8,7 @@ import 'package:raptorpos/home/repository/order/i_order_repository.dart';
 import 'package:raptorpos/payment/repository/i_payment_repository.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
+import '../../common/widgets/responsive.dart';
 import './widgets/main_button_list.dart';
 import './widgets/menu_item_list.dart';
 import './widgets/menu_list.dart';
@@ -89,14 +90,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             height: 5.h,
                           ),
                           SizedBox(
-                            height: 40.h,
+                            height: Responsive.isMobile(context) ? 50.h : 40.h,
                             child: MenuList(),
                           ),
                           SizedBox(
                             height: 10.h,
                           ),
                           Container(
-                            height: 270.h,
+                            height:
+                                Responsive.isMobile(context) ? 260.h : 270.h,
                             width: 600.w,
                             child: MenuItemList(),
                           ),

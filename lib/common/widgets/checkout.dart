@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:raptorpos/common/adapters/order_data.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
-import '../../home/provider/order/order_provider.dart';
+import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 

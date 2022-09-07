@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:raptorpos/home/provider/menu/menu_provider.dart';
 
+import '../../../common/widgets/responsive.dart';
 import 'menu_item_card.dart';
 
 class MenuItemList extends ConsumerStatefulWidget {
@@ -22,7 +23,7 @@ class _MenuItemListState extends ConsumerState<MenuItemList> {
         itemCount: data.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 5,
-          mainAxisExtent: 55.h,
+          mainAxisExtent: Responsive.isMobile(context) ? 60.h : 55.h,
         ),
         itemBuilder: (BuildContext context, int index) {
           final item = data[index];
