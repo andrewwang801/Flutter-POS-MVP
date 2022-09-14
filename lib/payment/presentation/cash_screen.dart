@@ -10,6 +10,7 @@ import '../../common/widgets/appbar.dart';
 import '../../common/widgets/checkout.dart';
 import '../../common/widgets/numpad.dart';
 import '../../constants/color_constant.dart';
+import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../home/provider/order/order_provider.dart';
@@ -145,24 +146,29 @@ class _CashScreenState extends ConsumerState<CashScreen> {
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: PreferredSize(
         child: AppBarWidget(true),
-        preferredSize:
-            Size(926.w, 53.h - MediaQuery.of(context).padding.top - 5.h),
+        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
-      body: Row(
-        children: [
-          CheckOut(380.h),
-          Expanded(child: _cashPayment(state)),
-        ],
+      body: SafeArea(
+        child: Row(
+          children: [
+            CheckOut(380.h),
+            Expanded(child: _cashPayment(state)),
+          ],
+        ),
       ),
     );
   }
 
   Widget _cashPayment(OrderState state) {
+    double numpadHeight =
+        200.h - ScreenUtil().bottomBarHeight - ScreenUtil().statusBarHeight;
+
     return Container(
       height: 380.h,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          verticalSpaceMedium,
           Container(
             padding: EdgeInsets.all(20.0),
             color: isDark ? primaryDarkColor : primaryLightColor,
@@ -245,13 +251,19 @@ class _CashScreenState extends ConsumerState<CashScreen> {
             child: OrientationBuilder(
               builder: (context, orientation) {
                 return SizedBox(
-                  width: orientation == Orientation.landscape ? 200.h : 300.w,
-                  height: orientation == Orientation.landscape ? 200.h : 300.w,
+                  width: orientation == Orientation.landscape
+                      ? numpadHeight
+                      : 300.w,
+                  height: orientation == Orientation.landscape
+                      ? numpadHeight
+                      : 300.w,
                   child: NumPad(
-                      buttonWidth:
-                          orientation == Orientation.landscape ? 50.h : 75.w,
-                      buttonHeight:
-                          orientation == Orientation.landscape ? 50.h : 75.w,
+                      buttonWidth: orientation == Orientation.landscape
+                          ? numpadHeight / 4
+                          : 75.w,
+                      buttonHeight: orientation == Orientation.landscape
+                          ? numpadHeight / 4
+                          : 75.w,
                       buttonColor:
                           isDark ? primaryButtonDarkColor : primaryButtonColor,
                       delete: () {},
@@ -262,7 +274,8 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                 );
               },
             ),
-          )
+          ),
+          verticalSpaceMedium,
         ],
       ),
     );

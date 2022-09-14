@@ -34,11 +34,15 @@ class _CheckOutState extends ConsumerState<CheckOut> {
       }
     }
     return Container(
-      width: Responsive.isMobile(context) ? 400.w : 320.w,
+      width: Responsive.isMobile(context)
+          ? 400.w -
+              MediaQuery.of(context).padding.top -
+              MediaQuery.of(context).padding.bottom
+          : 320.w,
       height: widget.height,
       color: isDark
           ? primaryDarkColor.withOpacity(0.9)
-          : Colors.white.withOpacity(0.6),
+          : Colors.white.withOpacity(0.8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -63,9 +67,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       child: Text(
                         "STotal:",
                         style: isDark
-                            ? buttonTextDarkStyle.copyWith(
+                            ? normalTextDarkStyle.copyWith(
                                 fontWeight: FontWeight.bold)
-                            : buttonTextLightStyle.copyWith(
+                            : normalTextLightStyle.copyWith(
                                 fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -74,9 +78,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       child: Text(
                         "Disc:",
                         style: isDark
-                            ? buttonTextDarkStyle.copyWith(
+                            ? normalTextDarkStyle.copyWith(
                                 fontWeight: FontWeight.bold)
-                            : buttonTextLightStyle.copyWith(
+                            : normalTextLightStyle.copyWith(
                                 fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -85,9 +89,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       child: Text(
                         "Tax:",
                         style: isDark
-                            ? buttonTextDarkStyle.copyWith(
+                            ? normalTextDarkStyle.copyWith(
                                 fontWeight: FontWeight.bold)
-                            : buttonTextLightStyle.copyWith(
+                            : normalTextLightStyle.copyWith(
                                 fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -95,10 +99,10 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       padding: const EdgeInsets.all(4.0),
                       child: Text("GTotal:",
                           style: isDark
-                              ? buttonTextDarkStyle.copyWith(
+                              ? normalTextDarkStyle.copyWith(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)
-                              : buttonTextLightStyle.copyWith(
+                              : normalTextLightStyle.copyWith(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                     ),
@@ -117,9 +121,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                             ? '\$ ${state.bills[2].toStringAsFixed(2)}'
                             : "\$ 0.00",
                         style: isDark
-                            ? buttonTextDarkStyle.copyWith(
+                            ? normalTextDarkStyle.copyWith(
                                 fontWeight: FontWeight.bold)
-                            : buttonTextLightStyle.copyWith(
+                            : normalTextLightStyle.copyWith(
                                 fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -130,9 +134,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                             ? '\$ ${state.bills[3].toStringAsFixed(2)}'
                             : "\$ 0.00",
                         style: isDark
-                            ? buttonTextDarkStyle.copyWith(
+                            ? normalTextDarkStyle.copyWith(
                                 fontWeight: FontWeight.bold)
-                            : buttonTextLightStyle.copyWith(
+                            : normalTextLightStyle.copyWith(
                                 fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -143,9 +147,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                             ? '\$ ${totalTax.toStringAsFixed(2)}'
                             : "\$ 0.00",
                         style: isDark
-                            ? buttonTextDarkStyle.copyWith(
+                            ? normalTextDarkStyle.copyWith(
                                 fontWeight: FontWeight.bold)
-                            : buttonTextLightStyle.copyWith(
+                            : normalTextLightStyle.copyWith(
                                 fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -156,10 +160,10 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                               ? '\$ ${state.bills[0].toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style: isDark
-                              ? buttonTextDarkStyle.copyWith(
+                              ? normalTextDarkStyle.copyWith(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)
-                              : buttonTextLightStyle.copyWith(
+                              : normalTextLightStyle.copyWith(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                     ),
@@ -244,7 +248,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
             dense: true,
             child: ExpansionTile(
               title: Container(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10.w),
                 child: Row(
                   children: [
                     Expanded(
@@ -255,9 +259,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                           'QTY',
                           textAlign: TextAlign.left,
                           style: isDark
-                              ? bodyTextDarkStyle.copyWith(
+                              ? listItemTextDarkStyle.copyWith(
                                   fontWeight: FontWeight.bold)
-                              : bodyTextLightStyle.copyWith(
+                              : listItemTextLightStyle.copyWith(
                                   fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -270,9 +274,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                           'Description',
                           textAlign: TextAlign.left,
                           style: isDark
-                              ? bodyTextDarkStyle.copyWith(
+                              ? listItemTextDarkStyle.copyWith(
                                   fontWeight: FontWeight.bold)
-                              : bodyTextLightStyle.copyWith(
+                              : listItemTextLightStyle.copyWith(
                                   fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -285,9 +289,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                           'Price',
                           textAlign: TextAlign.left,
                           style: isDark
-                              ? bodyTextDarkStyle.copyWith(
+                              ? listItemTextDarkStyle.copyWith(
                                   fontWeight: FontWeight.bold)
-                              : bodyTextLightStyle.copyWith(
+                              : listItemTextLightStyle.copyWith(
                                   fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -300,9 +304,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                           'SC',
                           textAlign: TextAlign.left,
                           style: isDark
-                              ? bodyTextDarkStyle.copyWith(
+                              ? listItemTextDarkStyle.copyWith(
                                   fontWeight: FontWeight.bold)
-                              : bodyTextLightStyle.copyWith(
+                              : listItemTextLightStyle.copyWith(
                                   fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -310,7 +314,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                   ],
                 ),
               ),
-              trailing: SizedBox(width: 20),
+              trailing: SizedBox(width: 10.w),
             ),
           ),
           Expanded(

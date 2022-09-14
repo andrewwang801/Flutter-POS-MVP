@@ -58,13 +58,13 @@ class AppAlertDialog extends StatelessWidget {
                         if (title != null)
                           Text(
                             title!,
-                            style: bodyTextDarkStyle.copyWith(height: 1.5),
+                            style: titleTextDarkStyle.copyWith(height: 1.5),
                           ),
                         const SizedBox(height: 40),
                         if (message != null)
                           Text(
                             message!,
-                            style: bodyTextDarkStyle.copyWith(height: 1.5),
+                            style: modalTextDarkStyle.copyWith(height: 1.5),
                           ),
                         const SizedBox(height: 40),
                         Row(

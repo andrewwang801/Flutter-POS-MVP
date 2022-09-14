@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../../common/GlobalConfig.dart';
 import '../../../common/widgets/custom_button.dart';
 import '../../../common/widgets/numpad.dart';
+import '../../../common/widgets/responsive.dart';
 import '../../../constants/color_constant.dart';
 import '../../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../../functions/presentation/functions_screen.dart';
@@ -45,7 +46,7 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
     isDark = ref.watch(themeProvider);
     return SizedBox(
       width: 600.w,
-      height: 40.h,
+      height: Responsive.isMobile(context) ? 50.h : 40.h,
       child: GridView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: btnTexts.length,

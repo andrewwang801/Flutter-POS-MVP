@@ -36,7 +36,7 @@ class MyApp extends ConsumerWidget {
     return ScreenUtilInit(
         designSize: const Size(926, 428),
         minTextAdapt: true,
-        builder: (Widget? context) {
+        builder: (BuildContext context, Widget? child) {
           return GetMaterialApp(
             title: 'Raptor POS',
             theme: isDark

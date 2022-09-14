@@ -48,7 +48,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 40.0),
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
                     child: Row(
                       children: [
                         ...List.generate(status.length, (index) {

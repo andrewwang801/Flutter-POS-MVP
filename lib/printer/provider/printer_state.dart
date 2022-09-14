@@ -25,22 +25,26 @@ class PrinterLoadingState extends PrinterState {}
 
 class PrinterSuccessState extends PrinterState {
   PrinterSuccessState(
-      {required this.printers,
+      {this.message,
+      required this.printers,
       required this.printerSupportList,
       required this.operation});
 
   final List<PrinterModel> printers;
   final List<PrinterSupportModel> printerSupportList;
   final OPERATION operation;
+  final String? message;
 
   PrinterSuccessState copyWith(
       {List<PrinterModel>? printers,
       List<PrinterSupportModel>? printerSupportList,
-      OPERATION? operation}) {
+      OPERATION? operation,
+      String? message}) {
     return PrinterSuccessState(
         printers: printers ?? this.printers,
         printerSupportList: printerSupportList ?? this.printerSupportList,
-        operation: operation ?? this.operation);
+        operation: operation ?? this.operation,
+        message: message ?? this.message);
   }
 }
 

@@ -12,6 +12,7 @@ import '../../common/widgets//bill_button_list.dart';
 import '../../common/widgets//checkout.dart';
 import '../../common/widgets/alert_dialog.dart';
 import '../../constants/color_constant.dart';
+import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../home/repository/order/i_order_repository.dart';
 import '../../payment/repository/i_payment_repository.dart';
@@ -19,8 +20,11 @@ import '../../print/provider/print_controller.dart';
 import '../../printer/presentation/printer_setting_screen.dart';
 import '../../promo/application/promo_provider.dart';
 import '../../promo/application/promo_state.dart';
+import '../../sales_report/application/sales_report_controller.dart';
+import '../../sales_report/presentation/sales_report_screen.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../../trans/presentation/trans.dart';
+import '../../zday_report/presentation/zday_report_screen.dart';
 import '../application/function_provider.dart';
 import '../application/function_state.dart';
 import '../model/function_model.dart';
@@ -77,8 +81,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
           : const Color.fromARGB(255, 244, 238, 233),
       appBar: PreferredSize(
         child: AppBarWidget(true),
-        preferredSize:
-            Size(926.w, 53.h - MediaQuery.of(context).padding.top - 5.h),
+        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
       body: Row(
         children: [
@@ -89,7 +92,13 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: CheckOut(320.h - 16),
+                child: CheckOut(428.h -
+                    10.h -
+                    10.h -
+                    (Responsive.isMobile(context) ? 50.h : 40.h) -
+                    appBarHeight -
+                    ScreenUtil().statusBarHeight -
+                    16),
               ),
               SizedBox(
                 height: 10.h,
@@ -155,7 +164,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                       builder: (context) {
                         return Dialog(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(16.0),
                             child: Text(bill),
                           ),
                         );
@@ -168,6 +177,24 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                   break;
                 // All Void
                 case 32:
+                  break;
+
+                // Sales Report
+                case 19:
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return SalesReportScreen();
+                      });
+                  break;
+
+                // ZDay Report
+                case 174:
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ZDayReportScreen();
+                      });
                   break;
 
                 // Void Promo

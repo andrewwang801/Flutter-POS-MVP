@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 enum Workable { initial, loading, ready, failure }
 
@@ -17,7 +18,8 @@ class Failure {
 
 class Data {
   Data(
-      {this.date1,
+      {required this.widgets,
+      this.date1,
       this.time1,
       this.date2,
       this.time2,
@@ -28,6 +30,7 @@ class Data {
   final String? time1;
   final String? date2;
   final String? time2;
+  final List<Widget> widgets;
 }
 
 class SalesReportState extends Equatable {

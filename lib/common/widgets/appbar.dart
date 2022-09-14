@@ -29,14 +29,14 @@ class AppBarWidget extends ConsumerWidget {
                   color: Colors.white,
                   size: iconSize,
                 )),
-          Image.asset(
-            "assets/images/raptor-logo.png",
-            fit: BoxFit.cover,
-          ),
         ],
       ),
-      leadingWidth: 250.w,
-      title: Text('Ratpor POS', style: titleTextDarkStyle),
+      // leadingWidth: 200.w,
+      title: Image.asset(
+        "assets/images/raptor-logo.png",
+        fit: BoxFit.contain,
+        height: appBarHeight,
+      ),
       actions: [
         IconButton(
             icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),

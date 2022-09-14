@@ -15,6 +15,7 @@ import '../../common/widgets/checkout.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/numpad.dart';
 import '../../constants/color_constant.dart';
+import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../home/provider/order/order_provider.dart';
@@ -184,8 +185,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
     return Scaffold(
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: PreferredSize(
-        preferredSize:
-            Size(926.w, 53.h - MediaQuery.of(context).padding.top - 5.h),
+        preferredSize: Size.fromHeight(appBarHeight),
         child: AppBarWidget(true),
       ),
       body: Row(
@@ -212,17 +212,6 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
       tenderDetail = state.tenderDetail ?? [];
       return Column(
         children: [
-          // SizedBox(
-          //   height: 25.h,
-          //   child: Center(
-          //     child: Text(
-          //       'Tender Modes',
-          //       style: isDark
-          //           ? titleTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
-          //           : titleTextLightStyle.copyWith(fontWeight: FontWeight.bold),
-          //     ),
-          //   ),
-          // ),
           SizedBox(
             height: 5.h,
           ),
@@ -273,7 +262,13 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 205.h,
+                height: Responsive.isMobile(context)
+                    ? 428.h -
+                        165.h -
+                        ScreenUtil().bottomBarHeight -
+                        ScreenUtil().statusBarHeight -
+                        appBarHeight
+                    : 205.h,
                 child: Column(
                   children: [
                     Container(
@@ -281,7 +276,6 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                           ? primaryDarkColor.withOpacity(0.8)
                           : primaryLightColor.withOpacity(0.8),
                       width: Responsive.isMobile(context) ? 260.w : 300.w,
-                      // height: 25.h,
                       child: ListTile(
                         dense: true,
                         title: Text(
@@ -302,7 +296,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                               ? primaryDarkColor.withOpacity(0.6)
                               : primaryLightColor.withOpacity(0.6),
                           width: Responsive.isMobile(context) ? 260.w : 300.w,
-                          height: 130.h,
+                          // height: 130.h,
                           child: ListView.builder(
                               itemCount: tenderDetail.length,
                               itemBuilder: (BuildContext context, int index) {
@@ -319,10 +313,6 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                             style: titleTextDarkStyle.copyWith(
                                 color: Colors.red, fontWeight: FontWeight.bold),
                           ),
-                          // Text(
-                          //   'Change: ${change.toStringAsFixed(2)}',
-                          //   style: titleTextDarkStyle,
-                          // ),
                         ],
                       ),
                     ),
@@ -336,11 +326,12 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                 children: [
                   Container(
                     width: Responsive.isMobile(context) ? 210.w : 250.w,
-                    height: 25.h,
+                    height: Responsive.isMobile(context) ? 30.h : 25.h,
                     decoration: BoxDecoration(
                       color: isDark
                           ? primaryDarkColor.withOpacity(0.8)
                           : primaryLightColor.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(Spacing.xs),
                     ),
                     child: Center(
                       child: Text(
@@ -352,7 +343,14 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                   ),
                   Container(
                     width: Responsive.isMobile(context) ? 210.w : 250.w,
-                    height: Responsive.isMobile(context) ? 180.h : 150.h,
+                    height: Responsive.isMobile(context)
+                        ? 428.h -
+                            165.h -
+                            ScreenUtil().bottomBarHeight -
+                            30.h -
+                            ScreenUtil().statusBarHeight -
+                            appBarHeight
+                        : 150.h,
                     color: Colors.transparent,
                     child: NumPad(
                         buttonWidth: Responsive.isMobile(context)

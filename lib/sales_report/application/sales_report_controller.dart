@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
 
@@ -6,6 +7,8 @@ import '../../common/extension/string_extension.dart';
 import '../../common/utils/datetime_util.dart';
 import '../../common/utils/strings_util.dart';
 import '../../common/utils/type_util.dart';
+import '../../common/widgets/dash_line.dart';
+import '../../constants/dimension_constant.dart';
 import '../../print/provider/print_controller.dart';
 import '../../zday_report/domain/report_local_repository.dart';
 import 'sales_report_state.dart';
@@ -34,7 +37,7 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
   Future<void> fetchData() async {
     try {
-      state = state.copyWith(workable: Workable.loading);
+      state = const SalesReportState(workable: Workable.loading);
 
       final List<List<String>> lastZDayArr =
           await reportRepository.getLastZDayDate(POSDtls.deviceNo);
@@ -63,6 +66,7 @@ class SalesReportController extends StateNotifier<SalesReportState>
         // state (lastZDay, report) and show on presentation
         state = state.copyWith(
             data: Data(
+                widgets: widgets,
                 salesReport: salesReport,
                 date1: date1,
                 time1: time1,
@@ -77,8 +81,10 @@ class SalesReportController extends StateNotifier<SalesReportState>
     }
   }
 
+  List<Widget> widgets = <Widget>[];
   Future<String> generateSalesReport(
       String date1, String time1, String date2, String time2) async {
+    widgets = [];
     double iSalesQty = 0,
         iSalesAmt = 0,
         iDiscQty = 0,
@@ -147,19 +153,24 @@ class SalesReportController extends StateNotifier<SalesReportState>
     }
 
     ReportStr += '${POSDtls.ScreenHeader1}\n';
+    widgets.add(Text(POSDtls.ScreenHeader1));
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}${POSDtls.ScreenHeader1}\n";
 
     ReportStr += '${POSDtls.ScreenHeader2}\n';
+    widgets.add(Text(POSDtls.ScreenHeader2));
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}${POSDtls.ScreenHeader2}\n";
 
     ReportStr += 'XZ Sales Report\n\n';
+    widgets.add(const Text('XZ Sales Report'));
     ReportPrint += "${textPrintFormat("N", "L", "1")}XZ Sales Report\n";
     ReportPrint += "${textPrintFormat("N", "L", "1")}\n";
 
     ReportStr += '${addDash(40)}\n';
     ReportPrint += "${textPrintFormat("N", "L", "1")}${addDash(40)}\n";
+    // widgets.add(Text(addDash(40)));
+    widgets.add(MySeparator());
 
     ReportStr += 'Type                  Qty        Amount\n';
     ReportPrint +=
@@ -167,6 +178,16 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
     ReportStr += '${addDash(40)}\n';
     ReportPrint += "${textPrintFormat("N", "L", "1")}${addDash(40)}\n";
+
+    widgets.add(Row(
+      children: const <Widget>[
+        Expanded(child: Text('Type')),
+        Expanded(child: Text('Qty')),
+        Expanded(child: Text('Amount'))
+      ],
+    ));
+    // widgets.add(Text(addDash(40)));
+    widgets.add(MySeparator());
 
     final String strISQty =
         addSpace(iSalesQty.toString(), 5 - iSalesQty.toString().length);
@@ -176,6 +197,13 @@ class SalesReportController extends StateNotifier<SalesReportState>
       strISAmt = strISAmt.substring(1);
       strISAmt = '( $strISAmt)';
     }
+    widgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('Item Sales')),
+        Expanded(child: Text('(+) $strISQty')),
+        Expanded(child: Text(strISAmt))
+      ],
+    ));
 
     strISAmt = addSpace(strISAmt, 14 - strISAmt.length);
     ReportStr += 'Item Sales      (+) $strISQty $strISAmt\n';
@@ -190,6 +218,13 @@ class SalesReportController extends StateNotifier<SalesReportState>
       strIDAmt = strIDAmt.substring(1);
       strIDAmt = '( $strIDAmt)';
     }
+    widgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('Item Discount')),
+        Expanded(child: Text('(-) $strISQty')),
+        Expanded(child: Text(strIDAmt))
+      ],
+    ));
 
     strIDAmt = addSpace(strIDAmt, 14 - strIDAmt.length);
     ReportStr += 'Item Discount   (-) $strIDQty $strIDAmt\n';
@@ -204,6 +239,13 @@ class SalesReportController extends StateNotifier<SalesReportState>
       strBDAmt = strBDAmt.substring(1);
       strBDAmt = '( $strBDAmt)';
     }
+    widgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('Bill Discount')),
+        Expanded(child: Text('(-) $strBDQty')),
+        Expanded(child: Text(strBDAmt))
+      ],
+    ));
 
     strBDAmt = addSpace(strBDAmt, 14 - strBDAmt.length);
     ReportStr += 'Bill Discount   (-) $strBDQty $strBDAmt\n';
@@ -218,6 +260,13 @@ class SalesReportController extends StateNotifier<SalesReportState>
       strIFOCAmt = strIFOCAmt.substring(1);
       strIFOCAmt = '( $strIFOCAmt)';
     }
+    widgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('FOC Items')),
+        Expanded(child: Text('(-) $strIFOCQty')),
+        Expanded(child: Text(strIFOCAmt))
+      ],
+    ));
 
     strIFOCAmt = addSpace(strIFOCAmt, 14 - strIFOCAmt.length);
     ReportStr += 'FOC Items       (-) $strIFOCQty $strIFOCAmt\n';
@@ -232,6 +281,13 @@ class SalesReportController extends StateNotifier<SalesReportState>
       strBFOCAmt = strBFOCAmt.substring(1);
       strBFOCAmt = '( $strBFOCAmt)';
     }
+    widgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('FOC Bill')),
+        Expanded(child: Text('(-) $strBFOCQty')),
+        Expanded(child: Text(strBFOCAmt))
+      ],
+    ));
 
     strBFOCAmt = addSpace(strBFOCAmt, 14 - strBFOCAmt.length);
     ReportStr += 'FOC Bill        (-) $strBFOCQty $strBFOCAmt\n';
@@ -253,6 +309,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
       ReportPrint += "${textPrintFormat("N", "L", "1")}\n";
       ReportPrint +=
           "${textPrintFormat("N", "L", "1")}Total Sales     (=)  $strTotalSales\n";
+      widgets.add(Row(
+        children: [
+          Expanded(child: Text('Total Sales')),
+          Expanded(child: Text('$TotalSales')),
+        ],
+      ));
 
       strTotalSales = EstSales.toString();
       strTotalSales = addSpace(strTotalSales, 19 - strTotalSales.length);
@@ -260,11 +322,24 @@ class SalesReportController extends StateNotifier<SalesReportState>
       ReportStr += 'Estimated Sales      $strTotalSales\n';
       ReportPrint +=
           "${textPrintFormat("N", "L", "1")}Estimated Sales      $strTotalSales\n";
+      widgets.add(Row(
+        children: [
+          Expanded(child: Text('Estimated Sales')),
+          Expanded(child: Text('$EstSales')),
+        ],
+      ));
     }
 
     ReportStr += '-----------------MEDIA------------------\n';
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}-----------------MEDIA------------------\n";
+    widgets.add(verticalSpaceSmall);
+    widgets.add(Center(
+      child: Text(
+        '----------------- MEDIA ------------------',
+        textAlign: TextAlign.center,
+      ),
+    ));
 
     for (int i = 0; i < TransArr.length; i++) {
       final String Title = TransArr[i][0];
@@ -284,6 +359,13 @@ class SalesReportController extends StateNotifier<SalesReportState>
       ReportStr += '$Title $strQty $strAmt\n';
       ReportPrint +=
           "${textPrintFormat("N", "L", "1")}$Title $strQty $strAmt\n";
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('$TransArr[i][1]')),
+          Expanded(child: Text('$TransArr[i][2]')),
+          Expanded(child: Text('$TransAmt'))
+        ],
+      ));
     }
 
     ReportStr += '\n';
@@ -312,11 +394,22 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
       TotQty += TotMediaQty;
       TotCollection += TotMediaAmt;
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('$TotMediaArr[i][0]')),
+          Expanded(child: Text('$TotMediaQty')),
+          Expanded(child: Text('$TotMediaAmt'))
+        ],
+      ));
     }
 
     ReportStr += '----------VOID / REFUND SUMMARY---------\n';
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}----------VOID / REFUND SUMMARY---------\n";
+    widgets.add(verticalSpaceSmall);
+    widgets.add(Center(child: Text('------- VOID / REFUND SUMMARY --------')));
+    widgets.add(verticalSpaceSmall);
+
     double RefundQty = 0, RefundAmt = 0;
     if (RefundArr.isNotEmpty) {
       RefundQty = RefundArr[0][0].toDouble();
@@ -332,6 +425,13 @@ class SalesReportController extends StateNotifier<SalesReportState>
     ReportStr += 'Refund $strRQty $strRAmt\n';
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}Refund $strRQty $strRAmt\n";
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Refund')),
+        Expanded(child: Text('$RefundQty')),
+        Expanded(child: Text('$RefundAmt')),
+      ],
+    ));
 
     double PreVoidQty = 0, PreVoidAmt = 0, PostVoidQty = 0, PostVoidAmt = 0;
     if (VoidReport.isNotEmpty) {
@@ -350,6 +450,13 @@ class SalesReportController extends StateNotifier<SalesReportState>
     ReportStr += 'Pre-Send Void $strPrVQty $strPrVAmt\n';
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}Pre-Send Void $strPrVQty $strPrVAmt\n";
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Pre-Send Void')),
+        Expanded(child: Text('$PreVoidQty')),
+        Expanded(child: Text('$PreVoidAmt')),
+      ],
+    ));
 
     String strPoVQty = PreVoidQty.toString();
     strPoVQty = addSpace(strPoVQty, 10 - strPoVQty.length);
@@ -360,9 +467,18 @@ class SalesReportController extends StateNotifier<SalesReportState>
     ReportStr += 'Post-Send Void $strPoVQty $strPoVAmt\n';
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}Post-Send Void $strPoVQty $strPoVAmt\n";
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Post-Send Void')),
+        Expanded(child: Text('$PreVoidQty')),
+        Expanded(child: Text('$PreVoidAmt')),
+      ],
+    ));
 
     ReportStr += '${addDash(40)}\n';
     ReportPrint += "${textPrintFormat("N", "L", "1")}${addDash(40)}\n";
+    // widgets.add(Text(addDash(40)));
+    widgets.add(MySeparator());
 
     String strTotQty = TotQty.toString();
     strTotQty = addSpace(strTotQty, 8 - strTotQty.length);
@@ -372,6 +488,15 @@ class SalesReportController extends StateNotifier<SalesReportState>
       strTotColl = strTotColl.substring(1);
       strTotColl = '( $strTotColl)';
     }
+
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Total Collection')),
+        Expanded(child: Text('$TotQty')),
+        Expanded(child: Text('$TotCollection')),
+      ],
+    ));
+
     strTotColl = addSpace(strTotColl, 14 - strTotColl.length);
 
     ReportStr += 'Total Collection $strTotQty $strTotColl\n';
@@ -392,6 +517,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax1 > 0) {
@@ -403,6 +534,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax2 > 0) {
@@ -414,6 +551,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax3 > 0) {
@@ -425,6 +568,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax4 > 0) {
@@ -436,6 +585,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax5 > 0) {
@@ -447,6 +602,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax6 > 0) {
@@ -458,6 +619,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax7 > 0) {
@@ -469,6 +636,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax8 > 0) {
@@ -480,6 +653,12 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax9 > 0) {
@@ -491,17 +670,31 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
         ReportStr += '$TaxName $strTax\n';
         ReportPrint += "${textPrintFormat("N", "L", "1")}$TaxName $strTax\n";
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
     }
 
     ReportStr += '${addDash(40)}\n';
     ReportPrint += "${textPrintFormat("N", "L", "1")}${addDash(40)}\n";
+    // widgets.add(Text(addDash(40)));
+    widgets.add(MySeparator());
 
     String strNetSales = TotalSales.toString();
     if (TotalSales < 0) {
       strNetSales = strNetSales.substring(1);
       strNetSales = '( $strNetSales)';
     }
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Net Sales')),
+        Expanded(child: Text(strNetSales)),
+      ],
+    ));
 
     strNetSales = addSpace(strNetSales, 29 - strNetSales.length);
 
@@ -510,24 +703,42 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
     ReportStr += '${addDash(40)}\n';
     ReportPrint += "${textPrintFormat("N", "L", "1")}${addDash(40)}\n";
+    // widgets.add(Text(addDash(40)));
+    widgets.add(MySeparator());
 
     final String strTBill =
         addSpace(TBill.toString(), 23 - TBill.toString().length);
     ReportStr += 'Total # of Bills $strTBill\n';
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}Total # of Bills $strTBill\n";
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Total # of Bills')),
+        Expanded(child: Text('$TBill')),
+      ],
+    ));
 
     final String strTCover =
         addSpace(TCover.toString(), 23 - TCover.toString().length);
     ReportStr += 'Total # of Bills $strTCover\n';
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}Total # of Bills $strTCover\n";
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Total # of Bills')),
+        Expanded(child: Text('$TCover')),
+      ],
+    ));
 
     ReportStr += '${addDash(40)}\n';
     ReportStr += '${addDash(40)}\n\n';
     ReportPrint += "${textPrintFormat("N", "L", "1")}${addDash(40)}\n";
     ReportPrint += "${textPrintFormat("N", "L", "1")}${addDash(40)}\n";
     ReportPrint += "${textPrintFormat("N", "L", "1")}\n";
+    // widgets.add(Text(addDash(40)));
+    // widgets.add(Text(addDash(40)));
+    widgets.add(MySeparator());
+    widgets.add(MySeparator());
 
     final List<List<String>> RcptNoArr =
         await reportRepository.getReceiptNo(firstDate, lastDate);
@@ -539,6 +750,19 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
       ReportStr += 'Begin Receipt# $RcptBegin\n';
       ReportStr += 'End Receipt# $RcptEnd\n\n\n';
+
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('Begin Receipt#')),
+          Expanded(child: Text('${RcptNoArr[0][0]}')),
+        ],
+      ));
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('End Receipt#')),
+          Expanded(child: Text('${RcptNoArr[0][1]}')),
+        ],
+      ));
 
       ReportPrint +=
           "${textPrintFormat("N", "L", "1")}Begin Receipt# $RcptBegin\n";
@@ -554,6 +778,19 @@ class SalesReportController extends StateNotifier<SalesReportState>
       ReportStr += 'Begin Receipt# $RcptBegin\n';
       ReportStr += 'End Receipt# $RcptEnd\n\n\n';
 
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('Begin Receipt#')),
+          Expanded(child: Text('${RcptNoArr[0][0]}')),
+        ],
+      ));
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('End Receipt#')),
+          Expanded(child: Text('${RcptNoArr[0][1]}')),
+        ],
+      ));
+
       ReportPrint +=
           "${textPrintFormat("N", "L", "1")}Begin Receipt# $RcptBegin\n";
       ReportPrint += "${textPrintFormat("N", "L", "1")}End Receipt# $RcptEnd\n";
@@ -564,6 +801,7 @@ class SalesReportController extends StateNotifier<SalesReportState>
     ReportStr += '========================================\n';
     ReportPrint +=
         "${textPrintFormat("N", "L", "1")}========================================\n";
+    widgets.add(Text('=============================='));
 
     final String FDateStr = '$date1 $time1';
     final String LDateStr = '$date2 $time2';
@@ -572,6 +810,7 @@ class SalesReportController extends StateNotifier<SalesReportState>
     ReportPrint +=
         "${"${textPrintFormat("N", "L", "1")}$FDateStr-$LDateStr"}\n";
     ReportPrint += "${textPrintFormat("N", "L", "1")}\n";
+    widgets.add(Text('$FDateStr-$LDateStr'));
     return ReportStr;
   }
 

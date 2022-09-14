@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
 
@@ -6,6 +7,8 @@ import '../../common/extension/string_extension.dart';
 import '../../common/utils/datetime_util.dart';
 import '../../common/utils/strings_util.dart';
 import '../../common/utils/type_util.dart';
+import '../../common/widgets/dash_line.dart';
+import '../../constants/dimension_constant.dart';
 import '../../print/provider/print_controller.dart';
 import '../domain/report_local_repository.dart';
 import 'zday_report_state.dart';
@@ -22,7 +25,7 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
   Future<void> fetchZDay() async {
     try {
-      state = state.copyWith(workable: Workable.loading);
+      state = const ZDayReportState(workable: Workable.loading);
 
       final List<List<String>> lastZDayArr =
           await reportRepository.getLastZDayDate(POSDtls.deviceNo);
@@ -49,7 +52,8 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         // state ready
         state = state.copyWith(
-            workable: Workable.ready, data: Data(zDayReport: zDayStr));
+            workable: Workable.ready,
+            data: Data(zDayReport: zDayStr, zDayWidgets: zDayWidgets));
       }
     } catch (e) {
       state = state.copyWith(
@@ -61,8 +65,11 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
   String zDayPrint = '';
   int zDayReportNo = 0;
   String date1 = '', date2 = '';
+  List<Widget> zDayWidgets = <Widget>[];
   Future<String> generateZDay(String date1, String date2, String currentDate,
       String lastZDayDate) async {
+    zDayWidgets = [];
+    zDayPrint = '';
     await reportRepository.salesReport(date1, date2, POSDtls.deviceNo);
     await reportRepository.transaction(date1, date2, POSDtls.deviceNo);
 
@@ -158,29 +165,44 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
     //Header
     ZDayStr += '${POSDtls.ScreenHeader1}\n';
+    zDayWidgets.add(Text(POSDtls.ScreenHeader1));
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${POSDtls.ScreenHeader1}\n';
 
     ZDayStr += '${POSDtls.ScreenHeader2}\n';
+    zDayWidgets.add(Text(POSDtls.ScreenHeader2));
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${POSDtls.ScreenHeader2}\n';
 
     ZDayStr += '${POSDtls.ScreenHeader3}\n';
+    zDayWidgets.add(Text(POSDtls.ScreenHeader3));
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${POSDtls.ScreenHeader3}\n';
 
     ZDayStr += 'Z Sales Day Report\n\n';
+    zDayWidgets.add(const Text('Z Sales Day Report'));
     zDayPrint += '${textPrintFormat('N', 'L', '1')}Z Sales Day Report\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}\n';
 
+    // Report No & Date
     String report = 'ReportNo: $zDayReportNo';
     ZDayStr += report;
     zDayPrint += textPrintFormat('N', 'L', '1') + report;
 
     ZDayStr +=
         ' ${addSpace(zdaydatestr, 38 - report.length - zdaydatestr.length)}\n';
+    zDayWidgets.add(Row(
+      children: [
+        Expanded(child: Text(report)),
+        Expanded(child: Text(zdaydatestr)),
+      ],
+    ));
+
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}ReportNo: ${addSpace(zdaydatestr, 38 - report.length - zdaydatestr.length)}\n';
 
+    // Add Dash Line
     ZDayStr += '${addDash(40)}\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${addDash(40)}\n';
+    // zDayWidgets.add(Text(addDash(40)));
+    zDayWidgets.add(MySeparator());
 
     ZDayStr += 'Type                  Qty        Amount\n';
     zDayPrint +=
@@ -188,6 +210,17 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
     ZDayStr += '${addDash(40)}\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${addDash(40)}\n';
+
+    // Add Items Heder and Dash Line
+    zDayWidgets.add(Row(
+      children: const <Widget>[
+        Expanded(child: Text('Type')),
+        Expanded(child: Text('Qty')),
+        Expanded(child: Text('Amount'))
+      ],
+    ));
+    // zDayWidgets.add(Text(addDash(40)));
+    zDayWidgets.add(MySeparator());
 
     //Item Sales
     iSalesQty = iSalesQty + PSQty;
@@ -200,6 +233,14 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       strISAmt = strISAmt.substring(1);
       strISAmt = '( $strISAmt)';
     }
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('Item Sales')),
+        Expanded(child: Text('(+) $strISQty')),
+        Expanded(child: Text(strISAmt))
+      ],
+    ));
+
     strISAmt = addSpace(strISAmt, 14 - strISAmt.length);
 
     ZDayStr += 'Item Sales      (+) $strISQty $strISAmt\n';
@@ -218,6 +259,14 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       strIDAmt = strIDAmt.substring(1);
       strIDAmt = '( $strIDAmt)';
     }
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('Item Discount')),
+        Expanded(child: Text('(-) $strISQty')),
+        Expanded(child: Text(strIDAmt))
+      ],
+    ));
+
     strIDAmt = addSpace(strIDAmt, 14 - strIDAmt.length);
 
     ZDayStr += 'Item Discount   (-) $strIDQty $strIDAmt\n';
@@ -236,6 +285,14 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       strBDAmt = strBDAmt.substring(1);
       strBDAmt = '( $strBDAmt)';
     }
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('Bill Discount')),
+        Expanded(child: Text('(-) $strBDQty')),
+        Expanded(child: Text(strBDAmt))
+      ],
+    ));
+
     strBDAmt = addSpace(strBDAmt, 14 - strBDAmt.length);
 
     ZDayStr += 'Bill Discount   (-) $strBDQty $strBDAmt\n';
@@ -254,6 +311,14 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       strIFOCAmt = strIFOCAmt.substring(1);
       strIFOCAmt = '( $strIFOCAmt)';
     }
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('FOC Items')),
+        Expanded(child: Text('(-) $strIFOCQty')),
+        Expanded(child: Text(strIFOCAmt))
+      ],
+    ));
+
     strIFOCAmt = addSpace(strIFOCAmt, 14 - strIFOCAmt.length);
 
     ZDayStr += 'FOC Items       (-) $strIFOCQty $strIFOCAmt\n';
@@ -269,6 +334,14 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       strBFOCAmt = strBFOCAmt.substring(1);
       strBFOCAmt = '( $strBFOCAmt)';
     }
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        const Expanded(child: Text('FOC Bill')),
+        Expanded(child: Text('(-) $strBFOCQty')),
+        Expanded(child: Text(strBFOCAmt))
+      ],
+    ));
+
     strBFOCAmt = addSpace(strBFOCAmt, 14 - strBFOCAmt.length);
 
     ZDayStr += 'FOC Bill        (-) $strBFOCQty $strBFOCAmt\n';
@@ -289,6 +362,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       zDayPrint += '${textPrintFormat('N', 'L', '1')}\n';
       zDayPrint +=
           '${textPrintFormat('N', 'L', '1')}Total Sales     (=)  $strTotalSales\n';
+      zDayWidgets.add(Row(
+        children: [
+          Expanded(child: Text('Total Sales')),
+          Expanded(child: Text('$TotalSales')),
+        ],
+      ));
 
       strTotalSales = EstSales.toString();
       strTotalSales = addSpace(strTotalSales, 19 - strTotalSales.length);
@@ -296,12 +375,25 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       ZDayStr += 'Estimated Sales      $strTotalSales\n';
       zDayPrint +=
           '${textPrintFormat('N', 'L', '1')}Estimated Sales      $strTotalSales\n';
+      zDayWidgets.add(Row(
+        children: [
+          Expanded(child: Text('Estimated Sales')),
+          Expanded(child: Text('$EstSales')),
+        ],
+      ));
     }
 
     //Media
     ZDayStr += '-----------------MEDIA------------------\n';
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}-----------------MEDIA------------------\n';
+    zDayWidgets.add(verticalSpaceSmall);
+    zDayWidgets.add(Center(
+      child: Text(
+        '----------------- MEDIA ------------------',
+        textAlign: TextAlign.center,
+      ),
+    ));
 
     for (int i = 0; i < TransArr.length; i++) {
       String Title = TransArr[i][1];
@@ -319,6 +411,13 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
       ZDayStr += '$Title $strQty $strAmt\n';
       zDayPrint += '${textPrintFormat('N', 'L', '1')}$Title $strQty $strAmt\n';
+      zDayWidgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('$TransArr[i][1]')),
+          Expanded(child: Text('$TransArr[i][2]')),
+          Expanded(child: Text('$TransAmt'))
+        ],
+      ));
     }
 
     ZDayStr += '\n';
@@ -344,6 +443,14 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       ZDayStr += 'TOTAL $Title $strQty $strAmt\n';
       zDayPrint +=
           '${textPrintFormat('N', 'L', '1')}TOTAL $Title $strQty $strAmt\n';
+      zDayWidgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('TOTAL')),
+          Expanded(child: Text('$TotMediaArr[i][0]')),
+          Expanded(child: Text('$TotMediaQty')),
+          Expanded(child: Text('$TotMediaAmt'))
+        ],
+      ));
 
       TotQty += TotMediaQty;
       TotCollection += TotMediaAmt;
@@ -353,6 +460,11 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
     ZDayStr += '----------VOID / REFUND SUMMARY---------\n';
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}----------VOID / REFUND SUMMARY---------\n';
+    zDayWidgets.add(verticalSpaceSmall);
+    zDayWidgets
+        .add(Center(child: Text('------- VOID / REFUND SUMMARY --------')));
+    zDayWidgets.add(verticalSpaceSmall);
+
     double RefundQty = 0, RefundAmt = 0;
     if (RefundArr.isNotEmpty) {
       RefundQty = RefundArr[0][0].toDouble();
@@ -367,6 +479,13 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
     ZDayStr += 'Refund $strRQty $strRAmt\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}Refund $strRQty $strRAmt\n';
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Refund')),
+        Expanded(child: Text('$RefundQty')),
+        Expanded(child: Text('$RefundAmt')),
+      ],
+    ));
 
     double PreVoidQty = 0, PreVoidAmt = 0, PostVoidQty = 0, PostVoidAmt = 0;
     if (VoidReport.isNotEmpty) {
@@ -385,6 +504,13 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
     ZDayStr += 'Pre-Send Void $strPrVQty $strPrVAmt\n';
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}Pre-Send Void $strPrVQty $strPrVAmt\n';
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Pre-Send Void')),
+        Expanded(child: Text('$PreVoidQty')),
+        Expanded(child: Text('$PreVoidAmt')),
+      ],
+    ));
 
     String strPoVQty = PreVoidQty.toString();
     strPoVQty = addSpace(strPoVQty, 10 - strPoVQty.length);
@@ -395,9 +521,18 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
     ZDayStr += 'Post-Send Void $strPoVQty $strPoVAmt\n';
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}Post-Send Void $strPoVQty $strPoVAmt\n';
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Post-Send Void')),
+        Expanded(child: Text('$PreVoidQty')),
+        Expanded(child: Text('$PreVoidAmt')),
+      ],
+    ));
 
     ZDayStr += '${addDash(40)}\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${addDash(40)}\n';
+    // zDayWidgets.add(Text(addDash(40)));
+    zDayWidgets.add(MySeparator());
 
     //Total Collection
     String strTotQty = TotQty.toString();
@@ -408,8 +543,16 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       strTotColl = strTotColl.substring(1);
       strTotColl = '( $strTotColl)';
     }
-    strTotColl = addSpace(strTotColl, 14 - strTotColl.length);
 
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Total Collection')),
+        Expanded(child: Text('$TotQty')),
+        Expanded(child: Text('$TotCollection')),
+      ],
+    ));
+
+    strTotColl = addSpace(strTotColl, 14 - strTotColl.length);
     ZDayStr += 'Total Collection $strTotQty $strTotColl\n';
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}Total Collection $strTotQty $strTotColl\n';
@@ -419,6 +562,7 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       ZDayStr += '------------------TAX-------------------\n';
       zDayPrint +=
           '${textPrintFormat('N', 'L', '1')}------------------TAX-------------------\n';
+      zDayWidgets.add(Text('------------------TAX-------------------'));
 
       if (Tax0 > 0) {
         List<List<String>> TaxArray = await reportRepository.getTaxApplied('0');
@@ -428,6 +572,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax1 > 0) {
@@ -438,6 +588,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax2 > 0) {
@@ -448,6 +604,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax3 > 0) {
@@ -458,6 +620,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax4 > 0) {
@@ -468,6 +636,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax5 > 0) {
@@ -478,6 +652,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax6 > 0) {
@@ -488,6 +668,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax7 > 0) {
@@ -498,6 +684,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax8 > 0) {
@@ -508,6 +700,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
 
       if (Tax9 > 0) {
@@ -518,11 +716,19 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
         ZDayStr += '$TaxName $strTax\n';
         zDayPrint += '${textPrintFormat('N', 'L', '1')}$TaxName $strTax\n';
+        zDayWidgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$TaxArray[0][1]')),
+            Expanded(child: Text('$Tax0')),
+          ],
+        ));
       }
     }
 
     ZDayStr += '${addDash(40)}\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${addDash(40)}\n';
+    // zDayWidgets.add(Text(addDash(40)));
+    zDayWidgets.add(MySeparator());
 
     //Nett Sales
     String strNetSales = TotalSales.toString();
@@ -530,6 +736,12 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       strNetSales = strNetSales.substring(1);
       strNetSales = '( $strNetSales)';
     }
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Net Sales')),
+        Expanded(child: Text(strNetSales)),
+      ],
+    ));
 
     strNetSales = addSpace(strNetSales, 29 - strNetSales.length);
 
@@ -538,24 +750,42 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
     ZDayStr += '${addDash(40)}\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${addDash(40)}\n';
+    // zDayWidgets.add(Text(addDash(40)));
+    zDayWidgets.add(MySeparator());
 
     //Total Bill & Cover
     String strTBill = addSpace(TBill.toString(), 23 - TBill.toString().length);
     ZDayStr += 'Total # of Bills $strTBill\n';
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}Total # of Bills $strTBill\n';
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Total # of Bills')),
+        Expanded(child: Text('$TBill')),
+      ],
+    ));
 
     String strTCover =
         addSpace(TCover.toString(), 23 - TCover.toString().length);
     ZDayStr += 'Total # of Bills $strTCover\n';
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}Total # of Bills $strTCover\n';
+    zDayWidgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Total # of Bills')),
+        Expanded(child: Text('$TCover')),
+      ],
+    ));
 
     ZDayStr += '${addDash(40)}\n';
     ZDayStr += '${addDash(40)}\n\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${addDash(40)}\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}${addDash(40)}\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}\n';
+    // zDayWidgets.add(Text(addDash(40)));
+    // zDayWidgets.add(Text(addDash(40)));
+    zDayWidgets.add(MySeparator());
+    zDayWidgets.add(MySeparator());
 
     //Rcpt No
     List<List<String>> RcptNoArr =
@@ -568,6 +798,19 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
 
       ZDayStr += 'Begin Receipt# $RcptBegin\n';
       ZDayStr += 'End Receipt# $RcptEnd\n\n\n';
+
+      zDayWidgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('Begin Receipt#')),
+          Expanded(child: Text('${RcptNoArr[0][0]}')),
+        ],
+      ));
+      zDayWidgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('End Receipt#')),
+          Expanded(child: Text('${RcptNoArr[0][1]}')),
+        ],
+      ));
 
       zDayPrint +=
           '${textPrintFormat('N', 'L', '1')}Begin Receipt# $RcptBegin\n';
@@ -583,6 +826,19 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       ZDayStr += 'Begin Receipt# $RcptBegin\n';
       ZDayStr += 'End Receipt# $RcptEnd\n\n\n';
 
+      zDayWidgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('Begin Receipt#')),
+          Expanded(child: Text('${RcptNoArr[0][0]}')),
+        ],
+      ));
+      zDayWidgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('End Receipt#')),
+          Expanded(child: Text('${RcptNoArr[0][1]}')),
+        ],
+      ));
+
       zDayPrint +=
           '${textPrintFormat('N', 'L', '1')}Begin Receipt# $RcptBegin\n';
       zDayPrint += '${textPrintFormat('N', 'L', '1')}End Receipt# $RcptEnd\n';
@@ -593,8 +849,10 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
     ZDayStr += '========================================\n';
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}========================================\n';
+    zDayWidgets.add(Text('=============================='));
 
     ZDayStr += '$lastZDayDate-$currentDate\n\n';
+    zDayWidgets.add(Text('$lastZDayDate-$currentDate'));
     zDayPrint +=
         '${textPrintFormat('N', 'L', '1')}$lastZDayDate-$currentDate\n';
     zDayPrint += '${textPrintFormat('N', 'L', '1')}\n';

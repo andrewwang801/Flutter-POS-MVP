@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 enum Workable { initial, loading, ready, failure }
 
@@ -16,9 +17,10 @@ class Failure {
 }
 
 class Data {
-  Data({required this.zDayReport});
+  Data({required this.zDayWidgets, required this.zDayReport});
 
   final String? zDayReport;
+  final List<Widget> zDayWidgets;
 }
 
 class ZDayReportState extends Equatable {
