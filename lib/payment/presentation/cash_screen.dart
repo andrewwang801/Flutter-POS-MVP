@@ -9,6 +9,7 @@ import '../../common/widgets/alert_dialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/checkout.dart';
 import '../../common/widgets/numpad.dart';
+import '../../common/widgets/responsive.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
@@ -17,6 +18,7 @@ import '../../home/provider/order/order_provider.dart';
 import '../../home/provider/order/order_state.dart';
 import '../../print/provider/print_provider.dart';
 import '../../print/provider/print_state.dart';
+import '../../printer/provider/printer_provider.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../provider/payment_provider.dart';
 import '../provider/payment_state.dart';
@@ -82,13 +84,14 @@ class _CashScreenState extends ConsumerState<CashScreen> {
       }
     });
     paymentState = ref.watch(paymentProvider);
+
     ref.listen<PaymentState>(paymentProvider, (prev, next) async {
       if (next is PaymentSuccessState && (next.paid ?? false)) {
         switch (next.status) {
           case PaymentStatus.PAID:
-            await ref
+            ref
                 .read(printProvider.notifier)
-                .doPrint(3, GlobalConfig.salesNo, '');
+                .printBill(GlobalConfig.salesNo, 'Close Tables');
             Get.back();
             Get.to(FloorPlanScreen());
             break;
@@ -148,13 +151,15 @@ class _CashScreenState extends ConsumerState<CashScreen> {
         child: AppBarWidget(true),
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
-      body: SafeArea(
-        child: Row(
-          children: [
-            CheckOut(380.h),
-            Expanded(child: _cashPayment(state)),
-          ],
-        ),
+      body: Row(
+        children: [
+          CheckOut(
+            428.h -
+                ScreenUtil().statusBarHeight -
+                AppBar().preferredSize.height,
+          ),
+          Expanded(child: SafeArea(child: _cashPayment(state))),
+        ],
       ),
     );
   }
@@ -164,11 +169,12 @@ class _CashScreenState extends ConsumerState<CashScreen> {
         200.h - ScreenUtil().bottomBarHeight - ScreenUtil().statusBarHeight;
 
     return Container(
-      height: 380.h,
+      height:
+          428.h - ScreenUtil().bottomBarHeight - ScreenUtil().statusBarHeight,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          verticalSpaceMedium,
+          Responsive.isMobile(context) ? verticalSpaceTiny : verticalSpaceLarge,
           Container(
             padding: EdgeInsets.all(20.0),
             color: isDark ? primaryDarkColor : primaryLightColor,
@@ -245,37 +251,23 @@ class _CashScreenState extends ConsumerState<CashScreen> {
             ),
           ),
           SizedBox(
-            height: 30.h,
+            height: Responsive.isMobile(context) ? 10.h : 30.h,
           ),
           Expanded(
-            child: OrientationBuilder(
-              builder: (context, orientation) {
-                return SizedBox(
-                  width: orientation == Orientation.landscape
-                      ? numpadHeight
-                      : 300.w,
-                  height: orientation == Orientation.landscape
-                      ? numpadHeight
-                      : 300.w,
-                  child: NumPad(
-                      buttonWidth: orientation == Orientation.landscape
-                          ? numpadHeight / 4
-                          : 75.w,
-                      buttonHeight: orientation == Orientation.landscape
-                          ? numpadHeight / 4
-                          : 75.w,
-                      buttonColor:
-                          isDark ? primaryButtonDarkColor : primaryButtonColor,
-                      delete: () {},
-                      onSubmit: () {
-                        doPayment(payment);
-                      },
-                      controller: _controller),
-                );
-              },
+            child: SizedBox(
+              width: 270.w,
+              height: numpadHeight,
+              child: NumPad(
+                  buttonColor:
+                      isDark ? primaryButtonDarkColor : primaryButtonColor,
+                  delete: () {},
+                  onSubmit: () {
+                    doPayment(payment);
+                  },
+                  controller: _controller),
             ),
           ),
-          verticalSpaceMedium,
+          Responsive.isMobile(context) ? verticalSpaceTiny : verticalSpaceLarge,
         ],
       ),
     );

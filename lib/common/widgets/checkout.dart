@@ -54,122 +54,124 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                     color: isDark ? primaryDarkColor : Colors.white,
                   ),
                   child: _orderItemList())),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 15.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        "STotal:",
-                        style: isDark
-                            ? normalTextDarkStyle.copyWith(
-                                fontWeight: FontWeight.bold)
-                            : normalTextLightStyle.copyWith(
-                                fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        "Disc:",
-                        style: isDark
-                            ? normalTextDarkStyle.copyWith(
-                                fontWeight: FontWeight.bold)
-                            : normalTextLightStyle.copyWith(
-                                fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        "Tax:",
-                        style: isDark
-                            ? normalTextDarkStyle.copyWith(
-                                fontWeight: FontWeight.bold)
-                            : normalTextLightStyle.copyWith(
-                                fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text("GTotal:",
+          SafeArea(
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 15.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          "STotal:",
                           style: isDark
                               ? normalTextDarkStyle.copyWith(
-                                  color: Colors.red,
                                   fontWeight: FontWeight.bold)
                               : normalTextLightStyle.copyWith(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        state is OrderSuccessState && state.bills.isNotEmpty
-                            ? '\$ ${state.bills[2].toStringAsFixed(2)}'
-                            : "\$ 0.00",
-                        style: isDark
-                            ? normalTextDarkStyle.copyWith(
-                                fontWeight: FontWeight.bold)
-                            : normalTextLightStyle.copyWith(
-                                fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        state is OrderSuccessState && state.bills.isNotEmpty
-                            ? '\$ ${state.bills[3].toStringAsFixed(2)}'
-                            : "\$ 0.00",
-                        style: isDark
-                            ? normalTextDarkStyle.copyWith(
-                                fontWeight: FontWeight.bold)
-                            : normalTextLightStyle.copyWith(
-                                fontWeight: FontWeight.bold),
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          "Disc:",
+                          style: isDark
+                              ? normalTextDarkStyle.copyWith(
+                                  fontWeight: FontWeight.bold)
+                              : normalTextLightStyle.copyWith(
+                                  fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        state is OrderSuccessState && state.bills.isNotEmpty
-                            ? '\$ ${totalTax.toStringAsFixed(2)}'
-                            : "\$ 0.00",
-                        style: isDark
-                            ? normalTextDarkStyle.copyWith(
-                                fontWeight: FontWeight.bold)
-                            : normalTextLightStyle.copyWith(
-                                fontWeight: FontWeight.bold),
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          "Tax:",
+                          style: isDark
+                              ? normalTextDarkStyle.copyWith(
+                                  fontWeight: FontWeight.bold)
+                              : normalTextLightStyle.copyWith(
+                                  fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text("GTotal:",
+                            style: isDark
+                                ? normalTextDarkStyle.copyWith(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold)
+                                : normalTextLightStyle.copyWith(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
                           state is OrderSuccessState && state.bills.isNotEmpty
-                              ? '\$ ${state.bills[0].toStringAsFixed(2)}'
+                              ? '\$ ${state.bills[2].toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style: isDark
                               ? normalTextDarkStyle.copyWith(
-                                  color: Colors.red,
                                   fontWeight: FontWeight.bold)
                               : normalTextLightStyle.copyWith(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-              ],
+                                  fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          state is OrderSuccessState && state.bills.isNotEmpty
+                              ? '\$ ${state.bills[3].toStringAsFixed(2)}'
+                              : "\$ 0.00",
+                          style: isDark
+                              ? normalTextDarkStyle.copyWith(
+                                  fontWeight: FontWeight.bold)
+                              : normalTextLightStyle.copyWith(
+                                  fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          state is OrderSuccessState && state.bills.isNotEmpty
+                              ? '\$ ${totalTax.toStringAsFixed(2)}'
+                              : "\$ 0.00",
+                          style: isDark
+                              ? normalTextDarkStyle.copyWith(
+                                  fontWeight: FontWeight.bold)
+                              : normalTextLightStyle.copyWith(
+                                  fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                            state is OrderSuccessState && state.bills.isNotEmpty
+                                ? '\$ ${state.bills[0].toStringAsFixed(2)}'
+                                : "\$ 0.00",
+                            style: isDark
+                                ? normalTextDarkStyle.copyWith(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold)
+                                : normalTextLightStyle.copyWith(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],

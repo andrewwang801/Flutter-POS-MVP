@@ -60,7 +60,7 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
             _callback();
           },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 4.0),
+            padding: EdgeInsets.symmetric(horizontal: _height / 10),
             child: Center(
               child: Text(_text,
                   textAlign: TextAlign.center,

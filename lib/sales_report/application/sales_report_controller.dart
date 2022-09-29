@@ -361,8 +361,8 @@ class SalesReportController extends StateNotifier<SalesReportState>
           "${textPrintFormat("N", "L", "1")}$Title $strQty $strAmt\n";
       widgets.add(Row(
         children: <Widget>[
-          Expanded(child: Text('$TransArr[i][1]')),
-          Expanded(child: Text('$TransArr[i][2]')),
+          Expanded(child: Text('${TransArr[i][1]}')),
+          Expanded(child: Text('${TransArr[i][2]}')),
           Expanded(child: Text('$TransAmt'))
         ],
       ));
@@ -396,8 +396,8 @@ class SalesReportController extends StateNotifier<SalesReportState>
       TotCollection += TotMediaAmt;
       widgets.add(Row(
         children: <Widget>[
-          Expanded(child: Text('$TotMediaArr[i][0]')),
-          Expanded(child: Text('$TotMediaQty')),
+          Expanded(child: Text('${TotMediaArr[i][0]}')),
+          Expanded(child: Text('${TotMediaQty}')),
           Expanded(child: Text('$TotMediaAmt'))
         ],
       ));
@@ -507,6 +507,8 @@ class SalesReportController extends StateNotifier<SalesReportState>
       ReportStr += '------------------TAX-------------------\n';
       ReportPrint +=
           "${textPrintFormat("N", "L", "1")}------------------TAX-------------------\n";
+      widgets
+          .add(Center(child: Text('------------------TAX-------------------')));
 
       if (Tax0 > 0) {
         final List<List<String>> TaxArray =
@@ -816,7 +818,11 @@ class SalesReportController extends StateNotifier<SalesReportState>
 
   // Print Report
   Future<void> printReport() async {
-    await printController.doPrint(4, 0, reportPrint);
+    try {
+      await printController.doPrint(4, 0, reportPrint);
+    } catch (e) {
+      state = state.copyWith(failure: Failure(errMsg: e.toString()));
+    }
   }
 
   // Refresh Report, dd/MM/yyyy, HH:mm:ss

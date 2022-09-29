@@ -65,9 +65,6 @@ class _CoverWidgetState extends ConsumerState<CoverWidget> {
             height: Responsive.isMobile(context) ? 220.h : 130.h,
             color: Colors.transparent,
             child: NumPad(
-                buttonWidth: 250.w / 4,
-                buttonHeight:
-                    Responsive.isMobile(context) ? 220.h / 4 : 130.h / 4,
                 buttonColor:
                     isDark ? primaryButtonDarkColor : primaryButtonColor,
                 delete: () {},

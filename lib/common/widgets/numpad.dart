@@ -7,8 +7,6 @@ import '../../constants/text_style_constant.dart';
 // KeyPad widget
 // This widget is reusable and its buttons are customizable (color, size)
 class NumPad extends StatelessWidget {
-  final double buttonWidth;
-  final double buttonHeight;
   final Color buttonColor;
   final Color iconColor;
   final TextEditingController controller;
@@ -17,8 +15,6 @@ class NumPad extends StatelessWidget {
 
   const NumPad({
     Key? key,
-    required this.buttonWidth,
-    required this.buttonHeight,
     this.buttonColor = primaryDarkColor,
     this.iconColor = Colors.amber,
     required this.delete,
@@ -30,156 +26,159 @@ class NumPad extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      double buttonWidth1 = constraints.maxWidth / 4;
-      double buttonHeight1 = constraints.maxHeight / 4;
-      return Container(
-        child: Column(
-          children: [
-            // SizedBox(height: 2.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              // implement the number keys (from 0 to 9) with the NumberButton widget
-              // the NumberButton widget is defined in the bottom of this file
-              children: [
-                NumberButton(
-                  number: 1,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  number: 2,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  number: 3,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  icon: Icon(Icons.cancel, size: iconSize),
-                  type: ButtonType.RESET,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-              ],
-            ),
-            // SizedBox(height: 2.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                NumberButton(
-                  number: 4,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  number: 5,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  number: 6,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  icon: Icon(
-                    Icons.restart_alt,
-                    size: iconSize,
+      double buttonWidth = constraints.maxWidth / 4;
+      double buttonHeight = constraints.maxHeight / 4;
+      return AspectRatio(
+        aspectRatio: 1.0,
+        child: Container(
+          child: Column(
+            children: [
+              // SizedBox(height: 2.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                // implement the number keys (from 0 to 9) with the NumberButton widget
+                // the NumberButton widget is defined in the bottom of this file
+                children: [
+                  NumberButton(
+                    number: 1,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
                   ),
-                  type: ButtonType.RESET,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-              ],
-            ),
-            // SizedBox(height: 2.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                NumberButton(
-                  number: 7,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  number: 8,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  number: 9,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  icon: Icon(
-                    Icons.done_rounded,
-                    size: iconSize,
+                  NumberButton(
+                    number: 2,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
                   ),
-                  type: ButtonType.CONFIRM,
-                  submit: onSubmit,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-              ],
-            ),
-            // SizedBox(height: 5.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // this button is used to delete the last number
-                NumberButton(
-                  number: 0,
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                // this button is used to submit the entered value
-                NumberButton(
-                  text: '.',
-                  width: buttonWidth1,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-                NumberButton(
-                  icon: const Icon(Icons.backspace),
-                  type: ButtonType.DEL,
-                  width: buttonWidth1 * 2,
-                  height: buttonHeight1,
-                  color: buttonColor,
-                  controller: controller,
-                ),
-              ],
-            ),
-          ],
+                  NumberButton(
+                    number: 3,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                  NumberButton(
+                    icon: Icon(Icons.cancel, size: iconSize),
+                    type: ButtonType.RESET,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                ],
+              ),
+              // SizedBox(height: 2.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  NumberButton(
+                    number: 4,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                  NumberButton(
+                    number: 5,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                  NumberButton(
+                    number: 6,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                  NumberButton(
+                    icon: Icon(
+                      Icons.restart_alt,
+                      size: iconSize,
+                    ),
+                    type: ButtonType.RESET,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                ],
+              ),
+              // SizedBox(height: 2.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  NumberButton(
+                    number: 7,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                  NumberButton(
+                    number: 8,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                  NumberButton(
+                    number: 9,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                  NumberButton(
+                    icon: Icon(
+                      Icons.done_rounded,
+                      size: iconSize,
+                    ),
+                    type: ButtonType.CONFIRM,
+                    submit: onSubmit,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                ],
+              ),
+              // SizedBox(height: 5.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // this button is used to delete the last number
+                  NumberButton(
+                    number: 0,
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                  // this button is used to submit the entered value
+                  NumberButton(
+                    text: '.',
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                  NumberButton(
+                    icon: const Icon(Icons.backspace),
+                    type: ButtonType.DEL,
+                    width: buttonWidth * 2,
+                    height: buttonHeight,
+                    color: buttonColor,
+                    controller: controller,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       );
     });

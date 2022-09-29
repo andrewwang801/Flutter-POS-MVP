@@ -88,9 +88,9 @@ class PrintController extends StateNotifier<PrintState>
               kpTblName,
               transID,
               countReprint);
-        }
-        if (kitchenPrint.isNotEmpty) {
-          printArr.add(kitchenPrint);
+          if (kitchenPrint.isNotEmpty) {
+            printArr.add(kitchenPrint);
+          }
         }
       }
     }
@@ -116,10 +116,35 @@ class PrintController extends StateNotifier<PrintState>
     }
   }
 
+  // Future<void> doPrint(int status, int printSNo, String printData) async {
+  //   try {
+  //     if (printerManager.getPrinters().isEmpty) {
+  //       state = PrintErrorState(errMsg: 'There is no printer connected');
+  //     } else {
+  //       if (status == 1) {
+  //         await printerManager.print(printData);
+  //       } else if (status == 2) {
+  //         await printerManager.print(printData);
+  //       } else if (status == 3) {
+  //         final String printText = await getBill(printSNo, printData);
+  //         await printerManager.print(printText);
+  //       } else if (status == 4) {
+  //         await printerManager.print(printData);
+  //       } else if (status == 5) {
+  //         final String printText = await getOpenBill(printSNo);
+  //         await printerManager.print(printData);
+  //       }
+  //       state = PrintSuccessState();
+  //     }
+  //   } catch (e) {
+  //     state = PrintErrorState(errMsg: e.toString());
+  //   }
+  // }
+
   Future<void> doPrint(int status, int printSNo, String printData) async {
     try {
       if (printerManager.getPrinters().isEmpty) {
-        state = PrintErrorState(errMsg: 'There is no printer connected');
+        throw Exception('There is no printer connected');
       } else {
         if (status == 1) {
           await printerManager.print(printData);
@@ -134,20 +159,24 @@ class PrintController extends StateNotifier<PrintState>
           final String printText = await getOpenBill(printSNo);
           await printerManager.print(printData);
         }
-        state = PrintSuccessState();
       }
     } catch (e) {
-      state = PrintErrorState(errMsg: e.toString());
+      throw Exception(e.toString());
     }
   }
 
   Future<void> printBill(int printSNo, String status) async {
-    if (status == 'Close Tables') {
-      await doPrint(3, printSNo, 'Close');
-    } else if (status == 'Refund') {
-      await doPrint(3, printSNo, 'Refund');
-    } else if (status == 'Void Tables') {
-      await doPrint(3, printSNo, 'AllVoid');
+    try {
+      if (status == 'Close Tables') {
+        await doPrint(3, printSNo, 'Close');
+      } else if (status == 'Refund') {
+        await doPrint(3, printSNo, 'Refund');
+      } else if (status == 'Void Tables') {
+        await doPrint(3, printSNo, 'AllVoid');
+      }
+      state = PrintSuccessState();
+    } catch (e) {
+      state = PrintErrorState(errMsg: e.toString());
     }
   }
 
@@ -169,6 +198,7 @@ class PrintController extends StateNotifier<PrintState>
         }
 
         if (printerManager.getPrinters().isEmpty) {
+          printArr.clear();
           state = PrintErrorState(errMsg: 'There is no printer connected');
         } else {
           for (String printData in printArr) {
@@ -259,7 +289,7 @@ class PrintController extends StateNotifier<PrintState>
         String promoType = itemArray[j][6];
         double disc = itemArray[j][5].toDouble();
         double promo = itemArray[j][7].toDouble();
-        double qty = itemArray[j][0].toDouble();
+        int qty = itemArray[j][0].toInt();
         String tempIName = itemArray[j][1];
         bool prep = itemArray[j][3].toBool();
         double iAmount = itemArray[j][2].toDouble();
@@ -405,6 +435,8 @@ class PrintController extends StateNotifier<PrintState>
             if (taxValue > 0) {
               taxName = addSpace(taxName, 5);
               String strTaxValue = taxValue.toString();
+              strTaxValue = addSpace(
+                  strTaxValue, 37 - taxName.length - strTaxValue.length);
 
               tempText +=
                   '${textPrintFormat('N', 'C', '1')}$taxName$strTaxValue\n';
@@ -416,6 +448,8 @@ class PrintController extends StateNotifier<PrintState>
         if (POSDtls.PrintTotalTax) {
           String title = addSpace(POSDtls.TotalTaxTitle, 5);
           String strTaxTotal = taxTotal.toString();
+          strTaxTotal =
+              addSpace(strTaxTotal, 37 - title.length - strTaxTotal.length);
 
           tempText += '${textPrintFormat('N', 'C', '1')} ${addDash(38)}\n';
         }
@@ -423,17 +457,17 @@ class PrintController extends StateNotifier<PrintState>
         String strSTotal = sTotal.toString();
         strSTotal = addSpace(strSTotal, 24 - strSTotal.length);
         tempText +=
-            '${textPrintFormat('N', 'C', '1')}       SUBTOTAL $strSTotal\n';
+            '${textPrintFormat('N', 'C', '1')}     SUBTOTAL $strSTotal\n';
       }
       if (taxTotal == 0) {
         String strSTotal = sTotal.toString();
-        strSTotal = addSpace(strSTotal, 24 - strSTotal.length);
+        strSTotal = addSpace(strSTotal, 27 - strSTotal.length);
         tempText +=
-            '${textPrintFormat('N', 'C', '1')}       TOTAL $strSTotal\n';
+            '${textPrintFormat('N', 'L', '1')}       TOTAL $strSTotal\n';
       } else {
         double gTotal = priceArray[0][1].toDouble();
         String strGTotal = sTotal.toString();
-        strGTotal = addSpace(strGTotal, 24 - strGTotal.length);
+        strGTotal = addSpace(strGTotal, 27 - strGTotal.length);
         tempText +=
             '${textPrintFormat('N', 'C', '1')}       TOTAL $strGTotal\n';
       }
@@ -540,7 +574,7 @@ class PrintController extends StateNotifier<PrintState>
         String promoType = itemArray[j][6];
         double disc = itemArray[j][5].toDouble();
         double promo = itemArray[j][7].toDouble();
-        double qty = itemArray[j][0].toDouble();
+        int qty = itemArray[j][0].toInt();
         String tempIName = itemArray[j][1];
         bool prep = itemArray[j][3].toBool();
         double iAmount = itemArray[j][2].toDouble();
@@ -703,13 +737,13 @@ class PrintController extends StateNotifier<PrintState>
       }
       if (taxTotal == 0) {
         String strSTotal = sTotal.toString();
-        strSTotal = addSpace(strSTotal, 24 - strSTotal.length);
+        strSTotal = addSpace(strSTotal, 30 - strSTotal.length);
         tempText +=
             '${textPrintFormat('N', 'C', '1')}       TOTAL $strSTotal\n';
       } else {
         double gTotal = priceArray[1];
         String strGTotal = sTotal.toString();
-        strGTotal = addSpace(strGTotal, 24 - strGTotal.length);
+        strGTotal = addSpace(strGTotal, 30 - strGTotal.length);
         tempText +=
             '${textPrintFormat('N', 'C', '1')}       TOTAL $strGTotal\n';
       }

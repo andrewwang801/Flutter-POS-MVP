@@ -17,7 +17,7 @@ mixin StringUtil {
   }
 
   String textPrintFormat(String attritube, String align, String size) {
-    // return '';
-    return '$attritube]$align]$size]';
+    return '';
+    // return '$attritube]$align]$size]';
   }
 }

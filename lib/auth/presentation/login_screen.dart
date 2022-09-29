@@ -118,12 +118,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         Container(
           width: 250.w,
-          height: Responsive.isMobile(context) ? 220.h : 130.h,
+          height: Responsive.isMobile(context) ? 220.h : 120.h,
           color: Colors.transparent,
           child: NumPad(
-              buttonWidth: 250.w / 4,
-              buttonHeight:
-                  Responsive.isMobile(context) ? 220.h / 4 : 130.h / 4,
               delete: () {},
               onSubmit: () {},
               buttonColor: isDark ? primaryButtonDarkColor : primaryButtonColor,

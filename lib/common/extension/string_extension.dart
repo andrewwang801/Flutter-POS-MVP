@@ -19,6 +19,13 @@ extension StringExtension on String {
   String currencyString(String currency) {
     return '$currency $this';
   }
+
+  String remoteFloat() {
+    if (contains('.'))
+      return substring(0, indexOf('.'));
+    else
+      return this;
+  }
 }
 
 extension BoolExtension on bool {

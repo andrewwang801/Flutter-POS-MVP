@@ -118,7 +118,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
           case PaymentStatus.PAID:
             await ref
                 .read(printProvider.notifier)
-                .doPrint(3, GlobalConfig.salesNo, '');
+                .printBill(GlobalConfig.salesNo, 'Close Tables');
             Get.back();
             Get.to(FloorPlanScreen());
             break;
@@ -353,12 +353,6 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                         : 150.h,
                     color: Colors.transparent,
                     child: NumPad(
-                        buttonWidth: Responsive.isMobile(context)
-                            ? 210.w / 4
-                            : 250.w / 4,
-                        buttonHeight: Responsive.isMobile(context)
-                            ? 180.h / 4
-                            : 150.h / 4,
                         buttonColor: isDark
                             ? primaryButtonDarkColor
                             : primaryButtonColor,
