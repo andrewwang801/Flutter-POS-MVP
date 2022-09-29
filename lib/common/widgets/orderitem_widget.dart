@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:raptorpos/common/widgets/orderitem_interface.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
+import 'package:raptorpos/home/presentation/widgets/menu_item_detail.dart';
 
 import '../../constants/text_style_constant.dart';
 import '../../home/model/order_item_model.dart';
@@ -23,7 +24,8 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
   }
 
   @override
-  Widget render(BuildContext context, int padding, bool isDark,
+  Widget render(
+      BuildContext context, int padding, bool isDark, void Function() callback,
       {bool detail = false}) {
     level = (orderItem.Preparation ?? 0) == 1 ? 1 : 0;
     TextStyle textStyle =
@@ -37,14 +39,23 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
     }
     return GestureDetector(
       onLongPress: () {
-        // Get.to(
-        //   ProgressHUD(
-        //       child: ,
-        //       barrierEnabled: false),
-        // );
+        showGeneralDialog(
+          context: context,
+          barrierColor: Colors.black38,
+          barrierLabel: 'Label',
+          barrierDismissible: true,
+          pageBuilder: (_, __, ___) => MenuItemDetail(
+            orderItem.PLUNo ?? '',
+            orderItem.SalesRef ?? 0,
+            true,
+            orderItem: orderItem,
+          ),
+        );
       },
       child: Dismissible(
-        onDismissed: (DismissDirection direction) {},
+        onDismissed: (DismissDirection direction) {
+          callback();
+        },
         direction: DismissDirection.endToStart,
         key: UniqueKey(),
         background: Container(
@@ -128,15 +139,16 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                 ),
               ),
               trailing: children.isEmpty
-                  ? SizedBox(
+                  ? const SizedBox(
                       width: 20,
                     )
-                  : SizedBox(
+                  : const SizedBox(
                       width: 20, child: Icon(Icons.arrow_drop_down_sharp)),
-              children: children
-                  .map((child) => child.render(context, 0, isDark))
-                  .toList(),
               initiallyExpanded: false,
+              children: children
+                  .map((IOrderItem child) =>
+                      child.render(context, 0, isDark, callback))
+                  .toList(),
             ),
           ),
         ),
@@ -146,7 +158,7 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
 
   @override
   Widget build(BuildContext context) {
-    return render(context, 5, isDark, detail: detail);
+    return Container();
   }
 
   @override

@@ -33,6 +33,8 @@ class VirtualKeyboard extends StatefulWidget {
 
   final CALLBACK callback;
 
+  final CALLBACK returnCallback;
+
   VirtualKeyboard(
       {Key? key,
       required this.type,
@@ -42,6 +44,7 @@ class VirtualKeyboard extends StatefulWidget {
       this.textColor = Colors.black,
       this.fontSize = 14,
       required this.callback,
+      required this.returnCallback,
       this.alwaysCaps = false})
       : super(key: key);
 
@@ -225,7 +228,7 @@ class _VirtualKeyboardState extends State<VirtualKeyboard> {
               textController.text.substring(0, textController.text.length - 1);
           break;
         case VirtualKeyboardKeyAction.Return:
-          widget.callback(textController.text);
+          widget.returnCallback(textController.text);
           // textController.text += '\n';
           break;
         case VirtualKeyboardKeyAction.Space:
@@ -236,6 +239,7 @@ class _VirtualKeyboardState extends State<VirtualKeyboard> {
         default:
       }
     }
+    widget.callback(textController.text);
   }
 
   /// Creates default UI element for keyboard Action Key.

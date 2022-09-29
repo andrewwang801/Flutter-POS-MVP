@@ -117,9 +117,10 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     DateFormat dateFormat = DateFormat('dd/MM/yyyy');
     return Row(
       children: [
-        Text('Start Date'),
+        Expanded(flex: 2, child: Text('Start Date')),
         horizontalSpaceSmall,
         Expanded(
+          flex: 4,
           child: GestureDetector(
             onTap: () async {
               final DateTime? picked = await showDatePicker(
@@ -158,7 +159,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     DateFormat dateFormat = DateFormat('HH:mm:ss');
     return Row(
       children: [
-        Text('Start Time'),
+        Expanded(child: Text('Start Time')),
         horizontalSpaceSmall,
         Expanded(
           child: GestureDetector(
@@ -173,6 +174,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               }
             },
             child: Container(
+              padding: EdgeInsets.symmetric(horizontal: Spacing.xs),
               height: Responsive.isMobile(context) ? 35.h : 20.h,
               decoration: BoxDecoration(
                 color: isDark ? primaryDarkColor : secondaryBackgroundColor,
@@ -195,9 +197,10 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     DateFormat dateFormat = DateFormat('dd/MM/yyyy');
     return Row(
       children: [
-        Text('End Date'),
+        Expanded(flex: 2, child: Text('End Date')),
         horizontalSpaceSmall,
         Expanded(
+          flex: 4,
           child: GestureDetector(
             onTap: () async {
               final DateTime? picked = await showDatePicker(
@@ -213,6 +216,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               }
             },
             child: Container(
+              padding: EdgeInsets.symmetric(horizontal: Spacing.xs),
               height: Responsive.isMobile(context) ? 35.h : 20.h,
               decoration: BoxDecoration(
                 color: isDark ? primaryDarkColor : secondaryBackgroundColor,
@@ -235,7 +239,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     DateFormat dateFormat = DateFormat('HH:mm:ss');
     return Row(
       children: [
-        Text('End Time'),
+        Expanded(child: Text('End Time')),
         horizontalSpaceSmall,
         Expanded(
           child: GestureDetector(
@@ -294,29 +298,35 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CustomButton(
-            callback: () {
-              ref.read(salesReportProvider.notifier).printReport();
-            },
-            text: 'Print Report',
-            borderColor: isDark ? primaryDarkColor : primaryLightColor,
-            fillColor: isDark ? primaryDarkColor : primaryLightColor),
+        Expanded(
+          child: CustomButton(
+              callback: () {
+                ref.read(salesReportProvider.notifier).printReport();
+              },
+              text: 'Print Report',
+              borderColor: isDark ? primaryDarkColor : primaryLightColor,
+              fillColor: isDark ? primaryDarkColor : primaryLightColor),
+        ),
         horizontalSpaceTiny,
-        CustomButton(
-            callback: () {
-              // ref.read(salesReportProvider.notifier).refreshReport();
-            },
-            text: 'Refresh',
-            borderColor: isDark ? primaryDarkColor : primaryLightColor,
-            fillColor: isDark ? primaryDarkColor : primaryLightColor),
+        Expanded(
+          child: CustomButton(
+              callback: () {
+                // ref.read(salesReportProvider.notifier).refreshReport();
+              },
+              text: 'Refresh',
+              borderColor: isDark ? primaryDarkColor : primaryLightColor,
+              fillColor: isDark ? primaryDarkColor : primaryLightColor),
+        ),
         horizontalSpaceTiny,
-        CustomButton(
-            callback: () {
-              Get.back();
-            },
-            text: 'Cancel',
-            borderColor: isDark ? primaryDarkColor : primaryLightColor,
-            fillColor: isDark ? primaryDarkColor : primaryLightColor),
+        Expanded(
+          child: CustomButton(
+              callback: () {
+                Get.back();
+              },
+              text: 'Cancel',
+              borderColor: isDark ? primaryDarkColor : primaryLightColor,
+              fillColor: isDark ? primaryDarkColor : primaryLightColor),
+        ),
       ],
     );
   }
