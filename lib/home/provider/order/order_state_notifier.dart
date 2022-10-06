@@ -1,13 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 
 import '../../../common/GlobalConfig.dart';
 import '../../../common/extension/string_extension.dart';
+import '../../../common/extension/workable.dart';
 import '../../../common/widgets/orderitem_widget.dart';
 import '../../../discount/repository/discount_repository.dart';
+import '../../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../../payment/repository/i_payment_repository.dart';
+import '../../../print/provider/print_controller.dart';
+import '../../../print/repository/i_print_repository.dart';
 import '../../../printer/provider/printer_state.dart';
+import '../../../sales_report/application/sales_report_state.dart';
+import '../../../zday_report/application/zday_report_state.dart';
 import '../../model/modifier.dart';
 import '../../model/order_item_model.dart';
 import '../../model/order_mod_model.dart';
@@ -17,12 +24,15 @@ import 'order_state.dart';
 
 @Injectable()
 class OrderStateNotifier extends StateNotifier<OrderState> {
-  OrderStateNotifier(
-      this.orderRepository, this.paymentRepository, this.discRepository)
-      : super(OrderInitialState());
+  OrderStateNotifier(this.orderRepository, this.paymentRepository,
+      this.discRepository, this.printRepository,
+      {@factoryParam required this.printController})
+      : super(OrderState());
   final IOrderRepository orderRepository;
   final IPaymentRepository paymentRepository;
   final DiscountRepository discRepository;
+  final IPrintRepository printRepository;
+  final PrintController printController;
 
   int? _salesRef = 0;
   // create order item
@@ -46,7 +56,8 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
 
     int pluCnt = await orderRepository.countPLU(pluNo, 1);
     if (pluCnt == 0) {
-      state = OrderErrorState(errMsg: 'Can not find the PLU: $pluNo');
+      state = state.copyWith(
+          failure: Failure(errMsg: 'Can not find the PLU: $pluNo'));
     } else {
       List<List<String>> pluDtls =
           await orderRepository.getPLUDetailsByNumber(pluNo);
@@ -350,15 +361,16 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
       }
       List<OrderItemModel> orderItems = await orderRepository.fetchOrderItems(
           GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
-      state = OrderSuccessState(
-        orderItems,
-        await calcBill(),
-        await paymentRepository.checkPaymentPermission(
+      state = state.copyWith(
+        orderItems: orderItems,
+        bills: await calcBill(),
+        paymentPermission: await paymentRepository.checkPaymentPermission(
             GlobalConfig.operatorNo, 5),
-        configureTree(orderItems),
+        orderItemTree: configureTree(orderItems),
+        workable: Workable.ready,
       );
     } catch (e) {
-      state = OrderErrorState(errMsg: e.toString());
+      state = state.copyWith(failure: Failure(errMsg: e.toString()));
     }
   }
 
@@ -371,7 +383,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
   int qty = 0;
   Future<void> voidOrderItemRemarks(int status, String remarks) async {
     try {
-      if (state is OrderSuccessState) {
+      if (state.workable == Workable.ready) {
         await orderRepository.voidOrder(
             GlobalConfig.salesNo,
             GlobalConfig.splitNo,
@@ -382,23 +394,23 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
         sRef = 0;
         List<OrderItemModel> orderItems = await orderRepository.fetchOrderItems(
             GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
-        state = OrderSuccessState(
-          orderItems,
-          await calcBill(),
-          await paymentRepository.checkPaymentPermission(
+        state = state.copyWith(
+          orderItems: orderItems,
+          bills: await calcBill(),
+          paymentPermission: await paymentRepository.checkPaymentPermission(
               GlobalConfig.operatorNo, 5),
-          configureTree(orderItems),
+          orderItemTree: configureTree(orderItems),
+          workable: Workable.ready,
         );
       }
     } catch (e) {
-      state = OrderErrorState(errMsg: e.toString());
+      state = state.copyWith(failure: Failure(errMsg: e.toString()));
     }
   }
 
   Future<void> voidOrderItem(OrderItemModel orderItem) async {
     try {
-      if (state is OrderSuccessState) {
-        OrderSuccessState prevState = state as OrderSuccessState;
+      if (state.workable == Workable.ready) {
         tempPLUNo = orderItem.PLUNo ?? '';
         sRef = orderItem.SalesRef ?? 0;
         lnkTo = orderItem.LnkTo ?? '';
@@ -417,7 +429,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
               // TODO(smith): show remarks dialog
               final List<List<String>> remarks =
                   await orderRepository.getVoidRemarks();
-              state = prevState.copyWith(
+              state = state.copyWith(
                   operation: OPERATIONS.SHOW_REMARKS, remarks: remarks);
             }
           } else {
@@ -432,12 +444,13 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
             List<OrderItemModel> orderItems =
                 await orderRepository.fetchOrderItems(GlobalConfig.salesNo,
                     GlobalConfig.splitNo, GlobalConfig.tableNo);
-            state = OrderSuccessState(
-              orderItems,
-              await calcBill(),
-              await paymentRepository.checkPaymentPermission(
+            state = state.copyWith(
+              orderItems: orderItems,
+              bills: await calcBill(),
+              paymentPermission: await paymentRepository.checkPaymentPermission(
                   GlobalConfig.operatorNo, 5),
-              configureTree(orderItems),
+              orderItemTree: configureTree(orderItems),
+              workable: Workable.ready,
             );
           }
         } else {
@@ -456,7 +469,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
                 // TODO(smith): Remarks Dialog
                 final List<List<String>> remarks =
                     await orderRepository.getVoidRemarks();
-                state = prevState.copyWith(
+                state = state.copyWith(
                     operation: OPERATIONS.SHOW_REMARKS, remarks: remarks);
               } else {
                 await orderRepository.voidOrder(
@@ -470,12 +483,13 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
                 List<OrderItemModel> orderItems =
                     await orderRepository.fetchOrderItems(GlobalConfig.salesNo,
                         GlobalConfig.splitNo, GlobalConfig.tableNo);
-                state = OrderSuccessState(
-                  orderItems,
-                  await calcBill(),
-                  await paymentRepository.checkPaymentPermission(
-                      GlobalConfig.operatorNo, 5),
-                  configureTree(orderItems),
+                state = state.copyWith(
+                  orderItems: orderItems,
+                  bills: await calcBill(),
+                  paymentPermission: await paymentRepository
+                      .checkPaymentPermission(GlobalConfig.operatorNo, 5),
+                  orderItemTree: configureTree(orderItems),
+                  workable: Workable.ready,
                 );
               }
             }
@@ -483,7 +497,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
         }
       }
     } catch (e) {
-      state = OrderErrorState(errMsg: e.toString());
+      state = state.copyWith(failure: Failure(errMsg: e.toString()));
     }
   }
 
@@ -505,7 +519,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
       DateTime now = DateTime.now();
       String strCurDate = DateFormat('yyyy-MM-dd').format(now);
       String strCurTime = DateFormat('HH:mm:ss.0').format(now);
-      state = OrderInitialState();
+      state = state.copyWith(workable: Workable.loading);
 
       List<int> taxs = await orderRepository.getTaxFromSC(categoryId);
       int seatNo = 0;
@@ -687,7 +701,8 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
 
     int pluCnt = await orderRepository.countPLU(pluNo, 1);
     if (pluCnt == 0) {
-      state = OrderErrorState(errMsg: 'Can not find the PLU: $pluNo');
+      state = state.copyWith(
+          failure: Failure(errMsg: 'Can not find the PLU: $pluNo'));
     } else {
       List<List<String>> pluDtls =
           await orderRepository.getPLUDetailsByNumber(pluNo);
@@ -959,15 +974,16 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
       }
       List<OrderItemModel> orderItems = await orderRepository.fetchOrderItems(
           GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
-      state = OrderSuccessState(
-        orderItems,
-        await calcBill(),
-        await paymentRepository.checkPaymentPermission(
+      state = state.copyWith(
+        orderItems: orderItems,
+        bills: await calcBill(),
+        paymentPermission: await paymentRepository.checkPaymentPermission(
             GlobalConfig.operatorNo, 5),
-        configureTree(orderItems),
+        orderItemTree: configureTree(orderItems),
+        workable: Workable.ready,
       );
     } catch (e) {
-      state = OrderErrorState(errMsg: e.toString());
+      state = state.copyWith(failure: Failure(errMsg: e.toString()));
     }
   }
 
@@ -986,16 +1002,18 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
     try {
       List<OrderItemModel> orderItems = await orderRepository.fetchOrderItems(
           GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
-      state = OrderSuccessState(
-        orderItems,
-        orderItems.isNotEmpty ? await calcBill() : [],
-        await paymentRepository.checkPaymentPermission(
+      state = state.copyWith(
+        orderItems: orderItems,
+        bills: orderItems.isNotEmpty ? await calcBill() : [],
+        workable: Workable.ready,
+        paymentPermission: await paymentRepository.checkPaymentPermission(
             GlobalConfig.operatorNo, 5),
-        configureTree(orderItems),
+        orderItemTree: configureTree(orderItems),
       );
     } catch (e) {
       print('Error: ${e.toString()}');
-      state = OrderErrorState(errMsg: e.toString());
+      state = state.copyWith(
+          failure: Failure(errMsg: e.toString()), workable: Workable.failure);
     }
   }
 
@@ -1036,5 +1054,70 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
     await orderRepository.updateHoldItem(GlobalConfig.salesNo,
         GlobalConfig.splitNo, GlobalConfig.tableNo, sTotal, gTotal, 0);
     // fetch updated order items
+  }
+
+  // Void All Order
+  int oprtNo = 0;
+  bool showBFOC = false, showDisc = false, showFunc = false, showPromo = false;
+
+  Future<void> voidAllOrder() async {
+    try {
+      if (GlobalConfig.checkTableOpen > 0) {
+        if (GlobalConfig.AllVoid) {
+          if (GlobalConfig.checkItemOrder > 0) {
+            List<List<String>> scArray =
+                await printRepository.getKPSalesCategory(GlobalConfig.salesNo,
+                    GlobalConfig.splitNo, 'HeldItems', 'KPStatus', 0);
+            if (scArray.isNotEmpty) {
+              await orderRepository.updateHoldItem(GlobalConfig.salesNo,
+                  GlobalConfig.splitNo, GlobalConfig.tableNo, 0, 0, 0);
+            }
+
+            final int voidRemark =
+                await orderRepository.getPostVoidData(0, GlobalConfig.salesNo);
+            if (voidRemark > 0) {
+              // TODO(Smith): show custom keyboard
+              GlobalConfig.CustomKeyboard = 1;
+              oprtNo = GlobalConfig.operatorNo;
+              state = state.copyWith(operation: OPERATIONS.SHOW_KEYBOARD);
+            } else {
+              await orderRepository.voidAllOrder(
+                  GlobalConfig.salesNo,
+                  GlobalConfig.splitNo,
+                  GlobalConfig.tableNo,
+                  POSDtls.deviceNo,
+                  GlobalConfig.operatorNo,
+                  GlobalConfig.cover,
+                  GlobalConfig.TransMode,
+                  InitSalesVar.memId,
+                  POSDtls.PShift.toInt(),
+                  POSDtls.categoryID,
+                  '',
+                  '');
+              await printController.printBill(
+                  GlobalConfig.salesNo, 'Void Tables');
+              showBFOC = false;
+              showDisc = false;
+              showFunc = false;
+              showPromo = false;
+
+              if (POSDtls.TBLManagement) {
+                // TODO(Smith): Show table management screen
+                state =
+                    state.copyWith(operation: OPERATIONS.SHOW_TABLE_MANAGEMENT);
+              } else {
+                // TODO(Smith): reset status
+                if (POSDtls.forceTable) {
+                  // TODO(Smith): Show table number screen
+                  state = state.copyWith(operation: OPERATIONS.SHOW_TABLE_NUM);
+                }
+              }
+            }
+          }
+        } else {
+          // TODO(Smith): Send Sales to Online Controller
+        }
+      } else {}
+    } catch (e) {}
   }
 }

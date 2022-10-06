@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:raptorpos/common/keyboard/virtual_keyboard_2.dart';
 
+import '../../../common/extension/workable.dart';
 import '../../../constants/color_constant.dart';
 import '../../../constants/dimension_constant.dart';
 import '../../../constants/text_style_constant.dart';
@@ -31,7 +32,7 @@ class _RemarksDialogState extends ConsumerState<RemarksDialog> {
   Widget build(BuildContext context) {
     OrderState state = ref.watch(orderProvoder);
     List<List<String>> remarks = [];
-    if (state is OrderSuccessState && state.remarks != null) {
+    if (state.workable == Workable.ready && state.remarks != null) {
       remarks = state.remarks!;
     }
 

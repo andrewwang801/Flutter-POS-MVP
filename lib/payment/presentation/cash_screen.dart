@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/string_extension.dart';
+import '../../common/extension/workable.dart';
 import '../../common/widgets/alert_dialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/checkout.dart';
@@ -62,9 +63,9 @@ class _CashScreenState extends ConsumerState<CashScreen> {
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
     OrderState state = ref.watch(orderProvoder);
-    if (state is OrderSuccessState) {
-      if (state.bills.isNotEmpty) {
-        billTotal = state.bills[0];
+    if (state.workable == Workable.ready) {
+      if (state.bills?.isNotEmpty ?? false) {
+        billTotal = state.bills![0];
       }
     }
 
@@ -192,8 +193,8 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          state is OrderSuccessState && state.bills.isNotEmpty
-                              ? '\$ ${state.bills[0].toStringAsFixed(2)}'
+                          (state.bills?.isNotEmpty ?? false)
+                              ? '\$ ${state.bills![0].toStringAsFixed(2)}'
                               : '\$ 0.00',
                           style: titleTextDarkStyle,
                           textAlign: TextAlign.right,

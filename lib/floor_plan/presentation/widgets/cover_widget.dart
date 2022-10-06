@@ -14,7 +14,9 @@ import 'package:raptorpos/theme/theme_state_notifier.dart';
 import '../../../common/extension/string_extension.dart';
 
 class CoverWidget extends ConsumerStatefulWidget {
-  const CoverWidget({Key? key}) : super(key: key);
+  CoverWidget({required this.callback, Key? key}) : super(key: key);
+
+  final void Function(int cover) callback;
 
   @override
   _CoverWidgetState createState() => _CoverWidgetState();
@@ -69,7 +71,7 @@ class _CoverWidgetState extends ConsumerState<CoverWidget> {
                     isDark ? primaryButtonDarkColor : primaryButtonColor,
                 delete: () {},
                 onSubmit: () {
-                  ref.read(tableProvider.notifier).selectCover(cover.toInt());
+                  widget.callback(cover.toInt());
                 },
                 controller: _controller),
           ),

@@ -34,10 +34,14 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
           showDialog(
               context: context,
               builder: (context) {
-                return const IntrinsicHeight(
+                return IntrinsicHeight(
                   child: IntrinsicWidth(
                     child: Dialog(
-                      child: CoverWidget(),
+                      child: CoverWidget(
+                        callback: (int cover) {
+                          ref.read(tableProvider.notifier).selectCover(cover);
+                        },
+                      ),
                     ),
                   ),
                 );

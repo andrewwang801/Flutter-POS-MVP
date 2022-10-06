@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/string_extension.dart';
+import '../../common/extension/workable.dart';
 import '../../common/utils/datetime_util.dart';
 import '../../common/utils/strings_util.dart';
 import '../../common/utils/type_util.dart';
