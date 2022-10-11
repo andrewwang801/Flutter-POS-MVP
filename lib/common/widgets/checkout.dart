@@ -9,10 +9,10 @@ import 'package:raptorpos/home/presentation/widgets/remark_dialog.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
+import 'package:raptorpos/common/extension/workable.dart';
 
 import '../../../constants/color_constant.dart';
 import '../../../constants/text_style_constant.dart';
-import '../extension/workable.dart';
 import 'alert_dialog.dart';
 
 class CheckOut extends ConsumerStatefulWidget {
@@ -39,7 +39,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
             builder: (BuildContext context) {
               return AppAlertDialog(
                 title: 'Error',
-                message: 'Order is empty!',
+                message: next.failure!.errMsg,
                 onConfirm: () {},
               );
             });
