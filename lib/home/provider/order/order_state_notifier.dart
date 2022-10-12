@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 
 import '../../../common/GlobalConfig.dart';
+import '../../../common/constants/strings.dart';
 import '../../../common/extension/string_extension.dart';
 import '../../../common/extension/workable.dart';
 import '../../../common/widgets/orderitem_widget.dart';
@@ -57,7 +58,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
     int pluCnt = await orderRepository.countPLU(pluNo, 1);
     if (pluCnt == 0) {
       state = state.copyWith(
-          failure: Failure(errMsg: 'Can not find the PLU: $pluNo'));
+          failure: Failure(errMsg: '$message_plu_not_found $pluNo'));
     } else {
       List<List<String>> pluDtls =
           await orderRepository.getPLUDetailsByNumber(pluNo);
@@ -457,8 +458,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           bool isBillDisc = await discRepository.CheckDiscBill(
               GlobalConfig.salesNo, GlobalConfig.splitNo);
           if (isBillDisc) {
-            throw Exception(
-                'Void Item Failed! \n Void item not allowed after a "Bill Discount". Void Previous "Bill Discount" and try again');
+            throw Exception(message_void_item_failed);
           } else {
             if (qty > 1) {
               // TODO(smith): show split qty
@@ -702,7 +702,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
     int pluCnt = await orderRepository.countPLU(pluNo, 1);
     if (pluCnt == 0) {
       state = state.copyWith(
-          failure: Failure(errMsg: 'Can not find the PLU: $pluNo'));
+          failure: Failure(errMsg: '$message_plu_not_found $pluNo'));
     } else {
       List<List<String>> pluDtls =
           await orderRepository.getPLUDetailsByNumber(pluNo);
@@ -1148,12 +1148,10 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
         }
       } else {
         // TODO(Smith): Send Sales to Online Controller
-        throw Exception(
-            'All Void Failed! No Transaction - Not enough permission to All Void');
+        throw Exception(message_allvoid_failed_permission);
       }
     } else {
-      throw Exception(
-          'All Void Failed! No Transaction - Please open table first');
+      throw Exception(message_allvoid_failed_transaction);
       // state = state.copyWith(
       //     failure: Failure(
       //         errMsg: 'All Void Failed! Not enough permission to All Void'));

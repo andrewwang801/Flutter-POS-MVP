@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../common/GlobalConfig.dart';
+import '../../common/constants/strings.dart';
 import '../../common/extension/string_extension.dart';
 import '../../common/extension/workable.dart';
 import '../../common/widgets/alert_dialog.dart';
@@ -109,9 +110,9 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                 builder: (BuildContext context) {
                   return AppAlertDialog(
                     insetPadding: EdgeInsets.all(20),
-                    title: 'Cash Payment',
+                    title: k_cash_payment,
                     message:
-                        'Payment: $payment, Total Bill: $billTotal, Change: ${change.toStringAsFixed(2)}',
+                        '$k_payment: $payment, $k_total_bill: $billTotal, $k_change: ${change.toStringAsFixed(2)}',
                     onCancel: () {},
                     onConfirm: () {
                       ref
@@ -187,7 +188,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
-                        'Amount Due: ',
+                        '$k_amount_due: ',
                         style: titleTextDarkStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -212,7 +213,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
-                        'Balance Due: ',
+                        '$k_balance_due: ',
                         style: titleTextDarkStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -234,7 +235,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                   child: Row(
                     children: [
                       Text(
-                        'Change: ',
+                        '$k_change: ',
                         style: titleTextDarkStyle.copyWith(color: Colors.red),
                         textAlign: TextAlign.left,
                       ),
@@ -293,7 +294,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
           context: context,
           builder: (BuildContext context) {
             return const AppAlertDialog(
-              content: Text('Payment Cash Failed! Paid amount is not enough.'),
+              content: Text(message_payment_cash_failed),
             );
           });
     }

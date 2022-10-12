@@ -7,9 +7,9 @@ final TextStyle bodyTextDarkStyle =
     TextStyle(fontSize: ScreenUtil().setSp(14), color: Colors.white);
 
 final TextStyle listItemTextLightStyle =
-    TextStyle(fontSize: ScreenUtil().setSp(16), color: Colors.black);
+    TextStyle(fontSize: ScreenUtil().setSp(14), color: Colors.black);
 final TextStyle listItemTextDarkStyle =
-    TextStyle(fontSize: ScreenUtil().setSp(16), color: Colors.white);
+    TextStyle(fontSize: ScreenUtil().setSp(14), color: Colors.white);
 
 final TextStyle modalTextLightStyle =
     TextStyle(fontSize: ScreenUtil().setSp(16), color: Colors.black);
