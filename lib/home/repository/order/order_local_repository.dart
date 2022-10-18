@@ -256,7 +256,7 @@ class OrderLocalRepository
         "UPDATE HeldItems SET PLUSalesRef = SalesRef WHERE TableNo = '${data[2]}' AND SalesNo = ${data[0]} AND SplitNo = ${data[1]} AND ItemSeqNo = ${data[3]}";
     if (status == 2) {
       query =
-          'UPDATE HeldItems SET PLUSalesRef = ${data[0]}, SetMenu = 1, SetMenuRef = ${data[0]} WHERE SalesNo = ${data[1]} AND SplitNo = ${data[2]} AND ItemSeqNo = ${data[3]}';
+          'UPDATE HeldItems SET PLUSalesRef = ${data[4]}, SetMenu = 1, SetMenuRef = ${data[4]} WHERE SalesNo = ${data[0]} AND SplitNo = ${data[1]} AND ItemSeqNo = ${data[3]}';
     }
     await db.rawQuery(query);
   }
@@ -954,7 +954,7 @@ class OrderLocalRepository
       int salesNo, int splitNo, int salesRef, String tableNo) async {
     List<OrderPrepModel> orderprepList = <OrderPrepModel>[];
     final String query =
-        "SELECT PLUNo, ItemName, CASE WHEN FunctionID = 26 THEN Quantity ELSE 0 END, (Quantity * ItemAmount * CASE WHEN (FOCItem = 0 OR FOCType = 'BuyXFreeY') THEN 1 ELSE 0 END), SalesRef FROM HeldItems WHERE SalesNo = $salesNo  AND SplitNo = $splitNo AND TableNo = '%tableNo' AND ItemSeqNo NOT IN (101, 102) AND FunctionID IN (12,24,25,26,55,101) AND (TransStatus = ' ' OR TransStatus = 'D') AND PLUSalesRef = $salesRef AND Preparation = 1 ORDER BY PLUSalesRef, SalesRef";
+        "SELECT PLUNo, ItemName, CASE WHEN FunctionID = 26 THEN Quantity ELSE 0 END, (Quantity * ItemAmount * CASE WHEN (FOCItem = 0 OR FOCType = 'BuyXFreeY') THEN 1 ELSE 0 END), SalesRef FROM HeldItems WHERE SalesNo = $salesNo  AND SplitNo = $splitNo AND TableNo = '$tableNo' AND ItemSeqNo NOT IN (101, 102) AND FunctionID IN (12,24,25,26,55,101) AND (TransStatus = ' ' OR TransStatus = 'D') AND PLUSalesRef = $salesRef AND Preparation = 1 ORDER BY PLUSalesRef, SalesRef";
 
     final Database dbHandler = await database.database;
     final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
@@ -989,7 +989,7 @@ class OrderLocalRepository
       ordermodList.add(OrderModData(
           modName: tempData.get(0).toString(),
           modPrice: dynamicToDouble(tempData.get(1)),
-          modSalesRef: dynamicToInt(tempData.get(1))));
+          modSalesRef: dynamicToInt(tempData.get(2))));
     }
 
     return ordermodList;

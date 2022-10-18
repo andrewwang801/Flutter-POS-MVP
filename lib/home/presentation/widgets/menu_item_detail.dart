@@ -22,8 +22,9 @@ class MenuItemDetail extends ConsumerStatefulWidget {
   final int salesRef;
   final bool update;
   final OrderItemModel? orderItem;
+  final Map<String, Map<String, String>>? prepSelect;
   MenuItemDetail(this.pluNo, this.salesRef, this.update,
-      {this.orderItem, Key? key})
+      {this.orderItem, this.prepSelect, Key? key})
       : super(key: key);
 
   @override
@@ -35,10 +36,12 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
   double price = 0.0;
   double subTotal = 0.0;
   bool foc = false;
-  Map<String, Map<String, String>> prepSelect = {};
+  late Map<String, Map<String, String>> _prepSelect;
 
   late PLUState pluState;
   late bool isDark;
+
+  String userInputModifier = '';
 
   TextEditingController _modifierController = TextEditingController();
 
@@ -47,6 +50,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
     ref
         .read(pluProvider.notifier)
         .fetchMenuDetail(widget.pluNo, widget.salesRef);
+    _prepSelect = widget.prepSelect ?? {};
     super.initState();
   }
 
@@ -71,6 +75,14 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
     price = state.pluDetails[1].toDouble() * 1.0;
     int qty = (state.orderSelect?.Quantity ?? 1) + qtyAdd;
     subTotal = state.pluDetails[1].toDouble() * qty;
+    _prepSelect = state.prepSelect;
+
+    String? originModifier = state.modSelect?.ItemName?.substring(2);
+    if (userInputModifier.isNotEmpty)
+      _modifierController.text = userInputModifier;
+    else if (originModifier != null && originModifier.isNotEmpty)
+      _modifierController.text = originModifier;
+
     return Center(
       child: Card(
         elevation: 1.0,
@@ -122,6 +134,9 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                 ),
                 TextFormField(
                   controller: _modifierController,
+                  onChanged: (String value) {
+                    userInputModifier = value;
+                  },
                   decoration: const InputDecoration(
                     hintText: 'Custome Modifer',
                     hintStyle: TextStyle(fontStyle: FontStyle.italic),
@@ -227,7 +242,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                           _modifierController.text,
                           qty,
                           foc,
-                          prepSelect,
+                          _prepSelect,
                           widget.orderItem ?? OrderItemModel());
                     } else {
                       ref.read(orderProvoder.notifier).createOrderItem(
@@ -235,7 +250,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                           _modifierController.text,
                           qty,
                           foc,
-                          prepSelect);
+                          _prepSelect);
                       // foc item
                     }
                     Get.back();
@@ -260,9 +275,11 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
       height: 36.w,
       child: FloatingActionButton(
           onPressed: () {
-            setState(() {
-              qtyAdd--;
-            });
+            if (qtyAdd > 0) {
+              setState(() {
+                qtyAdd--;
+              });
+            }
           },
           child: new Icon(Icons.remove,
               color: isDark ? Colors.black : Colors.white),
@@ -287,6 +304,6 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
   }
 
   void callback(Map<String, Map<String, String>> value) {
-    prepSelect = value;
+    _prepSelect = value;
   }
 }
