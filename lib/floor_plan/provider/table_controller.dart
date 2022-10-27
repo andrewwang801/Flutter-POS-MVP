@@ -56,9 +56,9 @@ class TableController extends StateNotifier<TableState>
               await orderRepository.getIndexOrder(GlobalConfig.tableNo);
           GlobalConfig.checkTableOpen = tblArray.length;
 
-          GlobalConfig.salesNo = dynamicToInt(tblArray[0][0]);
-          GlobalConfig.splitNo = dynamicToInt(tblArray[0][1]);
-          GlobalConfig.cover = dynamicToInt(tblArray[0][3]);
+          GlobalConfig.salesNo = tblArray[0][0].toInt();
+          GlobalConfig.splitNo = tblArray[0][1].toInt();
+          GlobalConfig.cover = tblArray[0][3].toInt();
           GlobalConfig.rcptNo = tblArray[0][4];
           // TODO(Smith): Refresh Header Status
         } else {
@@ -77,10 +77,10 @@ class TableController extends StateNotifier<TableState>
             GlobalConfig.checkTableOpen = tableData.length;
 
             List<String> tempData = tableData[0];
-            GlobalConfig.salesNo = dynamicToInt(tempData[0]);
-            GlobalConfig.splitNo = dynamicToInt(tempData[1]);
+            GlobalConfig.salesNo = tempData[0].toInt();
+            GlobalConfig.splitNo = tempData[1].toInt();
             GlobalConfig.tableNo = GlobalConfig.TableNoInt.toString();
-            GlobalConfig.cover = dynamicToInt(tempData[3]);
+            GlobalConfig.cover = tempData[3].toInt();
             GlobalConfig.rcptNo = tempData[4];
 
             await orderRepository.updateTableStatus(GlobalConfig.tableNo, 'O');

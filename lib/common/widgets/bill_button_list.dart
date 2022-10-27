@@ -9,6 +9,7 @@ import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/common/widgets/custom_button.dart';
 import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
+import 'package:raptorpos/discount/presentation/discount_screen.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
@@ -115,6 +116,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
                         });
                         break;
                       case 3:
+                        Get.to(() => DiscountScreen());
                         break;
                       case 4:
                         break;

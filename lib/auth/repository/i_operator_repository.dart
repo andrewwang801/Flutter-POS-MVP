@@ -6,4 +6,5 @@ abstract class IOperatorRepository {
   Future<void> updateOpHistory(int operatorNo);
   Future<void> checkOpHistory();
   Future<int> countOperatorTable();
+  Future<OperatorModel?> getOperatorByOperatorNo(int operatorNo);
 }

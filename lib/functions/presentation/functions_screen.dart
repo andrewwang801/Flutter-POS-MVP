@@ -194,6 +194,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
         itemBuilder: (BuildContext context, int index) {
           final FunctionModel function = functions[index];
           return InkWell(
+            borderRadius: BorderRadius.circular(3.0),
             onTap: () async {
               switch (function.functionID) {
                 case 109:
@@ -253,8 +254,8 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                 default:
               }
             },
-            child: Container(
-              margin: EdgeInsets.all(2.0),
+            child: Ink(
+              padding: EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                   color: isDark ? primaryDarkColor : primaryLightColor,
                   border: Border.all(

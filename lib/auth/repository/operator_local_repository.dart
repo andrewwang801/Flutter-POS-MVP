@@ -49,6 +49,16 @@ class OperatorLocalRepository extends IOperatorRepository
   }
 
   @override
+  Future<OperatorModel?> getOperatorByOperatorNo(int operatorNo) async {
+    final Database db = await dbHelper.database;
+    final String query = 'SELECT * FROM OPERATOR WHERE PIN = $operatorNo';
+    final List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.isNotEmpty) {
+      return OperatorModel.fromJson(maps[0]);
+    }
+  }
+
+  @override
   Future<void> insertOpHistory(int operatorNo) async {
     final String dateIn = currentDateTime('yyyy-MM-dd');
     final String timeIn = currentDateTime('HH:mm:ss');

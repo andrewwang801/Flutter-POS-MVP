@@ -9,7 +9,7 @@ import '../../../common/constants/strings.dart';
 import '../../../common/extension/string_extension.dart';
 import '../../../common/extension/workable.dart';
 import '../../../common/widgets/orderitem_widget.dart';
-import '../../../discount/repository/discount_repository.dart';
+import '../../../discount/domain/discount_repository.dart';
 import '../../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../../payment/repository/i_payment_repository.dart';
 import '../../../print/provider/print_controller.dart';
