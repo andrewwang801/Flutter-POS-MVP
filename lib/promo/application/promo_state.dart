@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../common/extension/workable.dart';
+import '../model/promotion_model.dart';
 
 // common part
 class Failiure {
@@ -12,7 +13,9 @@ class Failiure {
 
 // data class
 class PromoData {
-  PromoData();
+  PromoData(this.promos);
+
+  final List<PromotionModel> promos;
 }
 
 // state
@@ -31,6 +34,6 @@ class PromoState extends Equatable {
     return PromoState(
         failiure: failiure ?? this.failiure,
         workable: workable ?? this.workable,
-        data: data ?? data);
+        data: data ?? this.data);
   }
 }

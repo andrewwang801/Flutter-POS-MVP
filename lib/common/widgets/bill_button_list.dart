@@ -16,6 +16,7 @@ import 'package:raptorpos/home/repository/order/i_order_repository.dart';
 import 'package:raptorpos/payment/presentation/cash_screen.dart';
 import 'package:raptorpos/payment/presentation/tender_screen.dart';
 import 'package:raptorpos/payment/repository/i_payment_repository.dart';
+import 'package:raptorpos/promo/presentation/promotion_screen.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 import 'package:raptorpos/trans/presentation/trans.dart';
 
@@ -119,6 +120,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
                         Get.to(() => DiscountScreen());
                         break;
                       case 4:
+                        Get.to(() => PromotionScreen());
                         break;
                       default:
                         Get.to(ViewTransScreen());
