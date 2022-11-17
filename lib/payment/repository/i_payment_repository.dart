@@ -7,6 +7,7 @@ abstract class IPaymentRepository {
   Future<int> countData(String query);
   Future<List<Map<String, dynamic>>> getData(String query);
 
+  Future<List<List<String>>> getOrderStatusBySNo(int salesNo);
   Future<bool> checkPaymentPermission(int operatorNo, int paymentType);
   Future<bool> checkTenderPayment(int salesNo, int splitNo, String tableNo);
 
@@ -34,7 +35,7 @@ abstract class IPaymentRepository {
   Future<void> moveSales3(int salesNo, int splitNo);
 
   /// TableNo, SplitNo, Covers, RcptNo
-  Future<List<Map<String, dynamic>>> getOrderStatusBySNo(int salesNo);
+  // Future<List<Map<String, dynamic>>> getOrderStatusBySNo(int salesNo);
 
   /// SUM(PaidAmount), ChangeAmount, SUM(ItemAmount)
   Future<Map<String, dynamic>> getPopUpAmount(int salesNo);

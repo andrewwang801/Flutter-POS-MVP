@@ -63,7 +63,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   @override
   void initState() {
     // fetch trans data
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((Duration timeStamp) {
       ref.read(transProvider.notifier).fetchTransData(
           dateFormat.format(startDate),
           dateFormat.format(endDate),
@@ -78,11 +78,11 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
 
-    ref.listen(printProvider, (previous, PrintState next) {
+    ref.listen(printProvider, (Object? previous, PrintState next) {
       if (next is PrintErrorState) {
         showDialog(
             context: context,
-            builder: (context) {
+            builder: (BuildContext context) {
               return AppAlertDialog(
                 onConfirm: () {},
                 title: 'Error',
@@ -94,11 +94,11 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
 
     ref.listen(
       transProvider,
-      (previous, TransState next) {
+      (Object? previous, TransState next) {
         if (next.failiure != null) {
           showDialog(
               context: context,
-              builder: (context) {
+              builder: (BuildContext context) {
                 return AppAlertDialog(
                   onConfirm: () {},
                   title: 'Error',
@@ -250,7 +250,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
                     ],
-                    rows: List.generate(transArray.length, (index) {
+                    rows: List.generate(transArray.length, (int index) {
                       return DataRow(
                           onSelectChanged: (bool? value) {
                             selectedTrans = transArray[index];
@@ -263,7 +263,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                               selectedTransId = index;
                             });
                           },
-                          color: MaterialStateProperty.resolveWith((states) {
+                          color: MaterialStateProperty.resolveWith(
+                              (Set<MaterialState> states) {
                             if (selectedTransId == index) {
                               return Colors.green;
                             } else if (index.isEven) {
@@ -352,7 +353,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           children: <Widget>[
             Stack(
               children: [
-                Expanded(child: filterGroup()),
+                filterGroup(),
                 Positioned(
                   child: Container(
                     color: isDark ? backgroundDarkColor : backgroundColor,
@@ -656,52 +657,46 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   Widget rfidWidget() {
     return Wrap(
       children: <Widget>[
-        Expanded(
-          flex: 4,
-          child: Row(
-            children: [
-              Radio(value: 0, groupValue: 0, onChanged: (int? value) {}),
-              Text('RFID',
-                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-            ],
-          ),
+        Row(
+          children: [
+            Radio(value: 0, groupValue: 0, onChanged: (int? value) {}),
+            Text('RFID',
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+          ],
         ),
-        Expanded(
-          flex: 6,
-          child: Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: Responsive.isMobile(context) ? 35.h : 20.h,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+        Row(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: Responsive.isMobile(context) ? 35.h : 20.h,
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
                     ),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 4.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark ? primaryDarkColor : primaryLightColor,
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                  height: Responsive.isMobile(context) ? 35.h : 20.h,
-                  width: 40.w,
-                  child: Icon(
-                    Icons.folder_open,
-                    color: backgroundColor,
-                  ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isDark ? primaryDarkColor : primaryLightColor,
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+                height: Responsive.isMobile(context) ? 35.h : 20.h,
+                width: 40.w,
+                child: const Icon(
+                  Icons.folder_open,
+                  color: backgroundColor,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         )
       ],
     );
@@ -765,7 +760,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     if (selectedTrans == null) {
       showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AppAlertDialog(
               onConfirm: () {},
               title: 'Error',
@@ -777,7 +772,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     if (transArray.isEmpty) {
       showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AppAlertDialog(
               onConfirm: () {},
               title: 'Error',
@@ -789,7 +784,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
       if (salesStatue == 'Closed Tables') {
         showDialog(
             context: context,
-            builder: (context) {
+            builder: (BuildContext context) {
               return AppAlertDialog(
                 onConfirm: () {},
                 title: 'Error',
@@ -800,7 +795,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
       } else if (tableNo == GlobalConfig.tableNo) {
         showDialog(
             context: context,
-            builder: (context) {
+            builder: (BuildContext context) {
               return AppAlertDialog(
                 onConfirm: () {},
                 title: 'Error',
@@ -811,7 +806,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         if (salesNo == 0) {
           showDialog(
               context: context,
-              builder: (context) {
+              builder: (BuildContext context) {
                 return AppAlertDialog(
                   onConfirm: () {},
                   title: 'Error',
@@ -831,7 +826,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     if (selectedTrans == null) {
       showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AppAlertDialog(
               onConfirm: () {},
               title: 'Error',
@@ -844,7 +839,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
       if (selectedTrans == null) {
         showDialog(
             context: context,
-            builder: (context) {
+            builder: (BuildContext context) {
               return AppAlertDialog(
                 onConfirm: () {},
                 title: 'Error',
@@ -872,7 +867,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     if (selectedTrans == null) {
       showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AppAlertDialog(
               onConfirm: () {},
               title: 'Error',
@@ -888,7 +883,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     if (selectedTrans == null) {
       showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AppAlertDialog(
               onConfirm: () {},
               title: 'Error',
@@ -900,7 +895,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     if (transArray.isEmpty) {
       showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AppAlertDialog(
               onConfirm: () {},
               title: 'Error',
@@ -912,7 +907,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         if (tableNo == GlobalConfig.tableNo) {
           showDialog(
               context: context,
-              builder: (context) {
+              builder: (BuildContext context) {
                 return AppAlertDialog(
                   onConfirm: () {},
                   title: 'Error',
@@ -932,7 +927,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     if (selectedTrans == null) {
       showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AppAlertDialog(
               onConfirm: () {},
               title: 'Error',
@@ -958,7 +953,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     showDialog(
         barrierDismissible: true,
         context: context,
-        builder: (context) {
+        builder: (BuildContext context) {
           return Dialog(
             child: KitchenReprint(
               salesNo: salesNo,
@@ -973,7 +968,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     if (selectedTrans != null) {
       showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return Dialog(
               child: RefundWidget(
                 salesNo: salesNo,

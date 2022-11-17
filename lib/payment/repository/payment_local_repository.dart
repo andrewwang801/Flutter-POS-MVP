@@ -54,6 +54,17 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
   }
 
   @override
+  Future<List<List<String>>> getOrderStatusBySNo(int salesNo) async {
+    final String query =
+        'SELECT TableNo, SplitNo, Covers, RcptNo FROM HeldTables WHERE SalesNo = $salesNo';
+
+    final Database database = await dbHelper.database;
+    final List<Map<String, dynamic>> data = await database.rawQuery(query);
+
+    return mapListToString2D(data);
+  }
+
+  @override
   Future<bool> checkPaymentPermission(int operatorNo, int paymentType) async {
     final Database db = await dbHelper.database;
     String query =
@@ -1835,14 +1846,14 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
     return mediaList;
   }
 
-  @override
-  Future<List<Map<String, dynamic>>> getOrderStatusBySNo(int salesNo) async {
-    final Database db = await dbHelper.database;
-    final String query =
-        'SELECT TableNo, SplitNo, Covers, RcptNo FROM HeldTables WHERE SalesNo = $salesNo';
-    final List<Map<String, dynamic>> data = await db.rawQuery(query);
-    return data;
-  }
+  // @override
+  // Future<List<Map<String, dynamic>>> getOrderStatusBySNo(int salesNo) async {
+  //   final Database db = await dbHelper.database;
+  //   final String query =
+  //       'SELECT TableNo, SplitNo, Covers, RcptNo FROM HeldTables WHERE SalesNo = $salesNo';
+  //   final List<Map<String, dynamic>> data = await db.rawQuery(query);
+  //   return data;
+  // }
 
   @override
   Future<double> getPaidAmount(int salesNo, int splitNo, String tableNo) async {
