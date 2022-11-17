@@ -41,13 +41,13 @@ class _CoverWidgetState extends ConsumerState<CoverWidget> {
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
 
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(Spacing.md),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 250.w,
+            width: Responsive.isMobile(context) ? 220.h : 130.h,
             height: Responsive.isMobile(context) ? 40.h : 25.h,
             decoration: BoxDecoration(
               color: isDark
@@ -63,8 +63,8 @@ class _CoverWidgetState extends ConsumerState<CoverWidget> {
           ),
           verticalSpaceSmall,
           Container(
-            width: 250.w,
             height: Responsive.isMobile(context) ? 220.h : 130.h,
+            width: Responsive.isMobile(context) ? 220.h : 130.h,
             color: Colors.transparent,
             child: NumPad(
                 buttonColor:

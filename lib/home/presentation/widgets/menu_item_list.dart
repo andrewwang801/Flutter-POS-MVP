@@ -22,7 +22,7 @@ class _MenuItemListState extends ConsumerState<MenuItemList> {
       return GridView.builder(
         itemCount: data.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: Responsive.isMobile(context) ? 3 : 5,
+          crossAxisCount: Responsive.isMobile(context) ? 4 : 5,
           mainAxisExtent: Responsive.isMobile(context) ? 70.h : 55.h,
         ),
         itemBuilder: (BuildContext context, int index) {

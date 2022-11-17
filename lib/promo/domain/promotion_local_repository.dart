@@ -6,6 +6,7 @@ import '../../common/helper/db_helper.dart';
 import '../../common/utils/datetime_util.dart';
 import '../../common/utils/type_util.dart';
 import '../../home/repository/order/i_order_repository.dart';
+import '../model/promotion_model.dart';
 
 @Injectable()
 class PromotionLocalRepository with TypeUtil, DateTimeUtil {
@@ -104,5 +105,22 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
     } else {
       throw Exception('Not Enough Permission.');
     }
+  }
+
+  // Get Promotion Data
+  Future<List<PromotionModel>> getPromotionData() async {
+    final Database databse = await dbHelper.database;
+    final String strDate = currentDateTime('ddd');
+    final String query =
+        'SELECT PromotionName, PromotionID FROM Promotion WHERE PActive = 1 AND Prmn$strDate = 1 ORDER BY SortNo, PromotionName, PrmnPriority';
+    final List<Map<String, dynamic>> data = await databse.rawQuery(query);
+
+    final List<PromotionModel> promotionList = <PromotionModel>[];
+    for (final Map<String, dynamic> element in data) {
+      promotionList.add(PromotionModel(
+          element.get(0).toString(), dynamicToInt(element.get(1))));
+    }
+
+    return promotionList;
   }
 }

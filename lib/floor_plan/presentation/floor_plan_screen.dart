@@ -29,7 +29,7 @@ class _FloorPlanScreenState extends ConsumerState<FloorPlanScreen> {
   Widget build(BuildContext context) {
     bool isDark = ref.watch(themeProvider);
     return Scaffold(
-      backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         child: AppBarWidget(false),
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),

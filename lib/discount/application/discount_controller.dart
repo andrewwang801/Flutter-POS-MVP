@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
+
 import 'package:raptorpos/common/extension/string_extension.dart';
 import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/common/utils/datetime_util.dart';
@@ -74,7 +75,7 @@ class DiscountController extends StateNotifier<DiscountState>
 
     // TODO(Smith: check later)
     sDate = DateTime.parse(currentDateTime('yyyy-MM-dd'));
-    sTime = DateTime.parse(currentDateTime('HH:mm:ss.0'));
+    sTime = parse(currentDateTime('HH:mm:ss.0'));
     // sDate = currentDateTime('yyyy-MM-dd');
     // sTime = currentDateTime('HH:mm:ss');
     PLUSalesRef = salesRef;
@@ -155,32 +156,32 @@ class DiscountController extends StateNotifier<DiscountState>
     hpyHr1 = data[0].toBool();
     hpyHr2 = data[1].toBool();
     hpyHr3 = data[2].toBool();
-    hpyStart1 = data[3].toString();
-    hpyStart2 = data[4].toString();
-    hpyStart3 = data[5].toString();
-    hpyEnd1 = data[6].toString();
-    hpyEnd2 = data[7].toString();
-    hpyEnd3 = data[8].toString();
+    hpyStart1 = data[3];
+    hpyStart2 = data[4];
+    hpyStart3 = data[5];
+    hpyEnd1 = data[6];
+    hpyEnd2 = data[7];
+    hpyEnd3 = data[8];
     hpyPShift1 = data[9].toInt();
     hpyPShift2 = data[10].toInt();
     hpyPShift3 = data[11].toInt();
 
-    if (sTime.compareTo(DateTime.parse(hpyStart1)) >= 0 &&
-        sTime.compareTo(DateTime.parse(hpyEnd1)) <= 0 &&
+    if (sTime.compareTo(parse(hpyStart1)) >= 0 &&
+        sTime.compareTo(parse(hpyEnd1)) <= 0 &&
         hpyHr1 == 1 &&
         hpyPShift1 != 0) {
       pShift = hpyPShift1;
     }
 
-    if (sTime.compareTo(DateTime.parse(hpyStart2)) >= 0 &&
-        sTime.compareTo(DateTime.parse(hpyEnd2)) <= 0 &&
+    if (sTime.compareTo(parse(hpyStart2)) >= 0 &&
+        sTime.compareTo(parse(hpyEnd2)) <= 0 &&
         hpyHr2 == 1 &&
         hpyPShift2 != 0) {
       pShift = hpyPShift2;
     }
 
-    if (sTime.compareTo(DateTime.parse(hpyStart3)) >= 0 &&
-        sTime.compareTo(DateTime.parse(hpyEnd3)) <= 0 &&
+    if (sTime.compareTo(parse(hpyStart3)) >= 0 &&
+        sTime.compareTo(parse(hpyEnd3)) <= 0 &&
         hpyHr3 == 1 &&
         hpyPShift3 != 0) {
       pShift = hpyPShift3;
@@ -285,7 +286,7 @@ class DiscountController extends StateNotifier<DiscountState>
     fnTitleCh = await repository.getChineseTitle(fnTitle, fnID, sFnID);
 
     sDate = DateTime.parse(currentDateTime('yyyy-MM-dd'));
-    sTime = DateTime.parse(currentDateTime('HH:mm:ss.0'));
+    sTime = parse(currentDateTime('HH:mm:ss.0'));
 
     avgCost = 0;
     rcpID = 0;
@@ -387,22 +388,22 @@ class DiscountController extends StateNotifier<DiscountState>
     hpyPShift2 = data[10].toInt();
     hpyPShift3 = data[11].toInt();
 
-    if (sTime.compareTo(DateTime.parse(hpyStart1)) >= 0 &&
-        sTime.compareTo(DateTime.parse(hpyEnd1)) <= 0 &&
+    if (sTime.compareTo(parse(hpyStart1)) >= 0 &&
+        sTime.compareTo(parse(hpyEnd1)) <= 0 &&
         hpyHr1 == 1 &&
         hpyPShift1 != 0) {
       pShift = hpyPShift1;
     }
 
-    if (sTime.compareTo(DateTime.parse(hpyStart2)) >= 0 &&
-        sTime.compareTo(DateTime.parse(hpyEnd2)) <= 0 &&
+    if (sTime.compareTo(parse(hpyStart2)) >= 0 &&
+        sTime.compareTo(parse(hpyEnd2)) <= 0 &&
         hpyHr2 == 1 &&
         hpyPShift2 != 0) {
       pShift = hpyPShift2;
     }
 
-    if (sTime.compareTo(DateTime.parse(hpyStart3)) >= 0 &&
-        sTime.compareTo(DateTime.parse(hpyEnd3)) <= 0 &&
+    if (sTime.compareTo(parse(hpyStart3)) >= 0 &&
+        sTime.compareTo(parse(hpyEnd3)) <= 0 &&
         hpyHr3 == 1 &&
         hpyPShift3 != 0) {
       pShift = hpyPShift3;
@@ -509,8 +510,8 @@ class DiscountController extends StateNotifier<DiscountState>
 
         discItemAmt = data[0].toBool();
         discItemPer = data[1].toBool();
-        discTotalAmt = data[3].toBool();
-        discTotalPer = data[4].toBool();
+        discTotalAmt = data[2].toBool();
+        discTotalPer = data[3].toBool();
 
         cntDiscID = await repository.countDiscID(operatorNo, subFnID);
 

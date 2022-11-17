@@ -38,6 +38,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
     return Container(
       width: 926.w,
       height: Responsive.isMobile(context) ? 78.h : 70.h,
+      color: isDark ? backgroundDarkColor : backgroundColor,
       child: Column(
         children: [
           SizedBox(

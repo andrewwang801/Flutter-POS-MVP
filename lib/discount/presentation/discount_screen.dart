@@ -99,8 +99,11 @@ class _DiscountScreenState extends ConsumerState<DiscountScreen> {
                     child: Center(
                       child: Text(
                         'Discounts',
-                        style: titleTextDarkStyle.copyWith(
-                            fontWeight: FontWeight.bold),
+                        style: isDark
+                            ? titleTextDarkStyle.copyWith(
+                                fontWeight: FontWeight.bold)
+                            : titleTextLightStyle.copyWith(
+                                fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -121,7 +124,7 @@ class _DiscountScreenState extends ConsumerState<DiscountScreen> {
                                   GlobalConfig.salesNo,
                                   GlobalConfig.splitNo,
                                   salesRef ?? 0,
-                                  disc.fnctnID,
+                                  disc.subFnID,
                                   disc.discTitle,
                                   0);
                             },
@@ -148,7 +151,9 @@ class _DiscountScreenState extends ConsumerState<DiscountScreen> {
                               child: Center(
                                 child: Text(disc.discTitle,
                                     textAlign: TextAlign.center,
-                                    style: bodyTextLightStyle),
+                                    style: isDark
+                                        ? bodyTextDarkStyle
+                                        : bodyTextLightStyle),
                               ),
                             ),
                           );

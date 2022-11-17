@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:raptorpos/common/widgets/alert_dialog.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
 import 'package:raptorpos/payment/repository/i_payment_repository.dart';
+import 'package:raptorpos/print/provider/print_provider.dart';
+import 'package:raptorpos/print/provider/print_state.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
-import '../../common/widgets/responsive.dart';
 import './widgets/main_button_list.dart';
 import './widgets/menu_item_list.dart';
 import './widgets/menu_list.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/bill_button_list.dart';
 import '../../common/widgets/checkout.dart';
-import '../../common/widgets/numpad.dart';
+import '../../common/widgets/responsive.dart';
 import '../../constants/color_constant.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -38,6 +40,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     bool isDark = ref.watch(themeProvider);
+
+    ref.listen(printProvider, (previous, next) {
+      if (next is PrintSuccessState) {
+      } else if (next is PrintErrorState) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                insetPadding: EdgeInsets.all(20),
+                title: 'Error',
+                message: next.errMsg,
+                onConfirm: () {},
+              );
+            });
+      }
+    });
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
@@ -61,7 +80,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: CheckOut(428.h -
                           5.h -
                           10.h -
-                          (Responsive.isMobile(context) ? 50.h : 40.h) -
+                          (Responsive.isMobile(context) ? 35.h : 40.h) -
                           appBarHeight -
                           ScreenUtil().bottomBarHeight -
                           ScreenUtil().statusBarHeight),
@@ -97,7 +116,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             SizedBox(
                               height:
-                                  Responsive.isMobile(context) ? 50.h : 40.h,
+                                  Responsive.isMobile(context) ? 35.h : 40.h,
                               child: MenuList(),
                             ),
                             SizedBox(
@@ -110,9 +129,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       10.h -
                                       10.h -
                                       (Responsive.isMobile(context)
-                                          ? 50.h
+                                          ? 35.h
                                           : 40.h) -
-                                      50.h -
+                                      35.h -
                                       appBarHeight -
                                       ScreenUtil().bottomBarHeight -
                                       ScreenUtil().statusBarHeight

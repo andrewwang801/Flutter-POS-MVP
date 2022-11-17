@@ -37,7 +37,7 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
     final Color _borderColor = widget.borderColor;
     final Color _fillColor = widget.fillColor;
     final double _height =
-        widget.height ?? (Responsive.isMobile(context) ? 50.h : 25.h);
+        widget.height ?? (Responsive.isMobile(context) ? 35.h : 25.h);
     final double _width = widget.width ?? 80.w;
 
     return Container(
@@ -59,7 +59,7 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
           onTap: () {
             _callback();
           },
-          child: Container(
+          child: Ink(
             padding: EdgeInsets.symmetric(horizontal: _height / 10),
             child: Center(
               child: Text(_text,

@@ -150,7 +150,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CustomButton(
-              height: Responsive.isMobile(context) ? 48.h : 30.h,
+              height: Responsive.isMobile(context) ? 35.h : 30.h,
               width: 120.w,
               callback: () {
                 showDialog(
@@ -177,7 +177,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
-              height: Responsive.isMobile(context) ? 48.h : 30.h,
+              height: Responsive.isMobile(context) ? 35.h : 30.h,
               width: 120.w,
               callback: () {
                 if (selectedPrinter == null) return;
@@ -205,7 +205,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
-              height: Responsive.isMobile(context) ? 48.h : 30.h,
+              height: Responsive.isMobile(context) ? 35.h : 30.h,
               width: 120.w,
               callback: () {
                 if (selectedPrinter != null) {
@@ -221,7 +221,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
-              height: Responsive.isMobile(context) ? 48.h : 30.h,
+              height: Responsive.isMobile(context) ? 35.h : 30.h,
               width: 120.w,
               callback: () {
                 Get.back();

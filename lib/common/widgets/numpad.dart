@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 
 import '../../constants/color_constant.dart';
 import '../../constants/dimension_constant.dart';
@@ -61,7 +62,12 @@ class NumPad extends StatelessWidget {
                     controller: controller,
                   ),
                   NumberButton(
-                    icon: Icon(Icons.cancel, size: iconSize),
+                    icon: Icon(
+                      Icons.cancel,
+                      size: Responsive.isTablet(context)
+                          ? lgiconSize
+                          : smiconSize,
+                    ),
                     type: ButtonType.RESET,
                     width: buttonWidth,
                     height: buttonHeight,
@@ -98,7 +104,9 @@ class NumPad extends StatelessWidget {
                   NumberButton(
                     icon: Icon(
                       Icons.restart_alt,
-                      size: iconSize,
+                      size: Responsive.isTablet(context)
+                          ? lgiconSize
+                          : smiconSize,
                     ),
                     type: ButtonType.RESET,
                     width: buttonWidth,
@@ -136,7 +144,9 @@ class NumPad extends StatelessWidget {
                   NumberButton(
                     icon: Icon(
                       Icons.done_rounded,
-                      size: iconSize,
+                      size: Responsive.isTablet(context)
+                          ? lgiconSize
+                          : smiconSize,
                     ),
                     type: ButtonType.CONFIRM,
                     submit: onSubmit,

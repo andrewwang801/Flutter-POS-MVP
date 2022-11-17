@@ -77,14 +77,14 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
     final OrderState state = ref.watch(orderProvoder);
     final bool isDark = ref.read(themeProvider);
     return SizedBox(
-      width: 300.w,
-      height: Responsive.isMobile(context) ? 50.h : 40.h,
+      width: Responsive.isMobile(context) ? 400.w : 300.w,
+      height: Responsive.isMobile(context) ? 35.h : 40.h,
       child: Row(
         children: [
           GestureDetector(
             child: Icon(
               Icons.arrow_back_ios_rounded,
-              size: iconSize,
+              size: Responsive.isTablet(context) ? lgiconSize : smiconSize,
             ),
             onTap: () {
               scrollToPrev();
@@ -132,7 +132,11 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 1,
-                mainAxisExtent: (300.w - 24.0 * 2 - 6.w) / 3,
+                mainAxisExtent:
+                    ((Responsive.isMobile(context) ? 400.w : 300.w) -
+                            24.0 * 2 -
+                            6.w) /
+                        3,
                 mainAxisSpacing: 3.w,
               ),
             ),
@@ -140,7 +144,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
           GestureDetector(
             child: Icon(
               Icons.arrow_forward_ios_rounded,
-              size: iconSize,
+              size: Responsive.isTablet(context) ? lgiconSize : smiconSize,
             ),
             onTap: () {
               scrollToNext();

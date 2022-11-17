@@ -60,7 +60,7 @@ class DiscountRepository with TypeUtil {
   ///
   Future<List<String>> getOperatorByID(int operatorNo) async {
     final query =
-        "	Select DiscItemAmt, DiscItemPer, DiscTotalAmt, DiscTotalPer From Operator Where OperatorNo=$operatorNo";
+        "Select DiscItemAmt, DiscItemPer, DiscTotalAmt, DiscTotalPer From Operator Where OperatorNo=$operatorNo";
 
     final database = await dbHelper.database;
     List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -70,7 +70,7 @@ class DiscountRepository with TypeUtil {
   //
   Future<int> countDiscID(int operatorNo, int subFnID) async {
     final String query =
-        "COUNT(DISCid) From operatorDISC Where OparatorNo=$operatorNo AND DISCid=$subFnID";
+        'SELECT COUNT(DiscID) FROM operatorDISC WHERE OperatorNo=$operatorNo AND DISCid=$subFnID';
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -91,11 +91,14 @@ class DiscountRepository with TypeUtil {
   //
   Future<int> countSalesRef1(int salesNo, int splitNo) async {
     final String query =
-        "COUNT(SalesRef) From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo";
+        "SELECT COUNT(SalesRef) From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   //
@@ -105,47 +108,62 @@ class DiscountRepository with TypeUtil {
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   //
   Future<int> countSalesRef3(int salesNo, int splitNo, int salesRef) async {
     final String query =
-        "COUNT(SalesRef) From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo AND (TransStatus=' ' or TransStatus='D') AND FunctionID=26 AND SalesRef=$salesRef";
+        "SELECT COUNT(SalesRef) From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo AND (TransStatus=' ' or TransStatus='D') AND FunctionID=26 AND SalesRef=$salesRef";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   /// SalesNo, SplitNo, TransStatus, PLUSalesRef, FunctionID = 24
   Future<int> countSalesRef4(int salesNo, int splitNo, int salesRef) async {
     final String query =
-        "COUNT(SalesRef) From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo AND (TransStatus=' ' or TransStatus='D') AND FunctionID=24 AND PLUSalesRef=$salesRef";
+        "SELECT COUNT(SalesRef) From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo AND (TransStatus=' ' or TransStatus='D') AND FunctionID=24 AND PLUSalesRef=$salesRef";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   /// SalesNo, SplitNo, TransStatus, SalesRef, PromotionSaving
   Future<int> countSalesRef5(int salesNo, int splitNo, int salesRef) async {
     final String query =
-        "COUNT(SalesRef) From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo AND (TransStatus=' ' or TransStatus='D') AND PromotionSaving>0 AND SalesRef=$salesRef";
+        "SELECT COUNT(SalesRef) From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo AND (TransStatus=' ' or TransStatus='D') AND PromotionSaving>0 AND SalesRef=$salesRef";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   /// SalesNo, SplitNo, SalesRef, RentalItem, RentToDate
   Future<int> countSalesRef6(int salesNo, int splitNo, int salesRef) async {
     final String query =
-        "Select Count(SalesRef) From HeldItems Where SalesNo=$salesNo And SplitNo=$splitNo And SalesRef=$salesRef And RentalItem=1 And isdate(RentToDate)=0";
+        'Select Count(SalesRef) From HeldItems Where SalesNo=$salesNo And SplitNo=$splitNo And SalesRef=$salesRef And RentalItem=1 And strftime(RentToDate) IS NULL';
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   /// SalesNo, SplitNo, SalesRef, RentalItem, RentToDate
@@ -155,17 +173,23 @@ class DiscountRepository with TypeUtil {
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   /// SalesNo, SplitNo, SalesRef, RentalItem, RentToDate
   Future<int> countSalesRef8(int salesNo, int splitNo, int salesRef) async {
     final String query =
-        "Select Count(SalesRef) From HeldItems Where SalesNo=$salesNo And SplitNo=$splitNo And RentalItem=1 And TransStatus=' ' And isdate(RentToDate)=0";
+        "Select Count(SalesRef) From HeldItems Where SalesNo=$salesNo And SplitNo=$splitNo And RentalItem=1 And TransStatus=' ' And strftime(RentToDate) IS NULL";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   /// SalesNo, SplitNo, SalesRef, RentalItem, RentToDate
@@ -175,7 +199,10 @@ class DiscountRepository with TypeUtil {
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   /// SalesNo, SplitNo, SalesRef, RentalItem, RentToDate
@@ -185,7 +212,10 @@ class DiscountRepository with TypeUtil {
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   /// SalesNo, SplitNo, SalesRef, RentalItem, RentToDate
@@ -195,13 +225,16 @@ class DiscountRepository with TypeUtil {
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data.length;
+    if (data.isNotEmpty) {
+      return dynamicToInt(data[0].get(0));
+    }
+    return 0;
   }
 
   // get PLUNo, PLUName
   Future<List<String>> getPLU(int salesNo, int splitNo, int salesRef) async {
     final String query =
-        "SELECT PLUNo, PLUName From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo AND FunctionID=26 AND SalesRef=$salesRef";
+        "SELECT PLUNo, ItemName From HeldItems Where SalesNo=$salesNo AND SplitNo=$splitNo AND FunctionID=26 AND SalesRef=$salesRef";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -212,7 +245,7 @@ class DiscountRepository with TypeUtil {
   /// Where AllowDiscount is 1
   Future<int> countPLUDiscountAllowed(String pluNo) async {
     final String query =
-        "COUNT(PLUNumber) From PLU Where PLUNumber=$pluNo AND AllowDiscount=1";
+        "SELECT COUNT(PLUNumber) From PLU Where PLUNumber='$pluNo' AND AllowDiscount=1";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -222,7 +255,7 @@ class DiscountRepository with TypeUtil {
   /// Count PLUNumber where pludiscentitle = 1
   Future<int> countPLUDiscentitle(String pluNo) async {
     final String query =
-        "COUNT(PLUNumber) From PLU Where PLUNumber=$pluNo AND pludiscentitle=1";
+        "SELECT COUNT(PLUNumber) From PLU Where PLUNumber='$pluNo' AND pludiscentitle=1";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -232,7 +265,7 @@ class DiscountRepository with TypeUtil {
   /// Count pluDISC by PLUNumber AND DISCid
   Future<int> countpluDisc(String pluNo, int subFnID) async {
     final String query =
-        "COUNT(PLUNumber) From pluDisc Where PLUNumber=$pluNo AND DISCid=$subFnID";
+        "SELECT COUNT(PLUNumber) From pluDisc Where PLUNumber='$pluNo' AND DISCid=$subFnID";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -264,7 +297,7 @@ class DiscountRepository with TypeUtil {
 
   Future<String> getChineseTitle(String fnTitle, int fnID, int sFnID) async {
     final query =
-        "Select IFNULL(Title_Chinese, $fnTitle) From SubFunction Where FunctionID=$fnID And SubFunctionID=$sFnID";
+        "Select IFNULL(Title_Chinese, '$fnTitle') From SubFunction Where FunctionID=$fnID And SubFunctionID=$sFnID";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -274,7 +307,7 @@ class DiscountRepository with TypeUtil {
   /// (Select Max(ItemSeqNo) From HeldItems Where SalesNo=@SalesNo And ItemSeqNo not in (101,102))
   Future<int> getItemSeqNo(int salesNo) async {
     final query =
-        "Select Max(ItemSeqNo) From HeldItems Where SalesNo=$salesNo And ItemSeqNo not in (101,102)";
+        "Select Max(ItemSeqNo) From HeldItems WHERE SalesNo=$salesNo And ItemSeqNo not in (101,102)";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -288,7 +321,7 @@ class DiscountRepository with TypeUtil {
     required int salesRef,
   }) async {
     final query =
-        "(Select ItemSeqNo From HeldItems Where SalesNo=$salesNo And SplitNo=$splitNo And SalesRef=$salesRef)";
+        "Select ItemSeqNo From HeldItems WHERE SalesNo=$salesNo And SplitNo=$splitNo And SalesRef=$salesRef";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -308,7 +341,7 @@ class DiscountRepository with TypeUtil {
   /// Select @CtgryID = DefCategoryID, @PLU_BillDiscount = PLU_BillDiscount, @PShift = DefSellBand, @blnForceSalesCategory = forcesalescategory, @blnForceSalesCategorySellband = ForceSalesCategorySellband From PosDtls Where POSID=@POSID
   Future<List<String>> getPosDtlsDataBill(String posID) async {
     final query =
-        "Select DefCategoryID, PLU_BillDiscount, DefSellBand, forcesalescategory, ForceSalesCategorySellband From PosDtls Where POSID=$posID";
+        "Select DefCategoryID, PLU_BillDiscount, DefSellBand, forcesalescategory, ForceSalesCategorySellband From PosDtls Where POSID='$posID'";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -318,7 +351,7 @@ class DiscountRepository with TypeUtil {
   /// Select @CtgryID = DefCategoryID, @PShift = DefSellBand, @blnForceSalesCategory = forcesalescategory, @blnForceSalesCategorySellband = ForceSalesCategorySellband From POSDtls Where POSID=@POSID
   Future<List<String>> getPosDtlsDataItem(String posID) async {
     final query =
-        "Select DefCategoryID, DefSellBand, forcesalescategory, ForceSalesCategorySellband From POSDtls Where POSID=$posID";
+        "Select DefCategoryID, DefSellBand, forcesalescategory, ForceSalesCategorySellband From POSDtls Where POSID='$posID'";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -344,19 +377,7 @@ class DiscountRepository with TypeUtil {
       required String hpyShift2,
       required String hpyShift3}) async {
     final query =
-        'INSERT INTO HDS_HappyHourShift SELECT $posID, $salesNo, $splitNo, HpyHr1, HpyHr2, HpyHr3, IFNULL(HappyHourStart1, '
-        '00:00:00'
-        '), IFNULL(HappyHourStart2, '
-        '00:00:00'
-        '), IFNULL(HappyHourStart3, '
-        '00:00:00'
-        '), IFNULL(HappyHourStop1, '
-        '00:00:00'
-        '), IFNULL(HappyHourStop2, '
-        '00:00:00'
-        '), IFNULL(HappyHourStop3, '
-        '00:00:00'
-        '), $hpyShift1,$hpyShift2, $hpyShift3  FROM PosDtls WHERE POSID=$posID';
+        "INSERT INTO HDS_HappyHourShift SELECT $posID, $salesNo, $splitNo, HpyHr1, HpyHr2, HpyHr3, IFNULL(HappyHourStart1, '00:00:00'), IFNULL(HappyHourStart2, '00:00:00'), IFNULL(HappyHourStart3, '00:00:00'), IFNULL(HappyHourStop1, '00:00:00'), IFNULL(HappyHourStop2, '00:00:00'), IFNULL(HappyHourStop3, '00:00:00'), $hpyShift1,$hpyShift2, $hpyShift3  FROM PosDtls WHERE POSID='$posID'";
 
     final database = await dbHelper.database;
     await database.rawQuery(query);
@@ -368,7 +389,7 @@ class DiscountRepository with TypeUtil {
       required int salesNo,
       required int splitNo}) async {
     final query =
-        "SELECT HpyHr1, HpyHr2, HpyHr3, HappyHourStart1, HappyHourStart2, HappyHourStart3,@HpyEnd1 = HappyHourStop1,HappyHourStop2,HappyHourStop3,HpyPShift1,HpyPShift2,HpyPShift3 FROM HDS_HappyHourShift WHERE POSID=$posID AND SalesNo=$salesNo AND SplitNo=$splitNo";
+        "SELECT HpyHr1, HpyHr2, HpyHr3, HappyHourStart1, HappyHourStart2, HappyHourStart3,@HpyEnd1 = HappyHourStop1,HappyHourStop2,HappyHourStop3,HpyPShift1,HpyPShift2,HpyPShift3 FROM HDS_HappyHourShift WHERE POSID='$posID' AND SalesNo=$salesNo AND SplitNo=$splitNo";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -381,7 +402,7 @@ class DiscountRepository with TypeUtil {
       required int salesNo,
       required int splitNo}) async {
     final query =
-        "DELETE FROM HDS_HappyHourShift WHERE POSID=$posID AND SalesNo=$salesNo AND SplitNo=$splitNo";
+        "DELETE FROM HDS_HappyHourShift WHERE POSID='$posID' AND SalesNo=$salesNo AND SplitNo=$splitNo";
 
     final database = await dbHelper.database;
     await database.rawQuery(query);

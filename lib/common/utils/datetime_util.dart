@@ -15,4 +15,13 @@ mixin DateTimeUtil {
     final DateTime date1 = DateTime.parse(strDate1);
     return dateToString(date1, targetFormat);
   }
+
+  DateTime parse(String timeValue) {
+    String prefix = '0000-01-01T';
+    return DateTime.parse(prefix + timeValue);
+  }
+
+  String format(DateTime value) {
+    return '${value.hour}:${value.minute}:${value.second}.${value.millisecond}';
+  }
 }
