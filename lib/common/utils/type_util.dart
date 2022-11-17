@@ -25,6 +25,10 @@ mixin TypeUtil {
     }).toList();
   }
 
+  List<String> mapToStringList(Map<String, dynamic> map) {
+    return map.values.map((dynamic v) => v.toString()).toList();
+  }
+
   List<List<double>> mapListToDouble2D(List<Map<String, dynamic>> maps) {
     return maps.map((Map<String, dynamic> e) {
       return e.values.map((dynamic v) => dynamicToDouble(v)).toList();

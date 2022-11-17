@@ -79,4 +79,13 @@ abstract class IPaymentRepository {
   Future<List<List<String>>> getPrintTax(int sNo);
   Future<List<List<String>>> getPrintPromo(int sNo);
   Future<List<List<String>>> getPrintRefund(int sNo);
+
+  // Preview
+  Future<bool> previewBillPermission(int operatorNo);
+  Future<List<List<String>>> getSalesCatData(int salesNo);
+  Future<List<List<String>>> getPaymentData(int salesNo);
+  Future<List<String>> getTotalItem(int salesNo);
+  Future<List<List<String>>> getItemData(int salesNo, String categoryName);
+  Future<List<List<String>>> getPromotionData(int salesNo);
+  Future<List<String>> getTaxTitle();
 }
