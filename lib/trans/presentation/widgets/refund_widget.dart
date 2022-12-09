@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../common/widgets/alert_dialog.dart';
 import '../../../common/widgets/custom_button.dart';
@@ -26,6 +27,7 @@ class RefundWidget extends ConsumerStatefulWidget {
 }
 
 class _RefundWidgetState extends ConsumerState<RefundWidget> {
+  bool isDark = false;
   @override
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
@@ -36,6 +38,8 @@ class _RefundWidgetState extends ConsumerState<RefundWidget> {
 
   @override
   Widget build(BuildContext context) {
+    isDark = ref.watch(themeProvider);
+
     ref.listen(refundProvider, (previous, RefundState next) {
       if (next.workable == Workable.failure) {
         showDialog(
@@ -45,6 +49,7 @@ class _RefundWidgetState extends ConsumerState<RefundWidget> {
                 onConfirm: () {},
                 title: 'Error',
                 message: next.failiure?.errMsg ?? '',
+                isDark: isDark,
               );
             });
       }

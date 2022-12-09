@@ -11,3 +11,21 @@ const String kDescription = 'Description';
 const String kQty = 'QTY';
 const String kPrice = 'Price';
 const String kSalesCategory = 'SC';
+
+// Functions
+final List<String> functions = [
+  'All Void',
+  'Float in',
+  'FOC item',
+  'Paid Out',
+  'Preview Bill',
+  'Price Check On',
+  'Split Bill',
+  'Split Qty',
+  'Sock Adjustment',
+  'Trans Item',
+  'Trans Table',
+  'Update Sold Out',
+  'View Trans',
+  'XZ Report',
+];

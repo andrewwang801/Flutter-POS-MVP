@@ -100,10 +100,10 @@ class TransController extends StateNotifier<TransState> {
 
   Future<void> openTrans(int tempSNo, int tempSplit, int tempCover,
       String tempTableNo, String tempRcptNo) async {
-    bool showBFOC = false,
-        showDisc = false,
-        showFunc = false,
-        showPromo = false;
+    // bool showBFOC = false,
+    //     showDisc = false,
+    //     showFunc = false,
+    //     showPromo = false;
     double gTotal = 0.0;
     double sTotal = 0.0;
     List<String> printArr = <String>[];

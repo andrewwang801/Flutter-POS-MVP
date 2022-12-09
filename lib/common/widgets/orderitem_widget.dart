@@ -1,16 +1,16 @@
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:path/path.dart';
 import 'package:raptorpos/common/widgets/orderitem_interface.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/home/model/order_mod_model.dart';
 import 'package:raptorpos/home/model/order_prep_model.dart';
-import 'package:raptorpos/home/presentation/widgets/menu_item_detail.dart';
 
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../home/model/order_item_model.dart';
-import '../GlobalConfig.dart';
 
 @immutable
 class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
@@ -44,11 +44,10 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
     bool selected = false,
   }) {
     level = (orderItem.Preparation ?? 0) == 1 ? 1 : 0;
-    TextStyle textStyle =
-        listItemTextDarkStyle.copyWith(fontSize: modifierItemFontSize);
+    TextStyle textStyle = bodyTextDarkStyle;
 
     if (level != 0) {
-      textStyle = listItemTextDarkStyle.copyWith(
+      textStyle = bodyTextDarkStyle.copyWith(
           fontWeight: FontWeight.w500,
           fontSize: modifierItemFontSize,
           fontStyle: FontStyle.italic,
@@ -75,7 +74,7 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
       ),
       child: Column(
         children: [
-          OrderItemRowWidget(isDark, textStyle, selected, callback),
+          OrderItemRowWidget(isDark, textStyle, selected, callback, context),
           ...prepWidgets(orderPrepList ?? []),
           ...modWidgets(orderModList ?? []),
         ],
@@ -84,46 +83,52 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
   }
 
   Widget OrderItemRowWidget(bool isDark, TextStyle textStyle, bool selected,
-      void Function() callback) {
+      void Function() callback, BuildContext context) {
+    double iconSize = Responsive.isMobile(context) ? 24.h : 12.h;
     return Stack(
       alignment: Alignment.centerLeft,
       children: [
         Container(
-          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 14),
+          padding: EdgeInsets.symmetric(
+              horizontal: Spacing.sm,
+              vertical: Responsive.isMobile(context) ? Spacing.sm : 0.0),
           color: (isDark ? primaryDarkColor : Colors.white),
           child: Row(
             children: [
-              Expanded(
-                flex: 2,
-                child: Text(
-                  "${orderItem.Quantity}",
-                  textAlign: TextAlign.left,
-                  style: isDark
-                      ? textStyle
-                      : textStyle.copyWith(color: Colors.black),
+              Container(
+                width: iconSize,
+                height: iconSize,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                    size: iconSize,
+                  ),
+                  onPressed: () {
+                    callback();
+                  },
                 ),
               ),
-              Expanded(
-                flex: 7,
-                child: Row(children: [
-                  SizedBox(
-                    width: level * 20,
-                  ),
-                  Expanded(
-                    child: Text(
-                      orderItem.ItemName ?? '',
-                      textAlign: TextAlign.left,
-                      style: isDark
-                          ? textStyle
-                          : textStyle.copyWith(color: Colors.black),
+              horizontalSpaceSmall,
+              if (Responsive.isTablet(context))
+                Expanded(
+                  flex: 7,
+                  child: Row(children: [
+                    Expanded(
+                      child: Text(
+                        '(${orderItem.Quantity})  ${orderItem.ItemName}',
+                        textAlign: TextAlign.left,
+                        style: isDark
+                            ? textStyle
+                            : textStyle.copyWith(color: Colors.black),
+                      ),
                     ),
-                  ),
-                ]),
-              ),
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0),
+                  ]),
+                ),
+              if (Responsive.isTablet(context))
+                Expanded(
+                  flex: 2,
                   child: Text(
                     '${orderItem.ItemAmount}',
                     textAlign: TextAlign.left,
@@ -132,30 +137,36 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                         : textStyle.copyWith(color: Colors.black),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text(
-                    categoryType(orderItem.CategoryId!),
-                    textAlign: TextAlign.left,
-                    style: isDark
-                        ? textStyle
-                        : textStyle.copyWith(color: Colors.black),
+              if (Responsive.isMobile(context))
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '(${orderItem.Quantity})  ${orderItem.ItemName}',
+                        textAlign: TextAlign.left,
+                        style: isDark
+                            ? textStyle
+                            : textStyle.copyWith(color: Colors.black),
+                      ),
+                      verticalSpaceSmall,
+                      Text(
+                        '${orderItem.ItemAmount}',
+                        textAlign: TextAlign.left,
+                        style: isDark
+                            ? textStyle
+                            : textStyle.copyWith(color: Colors.black),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              Expanded(
-                  flex: 2,
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Colors.red,
-                    ),
-                    onPressed: () {
-                      callback();
-                    },
+              IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    color: purple,
+                    size: iconSize,
                   )),
             ],
           ),
@@ -172,25 +183,25 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
     );
   }
 
-  List<Widget> prepWidgets(List<OrderPrepModel> preps) {
-    return preps.map((e) {
+  List<Widget> modWidgets(List<OrderModData> mods) {
+    return mods.map((e) {
       return Container(
-        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 14),
         child: Row(
           children: [
-            Expanded(
-                flex: 2,
-                child: Text(
-                  e.prepQuantity.toInt().toString(),
-                )),
+            SizedBox(
+              width: 24.w,
+            ),
             Expanded(
                 flex: 7,
-                child: Text(
-                  '${e.prepName}',
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Modifier : ${e.modName}',
+                  ),
                 )),
-            Expanded(
-              flex: 5,
-              child: Container(),
+            Spacer(flex: 2),
+            SizedBox(
+              width: 24.w,
             ),
           ],
         ),
@@ -198,24 +209,28 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
     }).toList();
   }
 
-  List<Widget> modWidgets(List<OrderModData> mods) {
-    return mods.map((e) {
+  List<Widget> prepWidgets(List<OrderPrepModel> preps) {
+    return preps.map((e) {
       return Container(
-        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 14),
+        padding: EdgeInsets.symmetric(vertical: 3.0),
         child: Row(
           children: [
+            SizedBox(
+              width: 24.w,
+            ),
             Expanded(
-                flex: 2,
-                child: Container(
-                  child: Text('1'),
-                )),
-            Expanded(
-                flex: 7,
+              flex: 7,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Modifier : ${e.modName}',
-                )),
-            Expanded(flex: 3, child: Container()),
-            Expanded(flex: 2, child: Container()),
+                  ' (${e.prepQuantity.toInt().toString()}) ${e.prepName}',
+                ),
+              ),
+            ),
+            Spacer(flex: 2),
+            SizedBox(
+              width: 24.w,
+            ),
           ],
         ),
       );

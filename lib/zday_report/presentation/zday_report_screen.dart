@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 
 import '../../common/extension/workable.dart';
@@ -44,6 +43,7 @@ class _ZDayReportScreenState extends ConsumerState<ZDayReportScreen> {
               return AppAlertDialog(
                 title: 'Error',
                 message: next.failure?.errMsg,
+                isDark: isDark,
                 onConfirm: () {},
               );
             });
@@ -53,8 +53,8 @@ class _ZDayReportScreenState extends ConsumerState<ZDayReportScreen> {
     return Dialog(
       child: Container(
         padding: EdgeInsets.all(Spacing.md),
-        height: 350.h,
-        width: Responsive.isMobile(context) ? 500.w : 360.w,
+        height: Responsive.isMobile(context) ? 700.w : 350.h,
+        width: Responsive.isMobile(context) ? 400.w : 360.w,
         child: Column(
           children: [
             _header(),

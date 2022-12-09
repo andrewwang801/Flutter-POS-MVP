@@ -1,4 +1,3 @@
-import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +9,6 @@ import 'package:raptorpos/print/provider/print_provider.dart';
 import 'package:raptorpos/print/provider/print_state.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
-import '../../common/services/iprinter_service.dart';
 import '../../common/services/printer_manager.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_button.dart';
@@ -61,6 +59,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             builder: (context) {
               return AppAlertDialog(
                 title: 'Error',
+                isDark: isDark,
                 message: next.errMsg,
                 onConfirm: () {},
               );
@@ -82,6 +81,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                 builder: (context) {
                   return AppAlertDialog(
                     title: 'Printer',
+                    isDark: isDark,
                     message: 'Printer connected',
                     onConfirm: () {},
                   );
@@ -92,6 +92,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                 builder: (context) {
                   return AppAlertDialog(
                     title: 'Printer',
+                    isDark: isDark,
                     message: next.message,
                     onConfirm: () {},
                   );
@@ -102,6 +103,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                 builder: (context) {
                   return AppAlertDialog(
                     title: 'Printer',
+                    isDark: isDark,
                     message: 'Printer Disconnected',
                     onConfirm: () {},
                   );
@@ -114,6 +116,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
               builder: (context) {
                 return AppAlertDialog(
                   title: 'Error',
+                  isDark: isDark,
                   message: next.errMsg,
                   onConfirm: () {},
                 );
@@ -126,9 +129,22 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
     ref.watch(printerProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(appBarHeight),
-        child: AppBarWidget(false),
+      appBar: AppBar(
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? backgroundColor : primaryDarkColor,
+          ),
+        ),
+        title: Text(
+          'Printer',
+          style: isDark ? normalTextDarkStyle : normalTextLightStyle,
+        ),
+        centerTitle: false,
       ),
       body: SafeArea(
         child: Column(
@@ -149,88 +165,96 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CustomButton(
-              height: Responsive.isMobile(context) ? 35.h : 30.h,
-              width: 120.w,
-              callback: () {
-                showDialog(
-                    barrierDismissible: true,
-                    context: context,
-                    builder: (context) {
-                      return Dialog(
-                          child: IntrinsicWidth(
-                        child: IntrinsicHeight(
-                          child: PrinterAddWidget(
-                            isDark: isDark,
-                            printerID: printerID,
+          Expanded(
+            child: CustomButton(
+                height: Responsive.isMobile(context) ? 35.h : 30.h,
+                callback: () {
+                  showDialog(
+                      barrierDismissible: true,
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                            child: IntrinsicWidth(
+                          child: IntrinsicHeight(
+                            child: PrinterAddWidget(
+                              isDark: isDark,
+                              printerID: printerID,
+                            ),
                           ),
-                        ),
-                      ));
-                    });
-              },
-              text: 'ADD',
-              borderColor: isDark
-                  ? primaryButtonBorderDarkColor
-                  : primaryButtonBorderColor,
-              fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
+                        ));
+                      });
+                },
+                text: 'ADD',
+                borderColor: isDark
+                    ? primaryButtonBorderDarkColor
+                    : primaryButtonBorderColor,
+                fillColor:
+                    isDark ? primaryButtonDarkColor : primaryButtonColor),
+          ),
           SizedBox(
             width: 15.w,
           ),
-          CustomButton(
-              height: Responsive.isMobile(context) ? 35.h : 30.h,
-              width: 120.w,
-              callback: () {
-                if (selectedPrinter == null) return;
-                showDialog(
-                    barrierDismissible: true,
-                    context: context,
-                    builder: (context) {
-                      return Dialog(
-                          child: IntrinsicWidth(
-                        child: IntrinsicHeight(
-                          child: PrinterUpdateWidget(
-                            isDark: isDark,
-                            printer: printers[selectedPrinter!],
+          Expanded(
+            child: CustomButton(
+                height: Responsive.isMobile(context) ? 35.h : 30.h,
+                callback: () {
+                  if (selectedPrinter == null) return;
+                  showDialog(
+                      barrierDismissible: true,
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                            child: IntrinsicWidth(
+                          child: IntrinsicHeight(
+                            child: PrinterUpdateWidget(
+                              isDark: isDark,
+                              printer: printers[selectedPrinter!],
+                            ),
                           ),
-                        ),
-                      ));
-                    });
-              },
-              text: 'UPDATE',
-              borderColor: isDark
-                  ? primaryButtonBorderDarkColor
-                  : primaryButtonBorderColor,
-              fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
+                        ));
+                      });
+                },
+                text: 'UPDATE',
+                borderColor: isDark
+                    ? primaryButtonBorderDarkColor
+                    : primaryButtonBorderColor,
+                fillColor:
+                    isDark ? primaryButtonDarkColor : primaryButtonColor),
+          ),
           SizedBox(
             width: 15.w,
           ),
-          CustomButton(
-              height: Responsive.isMobile(context) ? 35.h : 30.h,
-              width: 120.w,
-              callback: () {
-                if (selectedPrinter != null) {
-                  deletePrinter(printers[selectedPrinter!].printerID);
-                }
-              },
-              text: 'DELETE',
-              borderColor: isDark
-                  ? primaryButtonBorderDarkColor
-                  : primaryButtonBorderColor,
-              fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
+          Expanded(
+            child: CustomButton(
+                height: Responsive.isMobile(context) ? 35.h : 30.h,
+                callback: () {
+                  if (selectedPrinter != null) {
+                    deletePrinter(printers[selectedPrinter!].printerID);
+                  }
+                },
+                text: 'DELETE',
+                borderColor: isDark
+                    ? primaryButtonBorderDarkColor
+                    : primaryButtonBorderColor,
+                fillColor:
+                    isDark ? primaryButtonDarkColor : primaryButtonColor),
+          ),
           SizedBox(
             width: 15.w,
           ),
-          CustomButton(
-              height: Responsive.isMobile(context) ? 35.h : 30.h,
-              width: 120.w,
-              callback: () {
-                Get.back();
-              },
-              text: 'CLOSE',
-              borderColor: isDark
-                  ? primaryButtonBorderDarkColor
-                  : primaryButtonBorderColor,
-              fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
+          Expanded(
+            child: CustomButton(
+                height: Responsive.isMobile(context) ? 35.h : 30.h,
+                callback: () {
+                  Get.back();
+                },
+                text: 'CLOSE',
+                borderColor: isDark
+                    ? primaryButtonBorderDarkColor
+                    : primaryButtonBorderColor,
+                fillColor:
+                    isDark ? primaryButtonDarkColor : primaryButtonColor),
+          ),
         ],
       ),
     );
@@ -282,7 +306,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
               ? (isDark ? backgroundDarkColor : backgroundColor)
               : (isDark
                   ? secondaryBackgroundDarkColor
-                  : secondaryBackgroundColor),
+                  : backgroundColorVariant),
           border: (selectedPrinter != null && selectedPrinter == index)
               ? Border.all(width: 1.0, color: backgroundColor)
               : Border.all(width: 0, color: Colors.transparent),

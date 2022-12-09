@@ -36,6 +36,7 @@ class PrinterAddWidget extends ConsumerWidget {
               builder: (context) {
                 return AppAlertDialog(
                   title: 'Success',
+                  isDark: isDark,
                   message: 'Printer added!',
                   onConfirm: () {},
                 );
@@ -47,6 +48,7 @@ class PrinterAddWidget extends ConsumerWidget {
                 return AppAlertDialog(
                   title: 'Error',
                   message: next.errMsg,
+                  isDark: isDark,
                 );
               });
         }

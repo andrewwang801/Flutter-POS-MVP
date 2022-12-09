@@ -76,6 +76,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                 onConfirm: () {},
                 title: 'Error',
                 message: next.failiure!.errMsg,
+                isDark: isDark,
               );
             });
       } else if (next.failiure == null) {
@@ -96,6 +97,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                     onConfirm: () {},
                     title: 'Error',
                     message: 'You did not selected any media.',
+                    isDark: isDark,
                   );
                 });
           }
@@ -194,7 +196,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                         : primaryLightColor
                     : index.isEven
                         ? secondaryBackgroundDarkColor
-                        : secondaryBackgroundColor,
+                        : backgroundColorVariant,
                 child: ListTile(
                   onTap: () {
                     medaiTitle = item[0];
@@ -226,6 +228,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
               onConfirm: () {},
               title: 'Error',
               message: 'Plesase select a Media before.',
+              isDark: isDark,
             );
           });
     } else {
@@ -238,6 +241,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                 title: 'Error',
                 message:
                     'Bill Adjust Failed. Tender value of the selected media is $tenderVal',
+                isDark: isDark,
               );
             });
       } else {
@@ -250,6 +254,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                   title: 'Error',
                   message:
                       'Bill adjust failed. You did not select any Media. Only Payment/Media is allowed to edit',
+                  isDark: isDark,
                 );
               });
         } else if (funcID == 7) {
@@ -261,6 +266,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                   title: 'Error',
                   message:
                       'Bill Adjust Failed. Bill adjustment is not allowed from NON FOC media to FOC',
+                  isDark: isDark,
                 );
               });
         } else {
@@ -333,7 +339,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
             } else {
               return isDark
                   ? secondaryBackgroundDarkColor
-                  : secondaryBackgroundColor;
+                  : backgroundColorVariant;
             }
           }),
         );
@@ -529,6 +535,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                                 title: 'Error',
                                 message:
                                     'Bill Adjust Failed. Please select an item',
+                                isDark: isDark,
                               );
                             });
                       } else {

@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:raptorpos/functions/application/function_provider.dart';
 import 'package:raptorpos/print/provider/print_controller.dart';
 
 import '../../../common/GlobalConfig.dart';
 import '../../../common/widgets/custom_button.dart';
-import '../../../common/widgets/numpad.dart';
 import '../../../common/widgets/responsive.dart';
 import '../../../constants/color_constant.dart';
 import '../../../floor_plan/presentation/floor_plan_screen.dart';
@@ -88,6 +88,7 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
                   break;
                 // void
                 case 4:
+                  allVoid();
                   break;
                 case 5:
                   Get.to(FloorPlanScreen());
@@ -120,5 +121,9 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
             crossAxisSpacing: 5.h),
       ),
     );
+  }
+
+  void allVoid() {
+    ref.read(functionProvider.notifier).voidAllOrder();
   }
 }

@@ -3,7 +3,6 @@ import 'package:raptorpos/home/model/order_item_model.dart';
 
 import '../../../common/extension/workable.dart';
 import '../../../common/widgets/orderitem_widget.dart';
-import '../../../sales_report/application/sales_report_state.dart';
 
 class OrderState extends Equatable {
   final List<OrderItemModel>? orderItems;

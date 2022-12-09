@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
 
 import '../../constants/dimension_constant.dart';
-import '../../constants/text_style_constant.dart';
 import '../../theme/theme_state_notifier.dart';
 
 class AppBarWidget extends ConsumerWidget {
@@ -22,21 +20,17 @@ class AppBarWidget extends ConsumerWidget {
         children: [
           if (backBtn)
             IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: Icon(
-                  Icons.keyboard_arrow_left,
-                  color: Colors.white,
-                  size: Responsive.isTablet(context) ? lgiconSize : smiconSize,
-                )),
+              onPressed: () {
+                Get.back();
+              },
+              icon: Icon(
+                Icons.keyboard_arrow_left,
+                color: Colors.white,
+                size: Responsive.isTablet(context) ? lgiconSize : smiconSize,
+              ),
+            ),
+          IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
         ],
-      ),
-      // leadingWidth: 200.w,
-      title: Image.asset(
-        "assets/images/raptor-logo.png",
-        fit: BoxFit.contain,
-        height: appBarHeight,
       ),
       actions: [
         IconButton(

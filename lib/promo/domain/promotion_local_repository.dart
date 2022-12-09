@@ -6,7 +6,6 @@ import '../../common/extension/string_extension.dart';
 import '../../common/helper/db_helper.dart';
 import '../../common/utils/datetime_util.dart';
 import '../../common/utils/type_util.dart';
-import '../../home/provider/order/order_state_notifier.dart';
 import '../../home/repository/order/i_order_repository.dart';
 import '../model/promotion_model.dart';
 

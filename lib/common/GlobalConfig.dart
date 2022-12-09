@@ -3,6 +3,7 @@
 import 'dart:core';
 
 import 'package:get_it/get_it.dart';
+import 'package:raptorpos/functions/model/function_model.dart';
 
 import '../auth/model/operator_model.dart';
 import 'extension/string_extension.dart';
@@ -11,6 +12,8 @@ import 'utils/type_util.dart';
 
 // ignore: avoid_classes_with_only_static_members
 class GlobalConfig {
+  static List<FunctionModel> functions = <FunctionModel>[];
+
   static bool kDebugMode = false;
   static OperatorModel? operator;
 

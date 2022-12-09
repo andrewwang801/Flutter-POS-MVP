@@ -71,7 +71,7 @@ class _SalesCategoryScreenState extends State<SalesCategoryScreen> {
                 SizedBox(
                   height: 5.h,
                 ),
-                CheckOut(320.h),
+                CheckOut(),
                 SizedBox(
                   height: 10.h,
                 ),

@@ -7,7 +7,6 @@ import 'package:raptorpos/home/model/menu_model.dart';
 import 'package:raptorpos/home/provider/menu/menu_provider.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
-import '../../../constants/color_constant.dart';
 import '../../../constants/text_style_constant.dart';
 
 const List<MaterialColor> menuColors = [
@@ -43,16 +42,6 @@ class _MenuCardState extends ConsumerState<MenuCard> {
         child: Container(
           width: 120.w,
           padding: EdgeInsets.all(4.0),
-          // decoration: BoxDecoration(
-          //   color: Colors.transparent,
-          //   borderRadius: BorderRadius.circular(6.0),
-          //   boxShadow: [
-          //     BoxShadow(
-          //       color: isDark ? primaryDarkColor : Colors.white,
-          //       spreadRadius: 0.0,
-          //     ),
-          //   ],
-          // ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,

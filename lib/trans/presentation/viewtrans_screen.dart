@@ -9,8 +9,6 @@ import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/widgets/alert_dialog.dart';
-import '../../common/widgets/appbar.dart';
-import '../../common/widgets/custom_button.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../home/presentation/home_screen.dart';
@@ -42,6 +40,9 @@ class ViewTransScreen extends ConsumerStatefulWidget {
 
 class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   final ScrollController _vScrollController = ScrollController();
+
+  final TextEditingController _searchController = TextEditingController();
+  String searchKeyword = '';
   // final TransData transData = TransData();
 
   // Radio Group Value for Trans filter
@@ -87,6 +88,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 onConfirm: () {},
                 title: 'Error',
                 message: next.errMsg,
+                isDark: isDark,
               );
             });
       }
@@ -103,6 +105,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                   onConfirm: () {},
                   title: 'Error',
                   message: next.failiure?.errMsg ?? '',
+                  isDark: isDark,
                 );
               });
         } else if (next.operation == Operation.KITCHEN_REPRINT) {
@@ -116,33 +119,46 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     );
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
-      appBar: PreferredSize(
-        child: AppBarWidget(false),
-        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
-      ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            width: 626.w,
-            height: 424.h - AppBar().preferredSize.height,
-            color: isDark ? backgroundDarkColor : backgroundColor,
-            child: transTable(),
-          ),
-          SizedBox(
-            width: 300.w,
-            height: 380.h,
-            child: operationSideBar(),
+      appBar: AppBar(
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(Icons.arrow_back),
+          color: isDark ? primaryDarkColor : primaryDarkColor,
+        ),
+        title: Text(
+          'All Transaction',
+          style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+        ),
+        centerTitle: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              showFilterBottomSheet();
+            },
+            icon: Icon(
+              Icons.filter_list,
+              color: red,
+            ),
           ),
         ],
       ),
+      body: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            _searchBar(),
+            verticalSpaceRegular,
+            Expanded(
+              child: transTable(),
+            ),
+          ],
+        ),
+      ),
     );
-  }
-
-  Widget transListView() {
-    return Container();
   }
 
   // trans array
@@ -180,160 +196,23 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           isDark: isDark,
         );
       }
-      return Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Scrollbar(
-          controller: _vScrollController,
-          isAlwaysShown: true,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                controller: _vScrollController,
-                physics: const ClampingScrollPhysics(),
-                child: SizedBox(
-                  child: DataTable(
-                    columns: <DataColumn>[
-                      DataColumn(
-                          label: Text('Rcptno',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('Table',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('First Op',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('Total',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('Open Date',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('Open Time',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('Close Date',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('Close Time',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('Trans Mode',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('POS ID',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('Sales No',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                    ],
-                    rows: List.generate(transArray.length, (int index) {
-                      return DataRow(
-                          onSelectChanged: (bool? value) {
-                            selectedTrans = transArray[index];
-                            rcptNo = selectedTrans!.rcptNo ?? '';
-                            salesNo = selectedTrans!.salesNo;
-                            splitNo = selectedTrans!.splitNo;
-                            covers = selectedTrans!.covers;
-                            tableNo = selectedTrans!.tableNo;
-                            setState(() {
-                              selectedTransId = index;
-                            });
-                          },
-                          color: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) {
-                            if (selectedTransId == index) {
-                              return Colors.green;
-                            } else if (index.isEven) {
-                              return isDark
-                                  ? primaryDarkColor
-                                  : backgroundColor.withOpacity(0.7);
-                            } else {
-                              return isDark
-                                  ? backgroundDarkColor
-                                  : backgroundColor;
-                            }
-                          }),
-                          cells: <DataCell>[
-                            DataCell(Text(transArray[index].rcptNo ?? '',
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].tableNo,
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].firstOp,
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].total.toString(),
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].openDate,
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].openTime,
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].closeDate ?? '',
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].closeTime ?? '',
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].transMode,
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].posID,
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].salesNo.toString(),
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
-                          ]);
-                    }),
-                    // source: transData,
-                    // columnSpacing: 40,
-                    // horizontalMargin: 10,
-                    // rowsPerPage: 10,
-                    showCheckboxColumn: false,
-                  ),
-                )),
-          ),
-        ),
-      );
+
+      List<TransSalesData> filteredTransArray = [];
+      filteredTransArray = transArray.where((trans) {
+        String strTrans =
+            '${trans.rcptNo}${trans.tableNo}${trans.firstOp}${trans.total}${trans.openDate}${trans.closeDate}${trans.openTime}${trans.closeTime}${trans.transMode}${trans.posID}${trans.salesNo}';
+        return strTrans.contains(searchKeyword);
+      }).toList();
+      return ListView.separated(
+          physics: ClampingScrollPhysics(),
+          separatorBuilder: ((context, index) => verticalSpaceSmall),
+          itemCount: filteredTransArray.length,
+          itemBuilder: ((context, index) {
+            TransSalesData trans = filteredTransArray[index];
+            return transCard((trans) {
+              showActionBottomSheet(trans);
+            }, trans);
+          }));
     } else if (state.workable == Workable.failure) {
       return Center(
         child: Text(state.failiure?.errMsg ?? ''),
@@ -343,100 +222,215 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     }
   }
 
-  Widget operationSideBar() {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Stack(
-              children: [
-                filterGroup(),
-                Positioned(
-                  child: Container(
-                    color: isDark ? backgroundDarkColor : backgroundColor,
-                    child: Text('Find',
-                        style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            buttonGroup(),
-          ],
+  Widget transCard(
+      void Function(TransSalesData trans)? callback, TransSalesData trans) {
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Spacing.sm)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(Spacing.sm),
+        onTap: () {
+          if (callback != null) {
+            callback(trans);
+          }
+        },
+        child: Ink(
+          padding: EdgeInsets.all(Spacing.sm),
+          decoration: BoxDecoration(
+            color: isDark ? primaryDarkColor : backgroundColorVariant,
+            border: Border.all(
+                width: 1,
+                color: isDark ? primaryDarkColor : backgroundColorVariant),
+            borderRadius: BorderRadius.circular(Spacing.sm),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                children: [
+                  Text('${trans.openDate} ${trans.openTime}'),
+                  Spacer(),
+                  Text('${trans.closeDate} ${trans.closeTime}'),
+                ],
+              ),
+              verticalSpaceSmall,
+              Row(
+                children: [
+                  Text('${trans.posID}'),
+                  Spacer(),
+                  Text('${trans.covers}'),
+                ],
+              ),
+              verticalSpaceSmall,
+              Row(
+                children: [
+                  Text('${trans.rcptNo}'),
+                  Spacer(),
+                  Text('${trans.transMode}'),
+                ],
+              ),
+              verticalSpaceRegular,
+              Text(
+                '${trans.total}',
+                style: isDark ? titleTextDarkStyle : titleTextLightStyle,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget filterGroup() {
-    final double marginTop = 3.5.h;
-    return Container(
-      margin: EdgeInsets.only(top: marginTop),
-      decoration: BoxDecoration(
-        border: Border.all(color: primaryDarkColor),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            rfidWidget(),
-            verticalSpaceSmall,
-            operatorDropDown(),
-            salesStatusDropDown(),
-            verticalSpaceSmall,
-            Row(
-              children: [
-                Checkbox(value: false, onChanged: (bool? value) {}),
-                Text('TBL Open Date',
-                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-              ],
-            ),
-            verticalSpaceSmall,
-            startDateWidget(),
-            endDateWidget(),
-            // Row(
-            //   children: [
-            //     Checkbox(value: false, onChanged: (bool? value) {}),
-            //     Text('POSID',
-            //         style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-            //   ],
-            // ),
-            verticalSpaceMedium,
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: CustomButton(
-                      callback: () {},
-                      text: 'Refresh',
-                      borderColor:
-                          isDark ? primaryDarkColor : primaryLightColor,
-                      fillColor: isDark ? primaryDarkColor : primaryLightColor,
-                    ),
-                  ),
+  void showFilterBottomSheet() {
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Spacing.sm)),
+        context: context,
+        builder: (BuildContext context) {
+          return Wrap(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    operatorDropDown(),
+                    verticalSpaceSmall,
+                    salesStatusDropDown(),
+                    verticalSpaceSmall,
+                    startDateWidget(),
+                    verticalSpaceSmall,
+                    endDateWidget(),
+                  ],
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: CustomButton(
-                      callback: () {},
-                      text: 'Copy Bill',
-                      borderColor:
-                          isDark ? primaryDarkColor : primaryLightColor,
-                      fillColor: isDark ? primaryDarkColor : primaryLightColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          );
+        });
+  }
+
+  void showActionBottomSheet(TransSalesData trans) {
+    showModalBottomSheet(
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Spacing.sm),
         ),
+        builder: (BuildContext context) {
+          return Wrap(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    transCard(null, trans),
+                    ElevatedButton(
+                      onPressed: () {
+                        openTrans();
+                      },
+                      child: Text('Open'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.fromHeight(40.h),
+                        primary: red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Spacing.sm),
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        viewTrans();
+                      },
+                      child: Text('View'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.fromHeight(40.h),
+                        primary: red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Spacing.sm),
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        refundTrans();
+                      },
+                      child: Text('Refund'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.fromHeight(40.h),
+                        primary: red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Spacing.sm),
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        kitchenReprint();
+                      },
+                      child: Text('Kitchen Reprint'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.fromHeight(40.h),
+                        primary: red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Spacing.sm),
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        reprintBill();
+                      },
+                      child: Text(
+                        'Reprint',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.fromHeight(40.h),
+                        primary: red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Spacing.sm),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  Widget _searchBar() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(Spacing.sm),
+        border: Border.all(width: 1, color: backgroundColorVariant),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Empty',
+                border: InputBorder.none,
+                isDense: true,
+              ),
+              onChanged: (String value) {
+                setState(() {
+                  searchKeyword = value;
+                });
+              },
+            ),
+          ),
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: BoxConstraints(),
+            onPressed: () {},
+            icon: Icon(
+              Icons.search,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -446,43 +440,45 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   Widget operatorDropDown() {
     List<String> operators = <String>['All', 'Cashier'];
     final List<DropdownMenuItem<String>> dropDownMenuItems = List.generate(
-        operators.length,
-        (int index) => DropdownMenuItem<String>(
-            value: operators[index], child: Text(operators[index])));
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Expanded(
-            flex: 4,
-            child: Text(
-              'Operator',
-              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-            )),
-        Expanded(
-          flex: 6,
-          child: Container(
-            height: Responsive.isMobile(context) ? 35.h : 20.h,
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            decoration: BoxDecoration(
-              color: isDark ? primaryDarkColor : primaryLightColor,
-              borderRadius: BorderRadius.circular(4.0),
-            ),
-            child: DropdownButton<String>(
-                underline: const SizedBox(),
-                isExpanded: true,
-                iconSize:
-                    Responsive.isTablet(context) ? lgiconSize : smiconSize,
-                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-                value: operator,
-                items: dropDownMenuItems,
-                onChanged: (String? value) {
-                  setState(() {
-                    operator = value!;
-                  });
-                }),
-          ),
+      operators.length,
+      (int index) => DropdownMenuItem<String>(
+        value: operators[index],
+        child: Text(operators[index]),
+      ),
+    );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Operator: ',
+          style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
         ),
-      ]),
+        Container(
+          width: 250.w,
+          padding: const EdgeInsets.symmetric(
+              horizontal: 12.0, vertical: Spacing.xs),
+          decoration: BoxDecoration(
+            color: isDark ? primaryDarkColor : Colors.white,
+            borderRadius: BorderRadius.circular(4.0),
+            border: Border.all(width: 1, color: orange),
+          ),
+          child: DropdownButton<String>(
+              borderRadius: BorderRadius.circular(Spacing.sm),
+              isDense: true,
+              isExpanded: true,
+              underline: const SizedBox(),
+              iconSize: Responsive.isTablet(context) ? lgiconSize : smiconSize,
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+              value: operator,
+              items: dropDownMenuItems,
+              onChanged: (String? value) {
+                setState(() {
+                  operator = value!;
+                });
+              }),
+        ),
+      ],
     );
   }
 
@@ -494,44 +490,42 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         status.length,
         (int index) => DropdownMenuItem<String>(
             value: status[index], child: Text(status[index])));
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Expanded(
-              flex: 4,
-              child: Text(
-                'Sales Status',
-                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-              )),
-          Expanded(
-            flex: 6,
-            child: Container(
-              height: Responsive.isMobile(context) ? 35.h : 20.h,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0),
-              decoration: BoxDecoration(
-                color: isDark ? primaryDarkColor : primaryLightColor,
-                borderRadius: BorderRadius.circular(4.0),
-              ),
-              child: DropdownButton<String>(
-                  underline: const SizedBox(),
-                  iconSize:
-                      Responsive.isTablet(context) ? lgiconSize : smiconSize,
-                  isExpanded: true,
-                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-                  value: salesStatue,
-                  items: dropDownMenuItems,
-                  onChanged: (String? value) {
-                    setState(() {
-                      salesStatue = value!;
-                    });
-                  }),
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Status: ',
+          style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+        ),
+        Container(
+          width: 250.w,
+          padding: const EdgeInsets.symmetric(
+              horizontal: 12.0, vertical: Spacing.xs),
+          decoration: BoxDecoration(
+            color: isDark ? primaryDarkColor : Colors.white,
+            borderRadius: BorderRadius.circular(4.0),
+            border: Border.all(width: 1, color: orange),
           ),
-        ],
-      ),
+          child: DropdownButton<String>(
+              borderRadius: BorderRadius.circular(Spacing.sm),
+              underline: const SizedBox(),
+              isDense: true,
+              isExpanded: true,
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: orange,
+              ),
+              iconSize: Responsive.isTablet(context) ? lgiconSize : smiconSize,
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+              value: salesStatue,
+              items: dropDownMenuItems,
+              onChanged: (String? value) {
+                setState(() {
+                  salesStatue = value!;
+                });
+              }),
+        ),
+      ],
     );
   }
 
@@ -541,7 +535,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(2022),
-        lastDate: DateTime(2022, 12));
+        lastDate: DateTime(2029, 12, 31));
 
     if (picked != null && picked != startDate) {
       setState(() {
@@ -561,7 +555,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(2022),
-        lastDate: DateTime(2022, 12));
+        lastDate: DateTime(2029, 12, 31));
 
     if (picked != null && picked != endDate) {
       setState(() {
@@ -577,176 +571,75 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
 
   // Start Date Widget
   Widget startDateWidget() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Expanded(
-              flex: 4,
-              child: Text(
-                'From Date',
-                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-              )),
-          Expanded(
-            flex: 6,
-            child: GestureDetector(
-              onTap: () {
-                _selectStartDate();
-              },
-              child: Container(
-                height: Responsive.isMobile(context) ? 35.h : 20.h,
-                decoration: BoxDecoration(
-                  color: isDark ? primaryDarkColor : secondaryBackgroundColor,
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                child: Center(
-                  child: Text(
-                    dateFormat.format(startDate),
-                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-                  ),
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text(
+          'From: ',
+          style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+        ),
+        Container(
+          width: 250.w,
+          child: ElevatedButton(
+            onPressed: () {
+              _selectStartDate();
+            },
+            child: Text(
+              dateFormat.format(startDate),
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            ),
+            style: ElevatedButton.styleFrom(
+              primary: backgroundColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Spacing.xs),
+                side: BorderSide(width: 1.0, color: red),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   // End date widget
   Widget endDateWidget() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Expanded(
-              flex: 4,
-              child: Text(
-                'To Date',
-                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-              )),
-          Expanded(
-            flex: 6,
-            child: GestureDetector(
-              onTap: () {
-                _selectEndDate();
-              },
-              child: Container(
-                height: Responsive.isMobile(context) ? 35.h : 20.h,
-                decoration: BoxDecoration(
-                  color: isDark ? primaryDarkColor : secondaryBackgroundColor,
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                child: Center(
-                  child: Text(
-                    dateFormat.format(endDate),
-                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-                  ),
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text(
+          'To: ',
+          style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+        ),
+        Container(
+          width: 250.w,
+          child: ElevatedButton(
+            onPressed: () {
+              _selectEndDate();
+            },
+            child: Text(
+              dateFormat.format(endDate),
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            ),
+            style: ElevatedButton.styleFrom(
+              primary: backgroundColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Spacing.xs),
+                side: BorderSide(width: 1.0, color: red),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   // Rfid wdiget
   Widget rfidWidget() {
-    return Wrap(
+    return Row(
       children: <Widget>[
-        Row(
-          children: [
-            Radio(value: 0, groupValue: 0, onChanged: (int? value) {}),
-            Text('RFID',
-                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-          ],
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: Responsive.isMobile(context) ? 35.h : 20.h,
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                    ),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 4.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isDark ? primaryDarkColor : primaryLightColor,
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                height: Responsive.isMobile(context) ? 35.h : 20.h,
-                width: 40.w,
-                child: const Icon(
-                  Icons.folder_open,
-                  color: backgroundColor,
-                ),
-              ),
-            ),
-          ],
-        )
+        Radio(value: 0, groupValue: 0, onChanged: (int? value) {}),
+        Text('RFID', style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
       ],
-    );
-  }
-
-  // Bottom btn group
-  Widget buttonGroup() {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: GridView.builder(
-          shrinkWrap: true,
-          itemCount: btns.length,
-          physics: const ScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisExtent: Responsive.isMobile(context) ? 35.h : 25.h,
-            mainAxisSpacing: 5.h,
-            crossAxisSpacing: 5.w,
-          ),
-          itemBuilder: (BuildContext context, int index) {
-            return CustomButton(
-              callback: () {
-                switch (index) {
-                  case 0:
-                    openTrans();
-                    break;
-                  case 1:
-                    viewTrans();
-                    break;
-                  case 2:
-                    refundTrans();
-                    break;
-                  case 3:
-                    kitchenReprint();
-                    break;
-                  case 4:
-                    // print bill
-                    reprintBill();
-                    break;
-                  case 5:
-                  default:
-                    Get.back();
-                    break;
-                }
-              },
-              text: btns[index],
-              borderColor: isDark ? primaryDarkColor : primaryLightColor,
-              fillColor: isDark ? primaryDarkColor : primaryLightColor,
-            );
-          }),
     );
   }
 
@@ -765,6 +658,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               onConfirm: () {},
               title: 'Error',
               message: 'Select transaction',
+              isDark: isDark,
             );
           });
       return;
@@ -778,6 +672,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               title: 'Error',
               message:
                   'Open transaction failed. There is no data to open transaction',
+              isDark: isDark,
             );
           });
     } else {
@@ -790,6 +685,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 title: 'Error',
                 message:
                     'Cannot open closed table. Click view to open closed table',
+                isDark: isDark,
               );
             });
       } else if (tableNo == GlobalConfig.tableNo) {
@@ -800,6 +696,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 onConfirm: () {},
                 title: 'Error',
                 message: 'Open Transaction failed. Table is already opened',
+                isDark: isDark,
               );
             });
       } else {
@@ -811,6 +708,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                   onConfirm: () {},
                   title: 'Error',
                   message: 'No table found to open',
+                  isDark: isDark,
                 );
               });
         } else {
@@ -831,6 +729,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               onConfirm: () {},
               title: 'Error',
               message: 'Select transaction',
+              isDark: isDark,
             );
           });
       return;
@@ -844,6 +743,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 onConfirm: () {},
                 title: 'Error',
                 message: 'There is no transcations',
+                isDark: isDark,
               );
             });
         return;
@@ -872,6 +772,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               onConfirm: () {},
               title: 'Error',
               message: 'Select transaction',
+              isDark: isDark,
             );
           });
     } else {
@@ -888,6 +789,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               onConfirm: () {},
               title: 'Error',
               message: 'Select transaction',
+              isDark: isDark,
             );
           });
       return;
@@ -900,6 +802,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               onConfirm: () {},
               title: 'Error',
               message: 'Reprint Bill Failed! There is no date to reprint',
+              isDark: isDark,
             );
           });
     } else {
@@ -913,6 +816,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                   title: 'Error',
                   message:
                       'Reprint Bill Failed! Table is already for transaction',
+                  isDark: isDark,
                 );
               });
         }
@@ -932,6 +836,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               onConfirm: () {},
               title: 'Error',
               message: 'Select transaction',
+              isDark: isDark,
             );
           });
     } else {

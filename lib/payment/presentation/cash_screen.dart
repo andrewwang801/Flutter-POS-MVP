@@ -20,6 +20,7 @@ import '../../home/provider/order/order_provider.dart';
 import '../../home/provider/order/order_state.dart';
 import '../../print/provider/print_provider.dart';
 import '../../print/provider/print_state.dart';
+// ignore: unused_import
 import '../../printer/provider/printer_provider.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../provider/payment_provider.dart';
@@ -79,6 +80,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
               return AppAlertDialog(
                 insetPadding: EdgeInsets.all(20),
                 title: 'Error',
+                isDark: isDark,
                 message: next.errMsg,
                 onConfirm: () {},
               );
@@ -111,6 +113,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
                   return AppAlertDialog(
                     insetPadding: EdgeInsets.all(20),
                     title: k_cash_payment,
+                    isDark: isDark,
                     message:
                         '$k_payment: $payment, $k_total_bill: $billTotal, $k_change: ${change.toStringAsFixed(2)}',
                     onCancel: () {},
@@ -136,6 +139,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
               return AppAlertDialog(
                 insetPadding: EdgeInsets.all(20),
                 title: 'Error',
+                isDark: isDark,
                 message: next.msg,
                 onConfirm: () {
                   ref
@@ -155,11 +159,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
       ),
       body: Row(
         children: [
-          CheckOut(
-            428.h -
-                ScreenUtil().statusBarHeight -
-                AppBar().preferredSize.height,
-          ),
+          CheckOut(),
           Expanded(child: SafeArea(child: _cashPayment(state))),
         ],
       ),
@@ -258,16 +258,14 @@ class _CashScreenState extends ConsumerState<CashScreen> {
           Expanded(
             child: AspectRatio(
               aspectRatio: 1.0,
-              child: SizedBox(
-                child: NumPad(
-                    buttonColor:
-                        isDark ? primaryButtonDarkColor : primaryButtonColor,
-                    delete: () {},
-                    onSubmit: () {
-                      doPayment(payment);
-                    },
-                    controller: _controller),
-              ),
+              child: NumPad(
+                  buttonColor:
+                      isDark ? primaryButtonDarkColor : primaryButtonColor,
+                  delete: () {},
+                  onSubmit: () {
+                    doPayment(payment);
+                  },
+                  controller: _controller),
             ),
           ),
           Responsive.isMobile(context) ? verticalSpaceTiny : verticalSpaceLarge,
@@ -294,7 +292,8 @@ class _CashScreenState extends ConsumerState<CashScreen> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return const AppAlertDialog(
+            return AppAlertDialog(
+              isDark: isDark,
               content: Text(message_payment_cash_failed),
             );
           });

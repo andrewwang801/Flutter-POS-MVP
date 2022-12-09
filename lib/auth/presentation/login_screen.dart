@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/common/extension/workable.dart';
+import 'package:raptorpos/functions/application/function_provider.dart';
+import 'package:raptorpos/functions/application/function_state.dart';
+import 'package:raptorpos/functions/model/function_model.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/widgets/alert_dialog.dart';
-import '../../common/widgets/appbar.dart';
-import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/numpad.dart';
 import '../../common/widgets/responsive.dart';
 import '../../constants/color_constant.dart';
@@ -38,11 +39,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         pin = _controller.text;
       });
     });
+
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      ref.read(functionProvider.notifier).fetchFunctions();
+    });
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    FunctionState state = ref.watch(functionProvider);
+    if (state.workable == Workable.ready) {
+      GlobalConfig.functions = state.data?.functionList ?? <FunctionModel>[];
+    }
+
     ref.listen(authProvider, (Object? previous, Object? next) {
       if (next is AuthSuccessState) {
         if (POSDtls.TBLManagement) {
@@ -56,6 +67,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             builder: (context) {
               return AppAlertDialog(
                 title: 'Error',
+                isDark: isDark,
                 message: next.errMsg,
                 onConfirm: () {},
               );
@@ -66,18 +78,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     isDark = ref.watch(themeProvider);
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(appBarHeight),
-        child: AppBarWidget(false),
-      ),
       body: SafeArea(
         child: Center(
-          child: Row(
-            children: [
-              Expanded(child: leftLogo()),
-              Expanded(child: rightLoginForm()),
-            ],
-          ),
+          child: Responsive.isMobile(context)
+              ? Column(
+                  children: [
+                    Expanded(flex: 1, child: leftLogo()),
+                    Expanded(flex: 3, child: rightLoginForm()),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Spacer(),
+                    Expanded(flex: 4, child: leftLogo()),
+                    Expanded(flex: 3, child: rightLoginForm()),
+                    Spacer(),
+                  ],
+                ),
         ),
       ),
     );
@@ -94,67 +111,65 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget rightLoginForm() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: Responsive.isMobile(context) ? 220.h : 160.h,
-          height: Responsive.isMobile(context) ? 40.h : 25.h,
-          decoration: BoxDecoration(
-            color: isDark
-                ? primaryDarkColor.withOpacity(0.8)
-                : primaryLightColor.withOpacity(0.8),
-            borderRadius: BorderRadius.circular(4.0),
-          ),
-          child: Center(
-            child: Text(
-              pin,
-              style: titleTextDarkStyle,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: Spacing.xs, vertical: Spacing.sm),
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: Spacing.xs, vertical: Spacing.sm),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? primaryDarkColor.withOpacity(0.8)
+                    : backgroundColorVariant.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(Spacing.sm),
+              ),
+              child: Center(
+                child: Text(
+                  pin,
+                  style: isDark ? titleTextDarkStyle : titleTextLightStyle,
+                  maxLines: 1,
+                ),
+              ),
             ),
           ),
-        ),
-        SizedBox(
-          height: 5.h,
-        ),
-        Container(
-          width: Responsive.isMobile(context) ? 220.h : 160.h,
-          color: Colors.transparent,
-          child: AspectRatio(
-            aspectRatio: 1.0,
+          Container(
+            color: Colors.transparent,
             child: NumPad(
                 delete: () {},
                 onSubmit: () {},
+                backgroundColor: Colors.transparent,
                 buttonColor:
-                    isDark ? primaryButtonDarkColor : primaryButtonColor,
+                    isDark ? primaryButtonDarkColor : backgroundColorVariant,
+                isDark: isDark,
                 controller: _controller),
           ),
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        ElevatedButton(
-          onPressed: () {
-            pinSignIn();
-          },
-          style: ButtonStyle(
-            fixedSize: MaterialStateProperty.all(
-              Size(
-                Responsive.isMobile(context) ? 220.h : 160.h,
-                Responsive.isMobile(context) ? 40.h : 25.h,
+          Container(
+            padding: EdgeInsets.all(Spacing.xs),
+            child: ElevatedButton(
+              onPressed: () {
+                pinSignIn();
+              },
+              style: ElevatedButton.styleFrom(
+                  minimumSize: Size.fromHeight(40),
+                  primary: isDark ? primaryDarkColor : backgroundColorVariant,
+                  padding: EdgeInsets.all(Spacing.xs),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(Spacing.sm))),
+              child: Text(
+                'Sign In',
+                style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
               ),
             ),
-            backgroundColor: MaterialStateProperty.all(
-                isDark ? primaryDarkColor : primaryLightColor),
           ),
-          child: Text(
-            'Sign In',
-            style: isDark
-                ? buttonTextDarkStyle
-                : buttonTextLightStyle.copyWith(color: Colors.white),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

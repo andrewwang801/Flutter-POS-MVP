@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 mixin TypeUtil {
   int dynamicToInt(dynamic dyn) {
     return cast<int>(dyn) ?? 0;
