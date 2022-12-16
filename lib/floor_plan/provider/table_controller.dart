@@ -1,5 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
+import 'package:raptorpos/payment/repository/i_payment_repository.dart';
+import 'package:raptorpos/print/provider/print_controller.dart';
+import 'package:raptorpos/print/repository/i_print_repository.dart';
+import 'package:raptorpos/printer/repository/printer_local_repository.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/string_extension.dart';
@@ -14,11 +18,16 @@ import 'table_state.dart';
 @Injectable()
 class TableController extends StateNotifier<TableState>
     with DateTimeUtil, TypeUtil {
-  TableController(this.tableRepository, this.orderRepository)
+  TableController(this.tableRepository, this.orderRepository,
+      this.paymentRepository, this.printRepository,
+      {@factoryParam required this.printController})
       : super(TableInitialState());
 
   final ITableMangementRepository tableRepository;
   final IOrderRepository orderRepository;
+  final IPaymentRepository paymentRepository;
+  final IPrintRepository printRepository;
+  final PrintController printController;
 
   Future<void> fetchData() async {
     try {
@@ -262,6 +271,198 @@ class TableController extends StateNotifier<TableState>
       }
     } on ReceiptGenFailException catch (e) {
       state = TableErrorState(e.errMsg);
+    }
+  }
+
+  Future<void> holdTable() async {
+    if (GlobalConfig.checkTableOpen == 0) {
+      if (POSDtls.TBLManagement) {
+        GlobalConfig.cover = 0;
+
+        if (state is TableSuccessState) {
+          TableSuccessState prevState = state as TableSuccessState;
+          state =
+              prevState.copyWith(notify_type: NOTIFY_TYPE.GOTO_TABLE_LAYOUT);
+        }
+      } else {
+        checkQuickService();
+      }
+    } else {
+      await orderRepository.updateTableStatus(GlobalConfig.tableNo, 'H');
+      double tempGTotal = 0;
+      double sTotal = 0;
+      if (GlobalConfig.checkItemOrder > 0) {
+        List<double> paymentData = await paymentRepository.getAmountOrder(
+            GlobalConfig.ChangeLayout,
+            GlobalConfig.splitNo,
+            GlobalConfig.tableNo.toInt(),
+            POSDefault.taxInclusive);
+        if (paymentData.isNotEmpty) {
+          tempGTotal = paymentData[0];
+          sTotal = paymentData[2];
+        }
+      }
+
+      // kds count -> send to kds
+      // stock count down sold refund
+
+      await orderRepository.updateHoldItem(GlobalConfig.salesNo,
+          GlobalConfig.splitNo, GlobalConfig.tableNo, sTotal, tempGTotal, 0);
+
+      if (POSDefault.printKPWhenHoldTable) {
+        List<List<String>> kpscArray = await printRepository.getKPSalesCategory(
+            GlobalConfig.salesNo,
+            GlobalConfig.splitNo,
+            'HeldItems',
+            'KPStatus',
+            0);
+        if (kpscArray.isNotEmpty) {
+          await printRepository.kpPrinting(
+              GlobalConfig.salesNo,
+              GlobalConfig.splitNo,
+              GlobalConfig.tableNo,
+              'HeldItems',
+              'KPStatus',
+              0,
+              0);
+
+          if (POSDtls.blnKPPrintMaster) {
+            await printController.masterKPPrint(
+                GlobalConfig.salesNo,
+                GlobalConfig.splitNo,
+                GlobalConfig.tableNo,
+                'HeldItems',
+                'KPStatus',
+                0,
+                0);
+          }
+
+          for (var i = 0; i < printController.getPrintArray().length; i++) {
+            String printData = printController.getPrintArray()[i];
+            printController.doPrint(2, 0, printData);
+          }
+
+          printController.clearPrintArray();
+          await printRepository.updateKPPrintItem(
+              GlobalConfig.salesNo, GlobalConfig.splitNo);
+        }
+      }
+
+      if (POSDtls.TBLManagement) {
+        variableSet();
+
+        //send to display -> close table
+        if (state is TableSuccessState) {
+          TableSuccessState prevState = state as TableSuccessState;
+          state =
+              prevState.copyWith(notify_type: NOTIFY_TYPE.GOTO_TABLE_LAYOUT);
+        }
+      } else {
+        if (GlobalConfig.checkTableOpen > 0) {
+          variableSet();
+          // send to display -> close table
+          if (POSDtls.forceTable) {
+            // show table number window
+            if (state is TableSuccessState) {
+              TableSuccessState prevState = state as TableSuccessState;
+              // show cover modal
+              state = prevState.copyWith(notify_type: NOTIFY_TYPE.SHOW_COVER);
+            }
+          }
+        } else {}
+        checkQuickService();
+      }
+    }
+  }
+
+  void variableSet() {
+    InitSalesVar.TransMode = "REG";
+    InitSalesVar.LoyaltyCardNo = "000000";
+    InitSalesVar.memId = 0;
+    POSDtls.categoryID = POSDtls.defCtgryID;
+
+    // GTotal = 0; SRef = 0; ISeqNo = 0; OprtNo = 0;
+    // TempPLUName = ""; TempPLUNo = ""; CustId = ""; FOCRemarks = ""; OperatorFOC = ""; //
+    // ShowBFOC = false; NumpShow = false; ShowFunc = false; ShowPromo = false; ShowDisc = false;
+
+    //Function.RcptNo = ""; Function.Cover = 0; POSDtls.CtgryID = 1;
+    // taxDict =  Map<String, String>();
+  }
+
+  Future<void> checkQuickService() async {
+    try {
+      if (POSDtls.tblAutoOnly) {
+        if (POSDtls.forceCover) {
+          GlobalConfig.tableNo = GlobalConfig.TableNoInt.toString();
+          GlobalConfig.CoverView = 2;
+
+          if (state is TableSuccessState) {
+            TableSuccessState prevState = state as TableSuccessState;
+            // show cover modal
+            state = prevState.copyWith(notify_type: NOTIFY_TYPE.SHOW_COVER);
+          }
+        } else {
+          List<List<String>> tableData = await orderRepository
+              .getIndexOrder(GlobalConfig.TableNoInt.toString());
+          GlobalConfig.checkTableOpen = tableData.length;
+
+          if (GlobalConfig.checkTableOpen > 0) {
+            List<String> tempData = tableData[0];
+
+            GlobalConfig.salesNo = tempData[0].toInt();
+            GlobalConfig.splitNo = tempData[1].toInt();
+            GlobalConfig.tableNo = GlobalConfig.TableNoInt.toString();
+            GlobalConfig.cover = tempData[3].toInt();
+            GlobalConfig.rcptNo = tempData[4];
+
+            await orderRepository.updateTableStatus(GlobalConfig.tableNo, 'O');
+            if (state is TableSuccessState) {
+              TableSuccessState prevState = state as TableSuccessState;
+              // show cover modal
+              state = prevState.copyWith(notify_type: NOTIFY_TYPE.SHOW_COVER);
+            }
+          } else {
+            GlobalConfig.cover = 1;
+            GlobalConfig.tableNo = GlobalConfig.TableNoInt.toString();
+            await openTable(POSDtls.deviceNo, GlobalConfig.operatorNo,
+                GlobalConfig.tableNo, GlobalConfig.cover);
+
+            tableData = await orderRepository
+                .getIndexOrder(GlobalConfig.TableNoInt.toString());
+            GlobalConfig.checkTableOpen = tableData.length;
+
+            List<String> tempData = tableData[0];
+
+            GlobalConfig.salesNo = tempData[0].toInt();
+            GlobalConfig.splitNo = tempData[1].toInt();
+            GlobalConfig.tableNo = GlobalConfig.TableNoInt.toString();
+            GlobalConfig.cover = tempData[3].toInt();
+            GlobalConfig.rcptNo = tempData[4];
+
+            await orderRepository.updateTableStatus(GlobalConfig.tableNo, 'O');
+            if (state is TableSuccessState) {
+              TableSuccessState prevState = state as TableSuccessState;
+              // show cover modal
+              state = prevState.copyWith(notify_type: NOTIFY_TYPE.SHOW_COVER);
+            }
+          }
+
+          if (GlobalConfig.TableNoInt == POSDtls.AutoTblEnd) {
+            GlobalConfig.TableNoInt = POSDtls.AutoTblStart;
+          } else {
+            GlobalConfig.TableNoInt++;
+          }
+        }
+      } else if (POSDtls.forceTable) {
+        // show table number window
+        if (state is TableSuccessState) {
+          TableSuccessState prevState = state as TableSuccessState;
+          // show cover modal
+          state = prevState.copyWith(notify_type: NOTIFY_TYPE.SHOW_COVER);
+        }
+      }
+    } catch (e) {
+      state = TableErrorState(e.toString());
     }
   }
 }

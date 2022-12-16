@@ -133,7 +133,7 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
           padding: const EdgeInsets.all(12.0),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: greenVariant2,
               shape: BoxShape.circle,
             ),
             child: Column(

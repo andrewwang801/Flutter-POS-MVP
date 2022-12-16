@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
 
@@ -39,13 +40,22 @@ class checkout_summary extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(15.0),
         decoration: BoxDecoration(
-          color: backgroundColorVariant,
+          color: isDark
+              ? Responsive.isMobile(context)
+                  ? primaryDarkColor
+                  : backgroundDarkColor
+              : backgroundColorVariant,
           borderRadius: BorderRadius.circular(Spacing.sm),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Payment Summary'),
+            Text(
+              'Payment Summary',
+              style: isDark
+                  ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                  : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
+            ),
             SizedBox(
               height: 5.0,
             ),
@@ -124,7 +134,7 @@ class checkout_summary extends StatelessWidget {
                             color: Colors.red, fontWeight: FontWeight.bold)
                         : bodyTextLightStyle.copyWith(
                             color: Colors.red, fontWeight: FontWeight.bold)),
-                Text(gTotal.currencyString('\$'),
+                Text(gTotal.toStringAsFixed(2).currencyString('\$'),
                     style: isDark
                         ? bodyTextDarkStyle.copyWith(
                             color: Colors.red, fontWeight: FontWeight.bold)

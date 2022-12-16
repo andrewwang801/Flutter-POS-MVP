@@ -1077,4 +1077,12 @@ class PrintController extends StateNotifier<PrintState>
       await printBill(tempSNo, status);
     }
   }
+
+  List<String> getPrintArray() {
+    return printArr;
+  }
+
+  void clearPrintArray() {
+    printArr.clear();
+  }
 }

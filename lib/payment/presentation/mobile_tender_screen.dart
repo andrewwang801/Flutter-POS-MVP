@@ -235,27 +235,28 @@ class _MobileCashScreenState extends ConsumerState<MobileTenderScreen>
         ),
         actions: [
           IconButton(
-              icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
+              icon: Icon(isDark ? Icons.wb_sunny : Icons.nightlight_round),
+              color: isDark ? backgroundColor : primaryDarkColor,
               onPressed: () {
                 isDark ? isDark = false : isDark = true;
                 ref.read(themeProvider.notifier).setTheme(isDark);
               }),
-          Container(
-            padding: EdgeInsets.all(Spacing.sm),
-            child: ElevatedButton(
-              onPressed: () {
-                ref.read(functionProvider.notifier).voidAllOrder();
-              },
-              child: Text('close'),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(lightRed),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(Spacing.sm)),
-                ),
-              ),
-            ),
-          ),
+          // Container(
+          //   padding: EdgeInsets.all(Spacing.sm),
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       ref.read(functionProvider.notifier).voidAllOrder();
+          //     },
+          //     child: Text('close'),
+          //     style: ButtonStyle(
+          //       backgroundColor: MaterialStateProperty.all(lightRed),
+          //       shape: MaterialStateProperty.all(
+          //         RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(Spacing.sm)),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
       body: _rightSide(state),
@@ -334,12 +335,12 @@ class _MobileCashScreenState extends ConsumerState<MobileTenderScreen>
           Expanded(
             child: Container(
               padding: EdgeInsets.all(Spacing.sm),
-              color: Colors.white,
+              color: isDark ? primaryDarkColor : Colors.white,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(Spacing.sm),
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
-                  color: backgroundColorVariant,
+                  color: isDark ? backgroundDarkColor : backgroundColorVariant,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -353,7 +354,7 @@ class _MobileCashScreenState extends ConsumerState<MobileTenderScreen>
                               children: [
                                 Container(
                                   color: isDark
-                                      ? primaryDarkColor.withOpacity(0.8)
+                                      ? primaryDarkColor.withOpacity(0.9)
                                       : orange.withOpacity(0.8),
                                   child: ListTile(
                                     tileColor: red,
@@ -411,7 +412,8 @@ class _MobileCashScreenState extends ConsumerState<MobileTenderScreen>
                               child: Container(
                                 padding: EdgeInsets.all(Spacing.sm),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color:
+                                      isDark ? primaryDarkColor : Colors.white,
                                   borderRadius:
                                       BorderRadius.circular(Spacing.sm),
                                   border: Border.all(width: 1.0, color: orange),
@@ -441,7 +443,7 @@ class _MobileCashScreenState extends ConsumerState<MobileTenderScreen>
 
   Widget partialPaymentInput() {
     return Container(
-      color: backgroundColor,
+      color: isDark ? primaryDarkColor : backgroundColor,
       padding: const EdgeInsets.all(8.0),
       child: TextField(
         decoration: InputDecoration(
@@ -492,7 +494,7 @@ class _MobileCashScreenState extends ConsumerState<MobileTenderScreen>
 
   Widget _rightBottomBtnGroup() {
     return Container(
-      color: Colors.white,
+      color: isDark ? primaryDarkColor : Colors.white,
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [

@@ -1,3 +1,5 @@
+import 'package:raptorpos/common/GlobalConfig.dart';
+
 extension StringExtension on String {
   int toInt() {
     return int.tryParse(this) ?? 0;

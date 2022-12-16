@@ -143,6 +143,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               ),
             ),
           ),
+          IconButton(
+              icon: Icon(
+                isDark ? Icons.wb_sunny : Icons.nightlight_round,
+              ),
+              color: isDark ? backgroundColor : primaryDarkColor,
+              onPressed: () {
+                isDark ? isDark = false : isDark = true;
+                ref.read(themeProvider.notifier).setTheme(isDark);
+              }),
           // IconButton(
           //     icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
           //     onPressed: () {
@@ -162,7 +171,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 children: [
                   Expanded(child: CheckOut()),
                   Container(
-                    color: Colors.white,
+                    color: isDark ? primaryDarkColor : backgroundColor,
                     height: MediaQuery.of(context).padding.bottom,
                   ),
                 ],
@@ -175,7 +184,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     children: [
                       Container(
                         padding: EdgeInsets.all(Spacing.sm),
-                        color: Colors.white,
+                        color: isDark ? backgroundDarkColor : backgroundColor,
                         child: MenuList(),
                       ),
                       Expanded(
@@ -203,11 +212,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
-      backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
+      backgroundColor: isDark ? primaryDarkColor : backgroundColor,
       body: SafeArea(
         bottom: false,
         child: Container(
-          color: isDark ? primaryDarkColor : backgroundColor,
+          // color: isDark ? backgroundDarkColor : backgroundColor,
           child: Column(
             children: [
               Padding(
@@ -277,23 +286,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                         textAlign: TextAlign.right,
                       ),
-                    )
+                    ),
+                    IconButton(
+                        icon: Icon(
+                          isDark ? Icons.wb_sunny : Icons.nightlight_round,
+                        ),
+                        color: isDark ? backgroundColor : primaryDarkColor,
+                        onPressed: () {
+                          isDark ? isDark = false : isDark = true;
+                          ref.read(themeProvider.notifier).setTheme(isDark);
+                        }),
                   ],
                 ),
               ),
               Container(
                 padding: EdgeInsets.all(Spacing.sm),
-                color: Colors.white,
+                color: isDark ? backgroundDarkColor : backgroundColor,
                 child: _searchBar(),
               ),
               Expanded(
                 child: Container(
+                  color: isDark ? backgroundDarkColor : backgroundColor,
                   padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
                   child: MenuItemList(),
                 ),
               ),
               ClipRRect(
-                borderRadius: BorderRadius.circular(Spacing.sm),
+                borderRadius: BorderRadius.circular(Spacing.md),
                 child: Column(
                   children: [
                     Container(
@@ -385,7 +404,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     Container(
                       height: 100.h,
                       padding: EdgeInsets.all(Spacing.sm),
-                      color: backgroundColorVariant,
+                      color: isDark ? primaryDarkColor : backgroundColorVariant,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -398,7 +417,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                     ? titleTextDarkStyle
                                     : titleTextLightStyle,
                               ),
-                              Text('${billTotal} \$'),
+                              Text('${billTotal.toStringAsFixed(2)}'),
                             ],
                           ),
                           ElevatedButton(

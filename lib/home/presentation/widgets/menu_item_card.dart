@@ -78,23 +78,23 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
     return InkWell(
       onTap: () {
         // create order item && modifier
-        ref
-            .read(orderProvoder.notifier)
-            .createOrderItem(widget.menuItem.pluNumber ?? '', '', 1, false, {});
+        // ref
+        //     .read(orderProvoder.notifier)
+        //     .createOrderItem(widget.menuItem.pluNumber ?? '', '', 1, false, {});
         // foc item
       },
       onLongPress: () {
-        showGeneralDialog(
-          context: context,
-          barrierColor: Colors.black38,
-          barrierLabel: 'Label',
-          barrierDismissible: true,
-          pageBuilder: (_, __, ___) => MenuItemDetail(
-            widget.menuItem.pluNumber ?? '',
-            0,
-            false,
-          ),
-        );
+        // showGeneralDialog(
+        //   context: context,
+        //   barrierColor: Colors.black38,
+        //   barrierLabel: 'Label',
+        //   barrierDismissible: true,
+        //   pageBuilder: (_, __, ___) => MenuItemDetail(
+        //     widget.menuItem.pluNumber ?? '',
+        //     0,
+        //     false,
+        //   ),
+        // );
       },
       child: Responsive(
         mobile: _moibleItemCard(),
@@ -134,7 +134,7 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
     return Ink(
       padding: const EdgeInsets.all(Spacing.sm),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? primaryDarkColor : backgroundColor,
         borderRadius: BorderRadius.circular(Spacing.sm),
       ),
       child: Column(
@@ -172,15 +172,21 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
                   '${widget.menuItem.price ?? 0}',
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(Spacing.xs),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Spacing.sm),
-                  color: orange,
-                ),
-                child: Text(
-                  'Add to cart',
-                  style: bodyTextDarkStyle,
+              GestureDetector(
+                onTap: () {
+                  ref.read(orderProvoder.notifier).createOrderItem(
+                      widget.menuItem.pluNumber ?? '', '', 1, false, {});
+                },
+                child: Container(
+                  padding: EdgeInsets.all(Spacing.xs),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(Spacing.sm),
+                    color: orange,
+                  ),
+                  child: Text(
+                    'Add to cart',
+                    style: bodyTextDarkStyle,
+                  ),
                 ),
               ),
             ],
@@ -238,15 +244,34 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
                     _incrementButton(),
                   ],
                 )
-              : Container(
-                  padding: EdgeInsets.all(Spacing.xs),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Spacing.sm),
-                    color: orange,
-                  ),
-                  child: Text(
-                    'Add to cart',
-                    style: bodyTextDarkStyle,
+              : GestureDetector(
+                  onTap: () {
+                    ref.read(orderProvoder.notifier).createOrderItem(
+                        widget.menuItem.pluNumber ?? '', '', 1, false, {});
+                  },
+                  // onLongPress: () {
+                  //   showGeneralDialog(
+                  //     context: context,
+                  //     barrierColor: Colors.black38,
+                  //     barrierLabel: 'Label',
+                  //     barrierDismissible: true,
+                  //     pageBuilder: (_, __, ___) => MenuItemDetail(
+                  //       widget.menuItem.pluNumber ?? '',
+                  //       0,
+                  //       false,
+                  //     ),
+                  //   );
+                  // },
+                  child: Container(
+                    padding: EdgeInsets.all(Spacing.xs),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Spacing.sm),
+                      color: orange,
+                    ),
+                    child: Text(
+                      'Add to cart',
+                      style: bodyTextDarkStyle,
+                    ),
                   ),
                 ),
         ],

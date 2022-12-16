@@ -126,7 +126,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
     return Container(
       // padding: EdgeInsets.all(Spacing.sm),
       width: 428.w,
-      color: isDark ? backgroundDarkColor : backgroundColor,
+      color: isDark ? primaryDarkColor : backgroundColor,
       child: Column(
         children: [
           Row(
@@ -134,8 +134,10 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  horizontalSpaceTiny,
                   Container(
-                    // padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
+                    width: minTouchTarget,
+                    height: minTouchTarget,
                     child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           padding: EdgeInsets.zero,
@@ -156,15 +158,28 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
               Row(
                 children: [
                   IconButton(
+                      padding: EdgeInsets.all(Spacing.sm),
+                      splashRadius: 24,
                       onPressed: () {
                         showInfoBottomSheet();
                       },
                       icon: Icon(Icons.info_outline)),
                   IconButton(
+                      splashRadius: 24,
                       onPressed: () {
                         showMoreAction();
                       },
-                      icon: Icon(Icons.more_vert))
+                      icon: Icon(Icons.more_vert)),
+                  IconButton(
+                      splashRadius: 24,
+                      icon: Icon(
+                        isDark ? Icons.wb_sunny : Icons.nightlight_round,
+                      ),
+                      color: isDark ? backgroundColor : primaryDarkColor,
+                      onPressed: () {
+                        isDark ? isDark = false : isDark = true;
+                        ref.read(themeProvider.notifier).setTheme(isDark);
+                      }),
                 ],
               )
             ],
@@ -178,7 +193,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
     return Container(
       padding: EdgeInsets.all(Spacing.sm),
       width: 926.w,
-      color: isDark ? backgroundDarkColor : backgroundColor,
+      color: isDark ? primaryDarkColor : backgroundColor,
       child: Column(
         children: [
           Row(
@@ -190,9 +205,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
                 child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(minTouchTarget / 2),
-                      ),
+                      shape: StadiumBorder(),
                     ),
                     onPressed: () {
                       Scaffold.of(context).openDrawer();
@@ -246,9 +259,12 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
                 ),
                 Row(
                   children: [
-                    _switchButton('View Table', () {}),
-                    _switchButton('View Detail', () {}),
-                    _switchButton('Dark Mode', () {})
+                    _switchButton(false, 'View Table', () {}),
+                    _switchButton(false, 'View Detail', () {}),
+                    _switchButton(isDark, 'Dark Mode', () {
+                      isDark ? isDark = false : isDark = true;
+                      ref.read(themeProvider.notifier).setTheme(isDark);
+                    })
                   ],
                 ),
               ],
@@ -315,7 +331,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
         ));
   }
 
-  Widget _switchButton(String text, Function callback) {
+  Widget _switchButton(bool value, String text, Function callback) {
     return Container(
       // height: 16.h,
       child: Row(
@@ -324,7 +340,11 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
             text,
             style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
           ),
-          Switch(value: false, onChanged: (bool newValue) {}),
+          Switch(
+              value: value,
+              onChanged: (bool newValue) {
+                callback();
+              }),
         ],
       ),
     );
@@ -410,8 +430,12 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
               width: 2.w,
             ),
             Center(
-                child: Text(statusString,
-                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+              child: Text(
+                statusString,
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                textAlign: TextAlign.center,
+              ),
+            ),
           ],
         ),
       ),

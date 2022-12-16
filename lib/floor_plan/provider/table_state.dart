@@ -7,7 +7,13 @@ abstract class TableState extends Equatable {
   List<Object?> get props => [];
 }
 
-enum NOTIFY_TYPE { SHOW_COVER, GOTO_MAIN, COVER_SELECT_ERROR, NONE }
+enum NOTIFY_TYPE {
+  SHOW_COVER,
+  GOTO_TABLE_LAYOUT,
+  GOTO_MAIN,
+  COVER_SELECT_ERROR,
+  NONE,
+}
 
 class TableInitialState extends TableState {}
 

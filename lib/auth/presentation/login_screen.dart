@@ -78,6 +78,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     isDark = ref.watch(themeProvider);
 
     return Scaffold(
+      backgroundColor: isDark ? primaryDarkColor : backgroundColor,
+      appBar: AppBar(
+        elevation: 0,
+        actions: [
+          IconButton(
+              icon: Icon(
+                isDark ? Icons.wb_sunny : Icons.nightlight_round,
+              ),
+              color: isDark ? backgroundColor : primaryDarkColor,
+              onPressed: () {
+                isDark ? isDark = false : isDark = true;
+                ref.read(themeProvider.notifier).setTheme(isDark);
+              }),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: Responsive.isMobile(context)
@@ -126,7 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   horizontal: Spacing.xs, vertical: Spacing.sm),
               decoration: BoxDecoration(
                 color: isDark
-                    ? primaryDarkColor.withOpacity(0.8)
+                    ? backgroundDarkColor.withOpacity(0.8)
                     : backgroundColorVariant.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(Spacing.sm),
               ),
@@ -146,7 +161,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onSubmit: () {},
                 backgroundColor: Colors.transparent,
                 buttonColor:
-                    isDark ? primaryButtonDarkColor : backgroundColorVariant,
+                    isDark ? backgroundDarkColor : backgroundColorVariant,
                 isDark: isDark,
                 controller: _controller),
           ),
@@ -158,7 +173,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               },
               style: ElevatedButton.styleFrom(
                   minimumSize: Size.fromHeight(40),
-                  primary: isDark ? primaryDarkColor : backgroundColorVariant,
+                  primary:
+                      isDark ? backgroundDarkColor : backgroundColorVariant,
                   padding: EdgeInsets.all(Spacing.xs),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(Spacing.sm))),
