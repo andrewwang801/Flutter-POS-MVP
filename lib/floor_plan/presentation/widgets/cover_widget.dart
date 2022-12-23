@@ -46,7 +46,7 @@ class _CoverWidgetState extends ConsumerState<CoverWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: Responsive.isMobile(context) ? 300.w : 300.w,
+            width: Responsive.isMobile(context) ? 300.w : 200.w,
             padding: EdgeInsets.all(Spacing.xs),
             decoration: BoxDecoration(
               color: isDark
@@ -64,11 +64,15 @@ class _CoverWidgetState extends ConsumerState<CoverWidget> {
           ),
           verticalSpaceSmall,
           Container(
-            width: Responsive.isMobile(context) ? 300.w : 300.w,
+            width: Responsive.isMobile(context) ? 300.w : 200.w,
+            height: ScreenUtil().orientation == Orientation.landscape
+                ? 0.4.sh
+                : 0.2.sh,
             color: Colors.transparent,
             child: NumPad(
                 buttonColor:
-                    isDark ? primaryButtonDarkColor : backgroundColorVariant,
+                    isDark ? backgroundDarkColor : backgroundColorVariant,
+                backgroundColor: Colors.transparent,
                 delete: () {},
                 onSubmit: () {
                   widget.callback(cover.toInt());

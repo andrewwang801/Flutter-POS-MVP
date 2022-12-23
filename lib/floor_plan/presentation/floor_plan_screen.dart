@@ -39,22 +39,9 @@ class _FloorPlanScreenState extends ConsumerState<FloorPlanScreen> {
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
         child: Column(
-          children: [
-            Expanded(
-              child: SafeArea(
-                bottom: false,
-                child: Column(
-                  children: <Widget>[
-                    FloorToolBar(),
-                    const FloorLayout(),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              color: isDark ? backgroundDarkColor : backgroundColorVariant,
-              height: MediaQuery.of(context).padding.bottom,
-            )
+          children: <Widget>[
+            FloorToolBar(),
+            FloorLayout(),
           ],
         ),
       ),

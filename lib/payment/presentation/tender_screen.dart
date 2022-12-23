@@ -245,7 +245,9 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
           Container(
             padding: EdgeInsets.all(Spacing.sm),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(FloorPlanScreen());
+              },
               child: Text('close'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(lightRed),
@@ -256,15 +258,15 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               ),
             ),
           ),
-          IconButton(
-              icon: Icon(
-                isDark ? Icons.wb_sunny : Icons.nightlight_round,
-              ),
-              color: isDark ? backgroundColor : primaryDarkColor,
-              onPressed: () {
-                isDark ? isDark = false : isDark = true;
-                ref.read(themeProvider.notifier).setTheme(isDark);
-              }),
+          // IconButton(
+          //     icon: Icon(
+          //       isDark ? Icons.wb_sunny : Icons.nightlight_round,
+          //     ),
+          //     color: isDark ? backgroundColor : primaryDarkColor,
+          //     onPressed: () {
+          //       isDark ? isDark = false : isDark = true;
+          //       ref.read(themeProvider.notifier).setTheme(isDark);
+          //     }),
           // IconButton(
           //     icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
           //     onPressed: () {
@@ -276,7 +278,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
       body: Row(
         children: [
           SizedBox(
-              width: Responsive.isMobile(context) ? 400.w : 320.w,
+              width: Responsive.isMobile(context) ? 400.w : 0.345.sw,
               child: Container(
                 padding: EdgeInsets.all(Spacing.xs),
                 color: isDark
@@ -300,15 +302,20 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                     checkout_summary(
                         isDark: isDark, state: orderState, totalTax: totalTax),
                     _paymentEdit(),
-                    NumPad(
-                      buttonColor:
-                          isDark ? primaryButtonDarkColor : Colors.white,
-                      backgroundColor:
-                          isDark ? backgroundDarkColor : backgroundColorVariant,
-                      delete: () {},
-                      onSubmit: () {},
-                      controller: _controller,
-                      onlyNum: true,
+                    SizedBox(
+                      height: 0.3.sh,
+                      width: double.infinity,
+                      child: NumPad(
+                        buttonColor:
+                            isDark ? primaryButtonDarkColor : Colors.white,
+                        backgroundColor: isDark
+                            ? backgroundDarkColor
+                            : backgroundColorVariant,
+                        delete: () {},
+                        onSubmit: () {},
+                        controller: _controller,
+                        onlyNum: true,
+                      ),
                     ),
                   ],
                 ),

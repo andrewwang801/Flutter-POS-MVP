@@ -270,180 +270,396 @@ class _MobileCashScreenState extends ConsumerState<MobileTenderScreen>
     } else {
       tenderArray = state.tenderArray ?? [];
       tenderDetail = state.tenderDetail ?? [];
-      return Column(
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(Spacing.sm),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Tender Modes',
-                    style: isDark ? titleTextDarkStyle : titleTextLightStyle,
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Expanded(
-                    // height: 200.h,
-                    child: GridView.builder(
-                      physics: ClampingScrollPhysics(),
-                      itemCount: tenderArray.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        MediaData mediaData = tenderArray[index];
-                        return Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(Spacing.sm),
-                            onTap: () {
-                              mediaSelect(mediaData);
-                            },
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(Spacing.sm),
-                                color: mediaData.title == 'Back'
-                                    ? Colors.red
-                                    : isDark
-                                        ? primaryDarkColor
-                                        : Colors.white,
-                              ),
-                              child: Center(
-                                child: Text(mediaData.title,
-                                    textAlign: TextAlign.center,
-                                    style: isDark
-                                        ? listItemTextDarkStyle
-                                        : listItemTextLightStyle),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        mainAxisExtent: 50.h - 10,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                      ),
-                    ),
-                  ),
-                ],
+      return ScreenUtil().orientation == Orientation.landscape
+          ? landscape()
+          : portrait();
+    }
+  }
+
+  Widget landscape() {
+    return Column(
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).padding.left,
               ),
-            ),
-          ),
-          partialPaymentInput(),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(Spacing.sm),
-              color: isDark ? primaryDarkColor : Colors.white,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(Spacing.sm),
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  color: isDark ? backgroundDarkColor : backgroundColorVariant,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Payment Detail'),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(Spacing.sm),
-                            child: Column(
-                              children: [
-                                Container(
-                                  color: isDark
-                                      ? primaryDarkColor.withOpacity(0.9)
-                                      : orange.withOpacity(0.8),
-                                  child: ListTile(
-                                    tileColor: red,
-                                    dense: true,
-                                    title: Text(
-                                      'Media Type',
-                                      style: isDark
-                                          ? bodyTextDarkStyle
-                                          : bodyTextLightStyle,
-                                    ),
-                                    trailing: Text(
-                                      'Amount',
-                                      style: isDark
-                                          ? bodyTextDarkStyle
-                                          : bodyTextLightStyle,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                      color: isDark
-                                          ? primaryDarkColor.withOpacity(0.6)
-                                          : Colors.white.withOpacity(0.6),
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            child: ListView.builder(
-                                                itemCount: tenderDetail.length,
-                                                itemBuilder:
-                                                    (BuildContext context,
-                                                        int index) {
-                                                  return _payentDetailListItem(
-                                                      index);
-                                                }),
-                                          ),
-                                        ],
-                                      )),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(Spacing.sm),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Amount Due: ',
+                              'Tender Modes',
                               style: isDark
-                                  ? normalTextDarkStyle
-                                  : normalTextLightStyle,
+                                  ? titleTextDarkStyle
+                                  : titleTextLightStyle,
+                            ),
+                            SizedBox(
+                              height: 5.h,
                             ),
                             Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(Spacing.sm),
-                                decoration: BoxDecoration(
-                                  color:
-                                      isDark ? primaryDarkColor : Colors.white,
-                                  borderRadius:
-                                      BorderRadius.circular(Spacing.sm),
-                                  border: Border.all(width: 1.0, color: orange),
-                                ),
-                                child: Text(
-                                  '${gtAmount.toStringAsFixed(2)}',
-                                  style: isDark
-                                      ? normalTextDarkStyle
-                                      : normalTextLightStyle,
+                              // height: 200.h,
+                              child: GridView.builder(
+                                physics: ClampingScrollPhysics(),
+                                itemCount: tenderArray.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  MediaData mediaData = tenderArray[index];
+                                  return Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius:
+                                          BorderRadius.circular(Spacing.sm),
+                                      onTap: () {
+                                        mediaSelect(mediaData);
+                                      },
+                                      child: Ink(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(Spacing.sm),
+                                          color: mediaData.title == 'Back'
+                                              ? Colors.red
+                                              : isDark
+                                                  ? primaryDarkColor
+                                                  : Colors.white,
+                                        ),
+                                        child: Center(
+                                          child: Text(mediaData.title,
+                                              textAlign: TextAlign.center,
+                                              style: isDark
+                                                  ? listItemTextDarkStyle
+                                                  : listItemTextLightStyle),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 4,
+                                  mainAxisExtent: 50.h - 10,
+                                  mainAxisSpacing: 10,
+                                  crossAxisSpacing: 10,
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
+                    ),
+                    partialPaymentInput(),
+
+                    // _rightBottomBtnGroup(),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(Spacing.sm),
+                  color: isDark ? backgroundDarkColor : Colors.white,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(Spacing.sm),
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      color:
+                          isDark ? backgroundDarkColor : backgroundColorVariant,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Payment Detail'),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(Spacing.sm),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      color: isDark
+                                          ? primaryDarkColor.withOpacity(0.9)
+                                          : orange.withOpacity(0.8),
+                                      child: ListTile(
+                                        tileColor: red,
+                                        dense: true,
+                                        title: Text(
+                                          'Media Type',
+                                          style: isDark
+                                              ? bodyTextDarkStyle
+                                              : bodyTextLightStyle,
+                                        ),
+                                        trailing: Text(
+                                          'Amount',
+                                          style: isDark
+                                              ? bodyTextDarkStyle
+                                              : bodyTextLightStyle,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                          color: isDark
+                                              ? primaryDarkColor
+                                                  .withOpacity(0.6)
+                                              : Colors.white.withOpacity(0.6),
+                                          child: Column(
+                                            children: [
+                                              Expanded(
+                                                child: ListView.builder(
+                                                    itemCount:
+                                                        tenderDetail.length,
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            int index) {
+                                                      return _payentDetailListItem(
+                                                          index);
+                                                    }),
+                                              ),
+                                            ],
+                                          )),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Amount Due: ',
+                                  style: isDark
+                                      ? normalTextDarkStyle
+                                      : normalTextLightStyle,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.all(Spacing.sm),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? primaryDarkColor
+                                          : Colors.white,
+                                      borderRadius:
+                                          BorderRadius.circular(Spacing.sm),
+                                      border:
+                                          Border.all(width: 1.0, color: orange),
+                                    ),
+                                    child: Text(
+                                      '${gtAmount.toStringAsFixed(2)}',
+                                      style: isDark
+                                          ? normalTextDarkStyle
+                                          : normalTextLightStyle,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).padding.right,
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).padding.bottom,
+        ),
+      ],
+    );
+  }
+
+  Widget portrait() {
+    return Column(
+      children: [
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.all(Spacing.sm),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Tender Modes',
+                  style: isDark ? titleTextDarkStyle : titleTextLightStyle,
+                ),
+                SizedBox(
+                  height: 5.h,
+                ),
+                Expanded(
+                  // height: 200.h,
+                  child: GridView.builder(
+                    physics: ClampingScrollPhysics(),
+                    itemCount: tenderArray.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      MediaData mediaData = tenderArray[index];
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(Spacing.sm),
+                          onTap: () {
+                            mediaSelect(mediaData);
+                          },
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(Spacing.sm),
+                              color: mediaData.title == 'Back'
+                                  ? Colors.red
+                                  : isDark
+                                      ? primaryDarkColor
+                                      : Colors.white,
+                            ),
+                            child: Center(
+                              child: Text(mediaData.title,
+                                  textAlign: TextAlign.center,
+                                  style: isDark
+                                      ? listItemTextDarkStyle
+                                      : listItemTextLightStyle),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      mainAxisExtent: 50.h - 10,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        partialPaymentInput(),
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.all(Spacing.sm),
+            color: isDark ? primaryDarkColor : Colors.white,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(Spacing.sm),
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                color: isDark ? backgroundDarkColor : backgroundColorVariant,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Payment Detail'),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(Spacing.sm),
+                          child: Column(
+                            children: [
+                              Container(
+                                color: isDark
+                                    ? primaryDarkColor.withOpacity(0.9)
+                                    : orange.withOpacity(0.8),
+                                child: ListTile(
+                                  tileColor: red,
+                                  dense: true,
+                                  title: Text(
+                                    'Media Type',
+                                    style: isDark
+                                        ? bodyTextDarkStyle
+                                        : bodyTextLightStyle,
+                                  ),
+                                  trailing: Text(
+                                    'Amount',
+                                    style: isDark
+                                        ? bodyTextDarkStyle
+                                        : bodyTextLightStyle,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                    color: isDark
+                                        ? primaryDarkColor.withOpacity(0.6)
+                                        : Colors.white.withOpacity(0.6),
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          child: ListView.builder(
+                                              itemCount: tenderDetail.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return _payentDetailListItem(
+                                                    index);
+                                              }),
+                                        ),
+                                      ],
+                                    )),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Amount Due: ',
+                            style: isDark
+                                ? normalTextDarkStyle
+                                : normalTextLightStyle,
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.all(Spacing.sm),
+                              decoration: BoxDecoration(
+                                color: isDark ? primaryDarkColor : Colors.white,
+                                borderRadius: BorderRadius.circular(Spacing.sm),
+                                border: Border.all(width: 1.0, color: orange),
+                              ),
+                              child: Text(
+                                '${gtAmount.toStringAsFixed(2)}',
+                                style: isDark
+                                    ? normalTextDarkStyle
+                                    : normalTextLightStyle,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-          _rightBottomBtnGroup(),
-        ],
-      );
-    }
+        ),
+        _rightBottomBtnGroup(),
+        Container(
+          color: isDark ? primaryDarkColor : backgroundColor,
+          height: MediaQuery.of(context).padding.bottom,
+        ),
+      ],
+    );
   }
 
   Widget partialPaymentInput() {
     return Container(
-      color: isDark ? primaryDarkColor : backgroundColor,
+      color: isDark
+          ? ScreenUtil().orientation == Orientation.landscape
+              ? backgroundDarkColor
+              : primaryDarkColor
+          : backgroundColor,
       padding: const EdgeInsets.all(8.0),
       child: TextField(
         decoration: InputDecoration(

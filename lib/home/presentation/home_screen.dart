@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -143,15 +144,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               ),
             ),
           ),
-          IconButton(
-              icon: Icon(
-                isDark ? Icons.wb_sunny : Icons.nightlight_round,
-              ),
-              color: isDark ? backgroundColor : primaryDarkColor,
-              onPressed: () {
-                isDark ? isDark = false : isDark = true;
-                ref.read(themeProvider.notifier).setTheme(isDark);
-              }),
+          // IconButton(
+          //     icon: Icon(
+          //       isDark ? Icons.wb_sunny : Icons.nightlight_round,
+          //     ),
+          //     color: isDark ? backgroundColor : primaryDarkColor,
+          //     onPressed: () {
+          //       isDark ? isDark = false : isDark = true;
+          //       ref.read(themeProvider.notifier).setTheme(isDark);
+          //     }),
           // IconButton(
           //     icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
           //     onPressed: () {
@@ -166,7 +167,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: Responsive.isMobile(context) ? 400.w : 320.w,
+              width: Responsive.isMobile(context) ? 400.w : 0.37.sw,
               child: Column(
                 children: [
                   Expanded(child: CheckOut()),
@@ -209,18 +210,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final menuHdr = ref.watch(menuHdrProvider);
     List<MenuModel> menus = [];
 
-    return Scaffold(
-      key: _scaffoldKey,
-      resizeToAvoidBottomInset: false,
-      backgroundColor: isDark ? primaryDarkColor : backgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: Container(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        key: _scaffoldKey,
+        resizeToAvoidBottomInset: false,
+        backgroundColor: isDark ? primaryDarkColor : backgroundColor,
+        body: Container(
           // color: isDark ? backgroundDarkColor : backgroundColor,
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(Spacing.sm),
+                padding: EdgeInsets.only(
+                    top: ScreenUtil().orientation == Orientation.landscape
+                        ? Spacing.sm
+                        : ScreenUtil().statusBarHeight,
+                    right: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.right
+                        : Spacing.sm,
+                    left: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.left
+                        : Spacing.sm,
+                    bottom: Spacing.sm),
+                // padding: EdgeInsets.all(Spacing.sm),
                 child: Row(
                   children: [
                     Row(
@@ -287,161 +299,194 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         textAlign: TextAlign.right,
                       ),
                     ),
-                    IconButton(
-                        icon: Icon(
-                          isDark ? Icons.wb_sunny : Icons.nightlight_round,
-                        ),
-                        color: isDark ? backgroundColor : primaryDarkColor,
-                        onPressed: () {
-                          isDark ? isDark = false : isDark = true;
-                          ref.read(themeProvider.notifier).setTheme(isDark);
-                        }),
+                    // IconButton(
+                    //     icon: Icon(
+                    //       isDark ? Icons.wb_sunny : Icons.nightlight_round,
+                    //     ),
+                    //     color: isDark ? backgroundColor : primaryDarkColor,
+                    //     onPressed: () {
+                    //       isDark ? isDark = false : isDark = true;
+                    //       ref.read(themeProvider.notifier).setTheme(isDark);
+                    //     }),
                   ],
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(Spacing.sm),
+                // padding: EdgeInsets.all(Spacing.sm),
+                padding: EdgeInsets.only(
+                    top: ScreenUtil().orientation == Orientation.landscape
+                        ? Spacing.sm
+                        : Spacing.sm,
+                    right: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.right
+                        : Spacing.sm,
+                    left: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.left
+                        : Spacing.sm,
+                    bottom: Spacing.sm),
                 color: isDark ? backgroundDarkColor : backgroundColor,
                 child: _searchBar(),
               ),
               Expanded(
                 child: Container(
                   color: isDark ? backgroundDarkColor : backgroundColor,
-                  padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
+                  // padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
+                  padding: EdgeInsets.only(
+                    right: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.right
+                        : Spacing.sm,
+                    left: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.left
+                        : Spacing.sm,
+                  ),
                   child: MenuItemList(),
                 ),
               ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(Spacing.md),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(Spacing.sm),
-                      height: 50.h,
-                      color: red,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.menu_book_sharp,
+              Container(
+                color: isDark ? backgroundDarkColor : backgroundColor,
+                padding: EdgeInsets.only(
+                    right: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.right
+                        : 0,
+                    left: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.left
+                        : 0,
+                    bottom: ScreenUtil().bottomBarHeight),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(Spacing.md),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(Spacing.sm),
+                        color: red,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.menu_book_sharp,
+                                  color: backgroundColor,
+                                ),
+                                horizontalSpaceTiny,
+                                Text(
+                                  _selectedMenu?.MenuName ?? 'All Menu',
+                                  style: isDark
+                                      ? bodyTextDarkStyle
+                                      : bodyTextLightStyle.copyWith(
+                                          color: Colors.white),
+                                ),
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _isMenuExpand = !_isMenuExpand;
+                                  _menuController.duration =
+                                      Duration(milliseconds: 300);
+                                  _isMenuExpand
+                                      ? _menuController.forward(from: 0)
+                                      : _menuController.reverse(from: 0.3);
+                                });
+                              },
+                              child: Icon(
+                                _isMenuExpand
+                                    ? Icons.keyboard_arrow_down
+                                    : Icons.keyboard_arrow_up,
                                 color: backgroundColor,
                               ),
-                              horizontalSpaceTiny,
-                              Text(
-                                _selectedMenu?.MenuName ?? 'All Menu',
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle.copyWith(
-                                        color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _isMenuExpand = !_isMenuExpand;
-                                _menuController.duration =
-                                    Duration(milliseconds: 300);
-                                _isMenuExpand
-                                    ? _menuController.forward(from: 0)
-                                    : _menuController.reverse(from: 0.3);
-                              });
-                            },
-                            child: Icon(
-                              _isMenuExpand
-                                  ? Icons.keyboard_arrow_down
-                                  : Icons.keyboard_arrow_up,
-                              color: backgroundColor,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    SizeTransition(
-                      sizeFactor: _animation,
-                      child: menuHdr.when(
-                        data: (data) {
-                          menus.addAll(data);
-                          menus.insert(0, MenuModel(0, 'All Menu', 'All Menu'));
-                          return Container(
-                            height: 300,
-                            color:
-                                isDark ? backgroundDarkColor : backgroundColor,
-                            child: ListView.separated(
-                                physics: ClampingScrollPhysics(),
-                                itemCount: menus.length,
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return Divider();
-                                },
-                                itemBuilder: ((context, index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedMenu = menus[index];
-                                      });
-                                      ref.read(menuIDProvider.notifier).state =
-                                          menus[index].MenuID;
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(Spacing.sm),
-                                      child: Text(menus[index].MenuName ?? ''),
-                                    ),
-                                  );
-                                })),
-                          );
-                        },
-                        error: (error, e) {
-                          return Container();
-                        },
-                        loading: () {
-                          return Container();
-                        },
+                      SizeTransition(
+                        sizeFactor: _animation,
+                        child: menuHdr.when(
+                          data: (data) {
+                            menus.addAll(data);
+                            menus.insert(
+                                0, MenuModel(0, 'All Menu', 'All Menu'));
+                            return Container(
+                              height: 0.3.sh,
+                              color: isDark
+                                  ? backgroundDarkColor
+                                  : backgroundColor,
+                              child: ListView.separated(
+                                  physics: ClampingScrollPhysics(),
+                                  itemCount: menus.length,
+                                  separatorBuilder:
+                                      (BuildContext context, int index) {
+                                    return Divider();
+                                  },
+                                  itemBuilder: ((context, index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedMenu = menus[index];
+                                        });
+                                        ref
+                                            .read(menuIDProvider.notifier)
+                                            .state = menus[index].MenuID;
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(Spacing.sm),
+                                        child:
+                                            Text(menus[index].MenuName ?? ''),
+                                      ),
+                                    );
+                                  })),
+                            );
+                          },
+                          error: (error, e) {
+                            return Container();
+                          },
+                          loading: () {
+                            return Container();
+                          },
+                        ),
                       ),
-                    ),
-                    Container(
-                      height: 100.h,
-                      padding: EdgeInsets.all(Spacing.sm),
-                      color: isDark ? primaryDarkColor : backgroundColorVariant,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${cntItem} Items',
-                                style: isDark
-                                    ? titleTextDarkStyle
-                                    : titleTextLightStyle,
-                              ),
-                              Text('${billTotal.toStringAsFixed(2)}'),
-                            ],
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Get.to(MobileCheckout());
-                            },
-                            style: ElevatedButton.styleFrom(
-                                primary: orange,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(Spacing.sm))),
-                            child: Text('Detail'),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                      Container(
+                        padding: EdgeInsets.all(Spacing.sm),
+                        color:
+                            isDark ? primaryDarkColor : backgroundColorVariant,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '${cntItem} Items',
+                                  style: isDark
+                                      ? titleTextDarkStyle
+                                      : titleTextLightStyle,
+                                ),
+                                Text('${billTotal.toStringAsFixed(2)}'),
+                              ],
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Get.to(MobileCheckout());
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  primary: orange,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(Spacing.sm))),
+                              child: Text('Detail'),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
+        drawer: SideBarDrawer(),
       ),
-      drawer: SideBarDrawer(),
     );
   }
 

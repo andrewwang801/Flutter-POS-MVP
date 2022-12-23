@@ -34,165 +34,173 @@ class NumPad extends StatelessWidget {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       return Container(
-        padding: EdgeInsets.all(Spacing.xs),
+        padding: EdgeInsets.all(4.0),
         color: backgroundColor,
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                NumberButton(
-                  number: 1,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                NumberButton(
-                  number: 2,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                NumberButton(
-                  number: 3,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                if (!onlyNum)
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
                   NumberButton(
-                    icon: Icon(
-                      Icons.cancel,
-                      size: Responsive.isTablet(context)
-                          ? lgiconSize
-                          : smiconSize,
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                    type: ButtonType.RESET,
+                    number: 1,
                     color: buttonColor,
                     controller: controller,
                     isDark: isDark,
                     onlyNum: onlyNum,
                   ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                NumberButton(
-                  number: 4,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                NumberButton(
-                  number: 5,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                NumberButton(
-                  number: 6,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                if (!onlyNum)
                   NumberButton(
-                    icon: Icon(
-                      Icons.restart_alt,
-                      size: Responsive.isTablet(context)
-                          ? lgiconSize
-                          : smiconSize,
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                    type: ButtonType.RESET,
+                    number: 2,
                     color: buttonColor,
                     controller: controller,
                     isDark: isDark,
                     onlyNum: onlyNum,
                   ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                NumberButton(
-                  number: 7,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                NumberButton(
-                  number: 8,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                NumberButton(
-                  number: 9,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                if (!onlyNum)
                   NumberButton(
-                    icon: Icon(
-                      Icons.done_rounded,
-                      size: Responsive.isTablet(context)
-                          ? lgiconSize
-                          : smiconSize,
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                    type: ButtonType.CONFIRM,
-                    submit: onSubmit,
+                    number: 3,
                     color: buttonColor,
                     controller: controller,
                     isDark: isDark,
                     onlyNum: onlyNum,
                   ),
-              ],
+                  if (!onlyNum)
+                    NumberButton(
+                      icon: Icon(
+                        Icons.cancel,
+                        size: Responsive.isTablet(context)
+                            ? lgiconSize
+                            : smiconSize,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
+                      type: ButtonType.RESET,
+                      color: buttonColor,
+                      controller: controller,
+                      isDark: isDark,
+                      onlyNum: onlyNum,
+                    ),
+                ],
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // this button is used to delete the last number
-                NumberButton(
-                  number: 0,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                // this button is used to submit the entered value
-                NumberButton(
-                  text: '.',
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-                NumberButton(
-                  icon: Icon(
-                    Icons.backspace,
-                    color: isDark ? Colors.white : Colors.black,
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  NumberButton(
+                    number: 4,
+                    color: buttonColor,
+                    controller: controller,
+                    isDark: isDark,
+                    onlyNum: onlyNum,
                   ),
-                  type: ButtonType.DEL,
-                  color: buttonColor,
-                  controller: controller,
-                  isDark: isDark,
-                  onlyNum: onlyNum,
-                ),
-              ],
+                  NumberButton(
+                    number: 5,
+                    color: buttonColor,
+                    controller: controller,
+                    isDark: isDark,
+                    onlyNum: onlyNum,
+                  ),
+                  NumberButton(
+                    number: 6,
+                    color: buttonColor,
+                    controller: controller,
+                    isDark: isDark,
+                    onlyNum: onlyNum,
+                  ),
+                  if (!onlyNum)
+                    NumberButton(
+                      icon: Icon(
+                        Icons.restart_alt,
+                        size: Responsive.isTablet(context)
+                            ? lgiconSize
+                            : smiconSize,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
+                      type: ButtonType.RESET,
+                      color: buttonColor,
+                      controller: controller,
+                      isDark: isDark,
+                      onlyNum: onlyNum,
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  NumberButton(
+                    number: 7,
+                    color: buttonColor,
+                    controller: controller,
+                    isDark: isDark,
+                    onlyNum: onlyNum,
+                  ),
+                  NumberButton(
+                    number: 8,
+                    color: buttonColor,
+                    controller: controller,
+                    isDark: isDark,
+                    onlyNum: onlyNum,
+                  ),
+                  NumberButton(
+                    number: 9,
+                    color: buttonColor,
+                    controller: controller,
+                    isDark: isDark,
+                    onlyNum: onlyNum,
+                  ),
+                  if (!onlyNum)
+                    NumberButton(
+                      icon: Icon(
+                        Icons.done_rounded,
+                        size: Responsive.isTablet(context)
+                            ? lgiconSize
+                            : smiconSize,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
+                      type: ButtonType.CONFIRM,
+                      submit: onSubmit,
+                      color: buttonColor,
+                      controller: controller,
+                      isDark: isDark,
+                      onlyNum: onlyNum,
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // this button is used to delete the last number
+                  NumberButton(
+                    number: 0,
+                    color: buttonColor,
+                    controller: controller,
+                    isDark: isDark,
+                    onlyNum: onlyNum,
+                  ),
+                  // this button is used to submit the entered value
+                  NumberButton(
+                    text: '.',
+                    color: buttonColor,
+                    controller: controller,
+                    isDark: isDark,
+                    onlyNum: onlyNum,
+                  ),
+                  NumberButton(
+                    icon: Icon(
+                      Icons.backspace,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                    type: ButtonType.DEL,
+                    color: buttonColor,
+                    controller: controller,
+                    isDark: isDark,
+                    onlyNum: onlyNum,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -236,14 +244,15 @@ class NumberButton extends StatelessWidget {
     return Expanded(
       flex: flex,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 3.0),
+        padding: EdgeInsets.all(3.0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             primary: color,
+            minimumSize: Size.fromHeight(double.infinity),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
-            padding: EdgeInsets.all(Spacing.sm),
+            // padding: EdgeInsets.all(Spacing.sm),
           ),
           onPressed: () {
             if (number != null) {

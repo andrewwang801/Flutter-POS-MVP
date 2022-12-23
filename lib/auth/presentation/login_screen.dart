@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/functions/application/function_provider.dart';
@@ -84,6 +86,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         actions: [
           IconButton(
               icon: Icon(
+                (ScreenUtil().orientation == Orientation.portrait)
+                    ? Icons.screen_lock_landscape
+                    : Icons.screen_lock_portrait,
+              ),
+              color: isDark ? backgroundColor : primaryDarkColor,
+              onPressed: () async {
+                if (ScreenUtil().orientation == Orientation.portrait) {
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.landscapeLeft,
+                    DeviceOrientation.landscapeRight
+                  ]).then((value) {
+                    ScreenUtil().setWidth(926);
+                    ScreenUtil().setHeight(428);
+                  });
+                } else {
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.portraitDown,
+                    DeviceOrientation.portraitUp
+                  ]).then((value) {
+                    ScreenUtil().setWidth(428);
+                    ScreenUtil().setHeight(926);
+                  });
+                }
+                // const platform =
+                //     MethodChannel('samples.flutter.dev/orientation');
+                // try {
+                //   await platform.invokeMethod('setOrientation');
+                // } catch (e) {
+                //   print(e.toString());
+                // }
+              }),
+          IconButton(
+              icon: Icon(
                 isDark ? Icons.wb_sunny : Icons.nightlight_round,
               ),
               color: isDark ? backgroundColor : primaryDarkColor,
@@ -94,14 +129,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ],
       ),
       body: SafeArea(
-        child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(Spacing.xs),
           child: Responsive.isMobile(context)
-              ? Column(
-                  children: [
-                    Expanded(flex: 1, child: leftLogo()),
-                    Expanded(flex: 3, child: rightLoginForm()),
-                  ],
-                )
+              ? OrientationBuilder(builder: (context, orientation) {
+                  if (orientation == Orientation.portrait) {
+                    return Column(
+                      children: [
+                        Expanded(flex: 1, child: leftLogo()),
+                        Expanded(flex: 1, child: rightLoginForm()),
+                      ],
+                    );
+                  } else {
+                    return Row(
+                      children: [
+                        Expanded(flex: 3, child: leftLogo()),
+                        Expanded(flex: 2, child: rightLoginForm()),
+                      ],
+                    );
+                  }
+                })
               : Row(
                   children: [
                     Spacer(),
@@ -127,15 +174,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget rightLoginForm() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(Spacing.sm),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: Spacing.xs, vertical: Spacing.sm),
+            padding:
+                EdgeInsets.symmetric(vertical: Spacing.xs, horizontal: 6.0),
             child: Container(
               padding: EdgeInsets.symmetric(
                   horizontal: Spacing.xs, vertical: Spacing.sm),
@@ -154,19 +201,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
           ),
+          Responsive.isMobile(context)
+              ? Expanded(
+                  child: Container(
+                    color: Colors.transparent,
+                    child: NumPad(
+                        delete: () {},
+                        onSubmit: () {},
+                        backgroundColor: Colors.transparent,
+                        buttonColor: isDark
+                            ? backgroundDarkColor
+                            : backgroundColorVariant,
+                        isDark: isDark,
+                        controller: _controller),
+                  ),
+                )
+              : Container(
+                  height: 0.25.sh,
+                  color: Colors.transparent,
+                  child: NumPad(
+                      delete: () {},
+                      onSubmit: () {},
+                      backgroundColor: Colors.transparent,
+                      buttonColor:
+                          isDark ? backgroundDarkColor : backgroundColorVariant,
+                      isDark: isDark,
+                      controller: _controller),
+                ),
           Container(
-            color: Colors.transparent,
-            child: NumPad(
-                delete: () {},
-                onSubmit: () {},
-                backgroundColor: Colors.transparent,
-                buttonColor:
-                    isDark ? backgroundDarkColor : backgroundColorVariant,
-                isDark: isDark,
-                controller: _controller),
-          ),
-          Container(
-            padding: EdgeInsets.all(Spacing.xs),
+            padding:
+                EdgeInsets.symmetric(vertical: Spacing.xs, horizontal: 6.0),
             child: ElevatedButton(
               onPressed: () {
                 pinSignIn();

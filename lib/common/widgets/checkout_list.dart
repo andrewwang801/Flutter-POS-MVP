@@ -54,30 +54,30 @@ class _CheckoutListState extends ConsumerState<CheckoutList> {
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      if (widget.callback != null) {
-                        widget.callback!(state.orderItemTree![index].orderItem);
-                      }
+                      // if (widget.callback != null) {
+                      //   widget.callback!(state.orderItemTree![index].orderItem);
+                      // }
                       setState(() {
                         selectedIndex = index;
                       });
                     },
-                    onLongPress: () {
-                      setState(() {
-                        selectedIndex = index;
-                      });
-                      showGeneralDialog(
-                        context: context,
-                        barrierColor: Colors.black38,
-                        barrierLabel: 'Label',
-                        barrierDismissible: true,
-                        pageBuilder: (_, __, ___) => MenuItemDetail(
-                          state.orderItemTree![index].orderItem.PLUNo ?? '',
-                          state.orderItemTree![index].orderItem.SalesRef ?? 0,
-                          true,
-                          orderItem: state.orderItemTree![index].orderItem,
-                        ),
-                      );
-                    },
+                    // onLongPress: () {
+                    //   setState(() {
+                    //     selectedIndex = index;
+                    //   });
+                    // showGeneralDialog(
+                    //   context: context,
+                    //   barrierColor: Colors.black38,
+                    //   barrierLabel: 'Label',
+                    //   barrierDismissible: true,
+                    //   pageBuilder: (_, __, ___) => MenuItemDetail(
+                    //     state.orderItemTree![index].orderItem.PLUNo ?? '',
+                    //     state.orderItemTree![index].orderItem.SalesRef ?? 0,
+                    //     true,
+                    //     orderItem: state.orderItemTree![index].orderItem,
+                    //   ),
+                    // );
+                    // },
                     child: state.orderItemTree![index].render(
                       context,
                       4,
@@ -88,6 +88,20 @@ class _CheckoutListState extends ConsumerState<CheckoutList> {
                               state.orderItemTree![index].orderItem);
                           // state.orderItemTree!.removeAt(index);
                         });
+                      },
+                      () {
+                        showGeneralDialog(
+                          context: context,
+                          barrierColor: Colors.black38,
+                          barrierLabel: 'Label',
+                          barrierDismissible: true,
+                          pageBuilder: (_, __, ___) => MenuItemDetail(
+                            state.orderItemTree![index].orderItem.PLUNo ?? '',
+                            state.orderItemTree![index].orderItem.SalesRef ?? 0,
+                            true,
+                            orderItem: state.orderItemTree![index].orderItem,
+                          ),
+                        );
                       },
                       selected: selectedIndex == index,
                     ),

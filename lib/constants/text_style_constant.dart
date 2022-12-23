@@ -3,13 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final TextStyle bodyTextLightStyle = TextStyle(
     fontSize: ScreenUtil().orientation == Orientation.landscape
-        ? ScreenUtil().setSp(10)
-        : ScreenUtil().setSp(14),
+        ? ScreenUtil().setSp(12)
+        : ScreenUtil().setSp(10),
     color: Colors.black);
 final TextStyle bodyTextDarkStyle = TextStyle(
     fontSize: ScreenUtil().orientation == Orientation.landscape
-        ? ScreenUtil().setSp(10)
-        : ScreenUtil().setSp(14),
+        ? ScreenUtil().setSp(12)
+        : ScreenUtil().setSp(10),
     color: Colors.white);
 
 final TextStyle listItemTextLightStyle =

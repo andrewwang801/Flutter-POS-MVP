@@ -41,6 +41,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
 
   void showInfoBottomSheet() {
     showModalBottomSheet(
+        isScrollControlled: true,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Spacing.sm),
         ),
@@ -61,7 +62,13 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
                             itemCount: _tableStatus.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4,
+                              crossAxisCount: ScreenUtil().orientation ==
+                                      Orientation.landscape
+                                  ? 8
+                                  : Responsive.isMobile(context)
+                                      ? 4
+                                      : 6,
+                              mainAxisSpacing: 5,
                             ),
                             itemBuilder: (context, index) {
                               return _statusCard(
@@ -80,6 +87,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
 
   void showMoreAction() {
     showModalBottomSheet(
+        isScrollControlled: true,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Spacing.sm)),
         context: context,
@@ -124,66 +132,70 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
 
   Widget _mobile() {
     return Container(
-      // padding: EdgeInsets.all(Spacing.sm),
-      width: 428.w,
-      color: isDark ? primaryDarkColor : backgroundColor,
-      child: Column(
+      padding: EdgeInsets.only(
+          top: ScreenUtil().statusBarHeight,
+          right: ScreenUtil().orientation == Orientation.landscape
+              ? MediaQuery.of(context).padding.right
+              : 0,
+          left: ScreenUtil().orientation == Orientation.landscape
+              ? MediaQuery.of(context).padding.left
+              : 0),
+      // width: 428.w,
+      // color: isDark ? primaryDarkColor : backgroundColor,
+      child: Row(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  horizontalSpaceTiny,
-                  Container(
-                    width: minTouchTarget,
-                    height: minTouchTarget,
-                    child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          shape: StadiumBorder(),
-                        ),
-                        onPressed: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                        child: const Icon(
-                          Icons.menu,
-                          size: smiconSize,
-                        )),
-                  ),
-                  _tableLayoutDropDown(),
-                ],
+              horizontalSpaceTiny,
+              Container(
+                width: 30.w,
+                height: 30.w,
+                child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: StadiumBorder(),
+                    ),
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    child: const Icon(
+                      Icons.menu,
+                      size: mdiconsize,
+                    )),
               ),
-              Spacer(),
-              Row(
-                children: [
-                  IconButton(
-                      padding: EdgeInsets.all(Spacing.sm),
-                      splashRadius: 24,
-                      onPressed: () {
-                        showInfoBottomSheet();
-                      },
-                      icon: Icon(Icons.info_outline)),
-                  IconButton(
-                      splashRadius: 24,
-                      onPressed: () {
-                        showMoreAction();
-                      },
-                      icon: Icon(Icons.more_vert)),
-                  IconButton(
-                      splashRadius: 24,
-                      icon: Icon(
-                        isDark ? Icons.wb_sunny : Icons.nightlight_round,
-                      ),
-                      color: isDark ? backgroundColor : primaryDarkColor,
-                      onPressed: () {
-                        isDark ? isDark = false : isDark = true;
-                        ref.read(themeProvider.notifier).setTheme(isDark);
-                      }),
-                ],
-              )
+              _tableLayoutDropDown(),
             ],
           ),
+          Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                  padding: EdgeInsets.all(Spacing.sm),
+                  splashRadius: 24,
+                  onPressed: () {
+                    showInfoBottomSheet();
+                  },
+                  icon: Icon(Icons.info_outline)),
+              IconButton(
+                  splashRadius: 24,
+                  onPressed: () {
+                    showMoreAction();
+                  },
+                  icon: Icon(Icons.more_vert)),
+              // IconButton(
+              //     splashRadius: 24,
+              //     icon: Icon(
+              //       isDark ? Icons.wb_sunny : Icons.nightlight_round,
+              //     ),
+              //     color: isDark ? backgroundColor : primaryDarkColor,
+              //     onPressed: () {
+              //       isDark ? isDark = false : isDark = true;
+              //       ref.read(themeProvider.notifier).setTheme(isDark);
+              //     }),
+            ],
+          )
         ],
       ),
     );
@@ -191,17 +203,25 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
 
   Widget _tablet() {
     return Container(
-      padding: EdgeInsets.all(Spacing.sm),
-      width: 926.w,
-      color: isDark ? primaryDarkColor : backgroundColor,
+      padding: EdgeInsets.only(
+          top: ScreenUtil().statusBarHeight + Spacing.sm,
+          right: ScreenUtil().orientation == Orientation.landscape
+              ? MediaQuery.of(context).padding.right + Spacing.sm
+              : Spacing.sm,
+          left: ScreenUtil().orientation == Orientation.landscape
+              ? MediaQuery.of(context).padding.left + Spacing.sm
+              : Spacing.sm,
+          bottom: Spacing.sm),
+      // width: 926.w,
+      // color: isDark ? primaryDarkColor : backgroundColor,
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: minTouchTarget,
-                height: minTouchTarget,
+                width: Responsive.isMobile(context) ? 36 : 36,
+                height: Responsive.isMobile(context) ? 36 : 36,
                 child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -217,59 +237,87 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
               ),
               _tableLayoutDropDown(),
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    _checkBoxButton('Open', () {}),
-                    SizedBox(width: 6.w),
-                    _checkBoxButton('View', () {}),
-                    SizedBox(width: 6.w),
-                    _checkBoxButton('Print', () {}),
-                    SizedBox(width: 6.w),
-                    _checkBoxButton('Clean', () {}),
-                    SizedBox(width: 6.w),
-                    _button('Refresh', () {}, orange, orange),
-                    SizedBox(width: 6.w),
-                    _button('OP/Sign Out', () {}, orange, orange),
-                    SizedBox(width: 6.w),
-                    _button('Hide', () {}, orange, orange),
-                  ],
-                ),
+                child: 1.sw > 900
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          _checkBoxButton('Open', () {}),
+                          SizedBox(width: 6.w),
+                          _checkBoxButton('View', () {}),
+                          SizedBox(width: 6.w),
+                          _checkBoxButton('Print', () {}),
+                          SizedBox(width: 6.w),
+                          _checkBoxButton('Clean', () {}),
+                          SizedBox(width: 6.w),
+                          _button('Refresh', () {}, orange, orange),
+                          SizedBox(width: 6.w),
+                          _button('OP/Sign Out', () {}, orange, orange),
+                          SizedBox(width: 6.w),
+                          _button('Hide', () {}, orange, orange),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                              padding: EdgeInsets.all(Spacing.sm),
+                              splashRadius: 24,
+                              onPressed: () {
+                                showInfoBottomSheet();
+                              },
+                              icon: Icon(Icons.info_outline)),
+                          IconButton(
+                              splashRadius: 24,
+                              onPressed: () {
+                                showMoreAction();
+                              },
+                              icon: Icon(Icons.more_vert)),
+                          // IconButton(
+                          //     splashRadius: 24,
+                          //     icon: Icon(
+                          //       isDark ? Icons.wb_sunny : Icons.nightlight_round,
+                          //     ),
+                          //     color: isDark ? backgroundColor : primaryDarkColor,
+                          //     onPressed: () {
+                          //       isDark ? isDark = false : isDark = true;
+                          //       ref.read(themeProvider.notifier).setTheme(isDark);
+                          //     }),
+                        ],
+                      ),
               ),
             ],
           ),
-          Container(
-            width: 926.w,
-            height: Responsive.isMobile(context) ? 25.h : 20.h,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        ..._tableStatus.map((e) {
-                          return _statusCard(
-                              e.entries.first.value, e.entries.first.key);
-                        }).toList(),
-                      ],
+          if (1.sw >= 900) verticalSpaceSmall,
+          if (1.sw >= 900)
+            Container(
+              // width: 926.w,
+              height: Responsive.isMobile(context) ? 25.h : 20.h,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ..._tableStatus.map((e) {
+                            return _statusCard(
+                                e.entries.first.value, e.entries.first.key);
+                          }).toList(),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Row(
-                  children: [
-                    _switchButton(false, 'View Table', () {}),
-                    _switchButton(false, 'View Detail', () {}),
-                    _switchButton(isDark, 'Dark Mode', () {
-                      isDark ? isDark = false : isDark = true;
-                      ref.read(themeProvider.notifier).setTheme(isDark);
-                    })
-                  ],
-                ),
-              ],
+                  Row(
+                    children: [
+                      _switchButton(false, 'View Table', () {}),
+                      _switchButton(false, 'View Detail', () {}),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
+          if (1.sw >= 900) verticalSpaceSmall,
         ],
       ),
     );
@@ -278,7 +326,11 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
   Widget _button(
       String text, Function callback, Color color, Color borderColor) {
     return SizedBox(
-      height: Responsive.isMobile(context) ? 30.h : 16.h,
+      height: Responsive.isMobile(context)
+          ? 30.h
+          : ScreenUtil().orientation == Orientation.landscape
+              ? 16.h
+              : 22.h,
       child: ElevatedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
@@ -389,7 +441,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
       selectedItemBuilder: (BuildContext context) {
         return [
           SizedBox(
-            width: 140.w,
+            width: Responsive.isMobile(context) ? 0.25.sw : 0.2.sw,
             child: Center(
               child: Text(
                 'Table Layout',
@@ -398,7 +450,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
             ),
           ),
           SizedBox(
-            width: 140.w,
+            width: Responsive.isMobile(context) ? 0.25.sw : 0.2.sw,
             child: Text(
               'Online',
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
@@ -420,11 +472,11 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
               width: 15.w,
               height: 15.w,
               decoration: BoxDecoration(
-                  border: Border.all(
-                      color: isDark ? primaryDarkColor : Colors.white,
-                      width: 1),
-                  color: statusColor,
-                  borderRadius: BorderRadius.circular(10.w)),
+                border: Border.all(
+                    color: isDark ? primaryDarkColor : Colors.white, width: 1),
+                color: statusColor,
+                shape: BoxShape.circle,
+              ),
             ),
             SizedBox(
               width: 2.w,
