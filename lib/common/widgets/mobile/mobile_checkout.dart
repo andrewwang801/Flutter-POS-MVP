@@ -348,6 +348,7 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
           ),
           Expanded(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 verticalSpaceSmall,
                 checkout_summary(
@@ -467,7 +468,7 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
           : ScreenUtil().orientation == Orientation.landscape
               ? backgroundColor
               : backgroundColorVariant,
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(6.0),
       child: Column(
         children: [
           Material(
@@ -523,7 +524,7 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
               Expanded(
                 flex: 4,
                 child: SizedBox(
-                  height: 65.h,
+                  height: 64.h,
                   child: ElevatedButton(
                     onPressed: () async {
                       // doTenderPayment(state);
@@ -543,7 +544,7 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
                               : listItemTextLightStyle.copyWith(
                                   color: Colors.white),
                         ),
-                        verticalSpaceTiny,
+                        Spacer(),
                         Text(
                           '234'.currencyString('\$'),
                           style: isDark

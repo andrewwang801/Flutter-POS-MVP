@@ -96,10 +96,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       }
     });
 
-    return Responsive(mobile: _mobile(), tablet: _tablet(), desktop: _tablet());
+    return Responsive(
+        mobile: _mobile(),
+        mobileLandscape: _tabletLandscape(),
+        tabletPortrait: _mobile(),
+        tablet: _tabletLandscape(),
+        desktop: _tabletLandscape());
   }
 
-  Widget _tablet() {
+  Widget _tabletLandscape() {
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
@@ -163,9 +168,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ),
       body: SafeArea(
         bottom: false,
+        left: Responsive.isTablet(context),
+        right: Responsive.isTablet(context),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              width: MediaQuery.of(context).padding.left,
+              color: isDark ? primaryDarkColor : backgroundColor,
+            ),
             SizedBox(
               width: Responsive.isMobile(context) ? 400.w : 0.37.sw,
               child: Column(
@@ -184,15 +195,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(Spacing.sm),
+                        padding: EdgeInsets.only(
+                            top: Spacing.sm,
+                            left: Spacing.sm,
+                            bottom: Spacing.sm,
+                            right: MediaQuery.of(context).padding.right),
                         color: isDark ? backgroundDarkColor : backgroundColor,
                         child: MenuList(),
                       ),
                       Expanded(
-                        child: Container(
-                            padding:
-                                EdgeInsets.symmetric(horizontal: Spacing.sm),
-                            child: MenuItemList()),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: Spacing.sm),
+                                child: MenuItemList(),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).padding.right,
+                              color: isDark
+                                  ? backgroundDarkColor
+                                  : backgroundColorVariant,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        color: isDark
+                            ? backgroundDarkColor
+                            : backgroundColorVariant,
+                        height: MediaQuery.of(context).padding.bottom,
                       ),
                     ],
                   ),
@@ -215,22 +249,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       child: Scaffold(
         key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
-        backgroundColor: isDark ? primaryDarkColor : backgroundColor,
+        backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
         body: Container(
-          // color: isDark ? backgroundDarkColor : backgroundColor,
+          color: isDark ? backgroundDarkColor : backgroundColor,
+          padding: EdgeInsets.only(
+              right: MediaQuery.of(context).padding.right,
+              left: MediaQuery.of(context).padding.left),
           child: Column(
             children: [
               Padding(
                 padding: EdgeInsets.only(
                     top: ScreenUtil().orientation == Orientation.landscape
-                        ? Spacing.sm
-                        : ScreenUtil().statusBarHeight,
-                    right: ScreenUtil().orientation == Orientation.landscape
-                        ? MediaQuery.of(context).padding.right
-                        : Spacing.sm,
-                    left: ScreenUtil().orientation == Orientation.landscape
-                        ? MediaQuery.of(context).padding.left
-                        : Spacing.sm,
+                        ? ScreenUtil().statusBarHeight + Spacing.sm
+                        : ScreenUtil().statusBarHeight + Spacing.sm,
+                    right: Spacing.sm,
+                    left: Spacing.sm,
                     bottom: Spacing.sm),
                 // padding: EdgeInsets.all(Spacing.sm),
                 child: Row(
@@ -317,12 +350,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     top: ScreenUtil().orientation == Orientation.landscape
                         ? Spacing.sm
                         : Spacing.sm,
-                    right: ScreenUtil().orientation == Orientation.landscape
-                        ? MediaQuery.of(context).padding.right
-                        : Spacing.sm,
-                    left: ScreenUtil().orientation == Orientation.landscape
-                        ? MediaQuery.of(context).padding.left
-                        : Spacing.sm,
+                    right: Spacing.sm,
+                    left: Spacing.sm,
                     bottom: Spacing.sm),
                 color: isDark ? backgroundDarkColor : backgroundColor,
                 child: _searchBar(),
@@ -332,155 +361,148 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   color: isDark ? backgroundDarkColor : backgroundColor,
                   // padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
                   padding: EdgeInsets.only(
-                    right: ScreenUtil().orientation == Orientation.landscape
-                        ? MediaQuery.of(context).padding.right
-                        : Spacing.sm,
-                    left: ScreenUtil().orientation == Orientation.landscape
-                        ? MediaQuery.of(context).padding.left
-                        : Spacing.sm,
+                    right: Spacing.sm,
+                    left: Spacing.sm,
                   ),
                   child: MenuItemList(),
                 ),
               ),
               Container(
-                color: isDark ? backgroundDarkColor : backgroundColor,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0)),
+                ),
+                clipBehavior: Clip.hardEdge,
                 padding: EdgeInsets.only(
-                    right: ScreenUtil().orientation == Orientation.landscape
-                        ? MediaQuery.of(context).padding.right
-                        : 0,
-                    left: ScreenUtil().orientation == Orientation.landscape
-                        ? MediaQuery.of(context).padding.left
-                        : 0,
-                    bottom: ScreenUtil().bottomBarHeight),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(Spacing.md),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(Spacing.sm),
-                        color: red,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.menu_book_sharp,
-                                  color: backgroundColor,
-                                ),
-                                horizontalSpaceTiny,
-                                Text(
-                                  _selectedMenu?.MenuName ?? 'All Menu',
-                                  style: isDark
-                                      ? bodyTextDarkStyle
-                                      : bodyTextLightStyle.copyWith(
-                                          color: Colors.white),
-                                ),
-                              ],
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _isMenuExpand = !_isMenuExpand;
-                                  _menuController.duration =
-                                      Duration(milliseconds: 300);
-                                  _isMenuExpand
-                                      ? _menuController.forward(from: 0)
-                                      : _menuController.reverse(from: 0.3);
-                                });
-                              },
-                              child: Icon(
-                                _isMenuExpand
-                                    ? Icons.keyboard_arrow_down
-                                    : Icons.keyboard_arrow_up,
+                  right: 0,
+                  left: 0,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(Spacing.sm),
+                      color: red,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.menu_book_sharp,
                                 color: backgroundColor,
                               ),
+                              horizontalSpaceTiny,
+                              Text(
+                                _selectedMenu?.MenuName ?? 'All Menu',
+                                style: isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle.copyWith(
+                                        color: Colors.white),
+                              ),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isMenuExpand = !_isMenuExpand;
+                                _menuController.duration =
+                                    Duration(milliseconds: 300);
+                                _isMenuExpand
+                                    ? _menuController.forward(from: 0)
+                                    : _menuController.reverse(from: 0.3);
+                              });
+                            },
+                            child: Icon(
+                              _isMenuExpand
+                                  ? Icons.keyboard_arrow_down
+                                  : Icons.keyboard_arrow_up,
+                              color: backgroundColor,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      SizeTransition(
-                        sizeFactor: _animation,
-                        child: menuHdr.when(
-                          data: (data) {
-                            menus.addAll(data);
-                            menus.insert(
-                                0, MenuModel(0, 'All Menu', 'All Menu'));
-                            return Container(
-                              height: 0.3.sh,
-                              color: isDark
-                                  ? backgroundDarkColor
-                                  : backgroundColor,
-                              child: ListView.separated(
-                                  physics: ClampingScrollPhysics(),
-                                  itemCount: menus.length,
-                                  separatorBuilder:
-                                      (BuildContext context, int index) {
-                                    return Divider();
-                                  },
-                                  itemBuilder: ((context, index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _selectedMenu = menus[index];
-                                        });
-                                        ref
-                                            .read(menuIDProvider.notifier)
-                                            .state = menus[index].MenuID;
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.all(Spacing.sm),
-                                        child:
-                                            Text(menus[index].MenuName ?? ''),
-                                      ),
-                                    );
-                                  })),
-                            );
-                          },
-                          error: (error, e) {
-                            return Container();
-                          },
-                          loading: () {
-                            return Container();
-                          },
-                        ),
+                    ),
+                    SizeTransition(
+                      sizeFactor: _animation,
+                      child: menuHdr.when(
+                        data: (data) {
+                          menus.addAll(data);
+                          menus.insert(0, MenuModel(0, 'All Menu', 'All Menu'));
+                          return Container(
+                            height: 0.3.sh,
+                            color:
+                                isDark ? backgroundDarkColor : backgroundColor,
+                            child: ListView.separated(
+                                physics: ClampingScrollPhysics(),
+                                itemCount: menus.length,
+                                separatorBuilder:
+                                    (BuildContext context, int index) {
+                                  return Divider();
+                                },
+                                itemBuilder: ((context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedMenu = menus[index];
+                                      });
+                                      ref.read(menuIDProvider.notifier).state =
+                                          menus[index].MenuID;
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(Spacing.sm),
+                                      child: Text(menus[index].MenuName ?? ''),
+                                    ),
+                                  );
+                                })),
+                          );
+                        },
+                        error: (error, e) {
+                          return Container();
+                        },
+                        loading: () {
+                          return Container();
+                        },
                       ),
-                      Container(
-                        padding: EdgeInsets.all(Spacing.sm),
-                        color:
-                            isDark ? primaryDarkColor : backgroundColorVariant,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '${cntItem} Items',
-                                  style: isDark
-                                      ? titleTextDarkStyle
-                                      : titleTextLightStyle,
-                                ),
-                                Text('${billTotal.toStringAsFixed(2)}'),
-                              ],
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Get.to(MobileCheckout());
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  primary: orange,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(Spacing.sm))),
-                              child: Text('Detail'),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(Spacing.sm),
+                      color: isDark ? primaryDarkColor : backgroundColorVariant,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${cntItem} Items',
+                                style: isDark
+                                    ? titleTextDarkStyle
+                                    : titleTextLightStyle,
+                              ),
+                              Text('${billTotal.toStringAsFixed(2)}'),
+                            ],
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.to(MobileCheckout());
+                            },
+                            style: ElevatedButton.styleFrom(
+                                primary: orange,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(Spacing.sm))),
+                            child: Text('Detail'),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
+              ),
+              Container(
+                height: ScreenUtil().bottomBarHeight,
+                color: isDark ? primaryDarkColor : backgroundColorVariant,
               ),
             ],
           ),

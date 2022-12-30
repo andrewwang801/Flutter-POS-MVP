@@ -6,6 +6,8 @@ import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/common/extension/color_extension.dart';
 import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/common/widgets/alert_dialog.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/discount/application/discount_provider.dart';
 import 'package:raptorpos/discount/application/discount_state.dart';
 import 'package:raptorpos/discount/model/discount_model.dart';
@@ -63,116 +65,232 @@ class _DiscountScreenState extends ConsumerState<DiscountScreen> {
         child: AppBarWidget(true),
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
-      body: Row(
-        children: [
-          Column(
-            children: [
-              SizedBox(
-                height: 5.h,
-              ),
-              CheckOut(Callback: (OrderItemModel orderItem) {
+      body: SafeArea(
+        child: Responsive.isMobile(context)
+            ? (ScreenUtil().orientation == Orientation.landscape
+                ? landscape(state)
+                : portrait(state))
+            : (ScreenUtil().orientation == Orientation.landscape
+                ? landscape(state)
+                : portrait(state)),
+      ),
+    );
+  }
+
+  Widget portrait(DiscountState state) {
+    int? salesRef;
+    return Column(
+      children: [
+        Expanded(
+          flex: 3,
+          child: CheckOut(
+              showCheckoutBtns: false,
+              Callback: (OrderItemModel orderItem) {
                 salesRef = orderItem.SalesRef;
               }),
-              SizedBox(
-                height: 10.h,
-              ),
-              // BillButtonList(
-              //   paymentRepository: GetIt.I<IPaymentRepository>(),
-              //   orderRepository: GetIt.I<IOrderRepository>(),
-              // ),
-            ],
-          ),
-          SizedBox(
-            width: 26.w,
-          ),
-          if (state.workable == Workable.ready)
-            Expanded(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 40.h,
-                    child: Center(
-                      child: Text(
-                        'Discounts',
-                        style: isDark
-                            ? titleTextDarkStyle.copyWith(
-                                fontWeight: FontWeight.bold)
-                            : titleTextLightStyle.copyWith(
-                                fontWeight: FontWeight.bold),
-                      ),
+        ),
+        if (state.workable == Workable.ready)
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 40.h,
+                  child: Center(
+                    child: Text(
+                      'Discounts',
+                      style: isDark
+                          ? titleTextDarkStyle.copyWith(
+                              fontWeight: FontWeight.bold)
+                          : titleTextLightStyle.copyWith(
+                              fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Expanded(
-                    child: SizedBox(
-                      width: 600.w,
-                      child: GridView.builder(
-                        itemCount: state.data!.discs.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          DiscountModel disc = state.data!.discs[index];
-                          return InkWell(
-                            borderRadius: BorderRadius.circular(3.0),
-                            onTap: () {
-                              ref.read(discProvider.notifier).disc(
-                                  POSDtls.deviceNo,
-                                  GlobalConfig.operatorNo,
-                                  GlobalConfig.tableNo,
-                                  GlobalConfig.salesNo,
-                                  GlobalConfig.splitNo,
-                                  salesRef ?? 0,
-                                  disc.subFnID,
-                                  disc.discTitle,
-                                  0);
-                            },
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                  color: HexColor(disc.color ?? 'ffffff')
-                                      .withOpacity(0.9),
-                                  border: Border.all(
+                ),
+                Expanded(
+                  child: Container(
+                    width: 600.w,
+                    padding: EdgeInsets.all(Spacing.sm),
+                    child: GridView.builder(
+                      physics: ClampingScrollPhysics(),
+                      itemCount: state.data!.discs.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        DiscountModel disc = state.data!.discs[index];
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(3.0),
+                          onTap: () {
+                            ref.read(discProvider.notifier).disc(
+                                POSDtls.deviceNo,
+                                GlobalConfig.operatorNo,
+                                GlobalConfig.tableNo,
+                                GlobalConfig.salesNo,
+                                GlobalConfig.splitNo,
+                                salesRef ?? 0,
+                                disc.subFnID,
+                                disc.discTitle,
+                                0);
+                          },
+                          child: Ink(
+                            decoration: BoxDecoration(
+                                color: HexColor(disc.color ?? 'ffffff')
+                                    .withOpacity(0.9),
+                                border: Border.all(
+                                  color: isDark
+                                      ? primaryDarkColor.withOpacity(0.7)
+                                      : primaryLightColor,
+                                  width: 1.0,
+                                ),
+                                borderRadius: BorderRadius.circular(3.0),
+                                boxShadow: [
+                                  BoxShadow(
                                     color: isDark
-                                        ? primaryDarkColor.withOpacity(0.7)
-                                        : primaryLightColor,
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(3.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: isDark
-                                          ? backgroundDarkColor
-                                          : Colors.white,
-                                      spreadRadius: 1.0,
-                                      blurRadius: 1.0,
-                                    )
-                                  ]),
-                              child: Center(
-                                child: Text(disc.discTitle,
-                                    textAlign: TextAlign.center,
-                                    style: isDark
-                                        ? bodyTextDarkStyle
-                                        : bodyTextLightStyle),
-                              ),
+                                        ? backgroundDarkColor
+                                        : Colors.white,
+                                    spreadRadius: 1.0,
+                                    blurRadius: 1.0,
+                                  )
+                                ]),
+                            child: Center(
+                              child: Text(disc.discTitle,
+                                  textAlign: TextAlign.center,
+                                  style: isDark
+                                      ? bodyTextDarkStyle
+                                      : bodyTextLightStyle),
                             ),
-                          );
-                        },
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 5,
-                            mainAxisSpacing: 1,
-                            mainAxisExtent: 60.h,
-                            crossAxisSpacing: 1),
-                      ),
+                          ),
+                        );
+                      },
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5,
+                          mainAxisSpacing: 1,
+                          mainAxisExtent: 60.h,
+                          crossAxisSpacing: 1),
                     ),
                   ),
-                  SizedBox(
-                    height: 40.h,
-                  ),
-                ],
+                ),
+                SizedBox(
+                  height: 40.h,
+                ),
+              ],
+            ),
+          )
+        else if (state.workable == Workable.loading)
+          Container()
+        else if (state.workable == Workable.failure)
+          Container()
+      ],
+    );
+  }
+
+  Widget landscape(DiscountState state) {
+    int? salesRef;
+    return Row(
+      children: [
+        Column(
+          children: [
+            Expanded(
+              child: SizedBox(
+                width: Responsive.isMobile(context) ? 400.w : 0.37.sw,
+                child: CheckOut(Callback: (OrderItemModel orderItem) {
+                  salesRef = orderItem.SalesRef;
+                }),
               ),
-            )
-          else if (state.workable == Workable.loading)
-            Container()
-          else if (state.workable == Workable.failure)
-            Container()
-        ],
-      ),
+            ),
+            // BillButtonList(
+            //   paymentRepository: GetIt.I<IPaymentRepository>(),
+            //   orderRepository: GetIt.I<IOrderRepository>(),
+            // ),
+          ],
+        ),
+        if (state.workable == Workable.ready)
+          Expanded(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 40.h,
+                  child: Center(
+                    child: Text(
+                      'Discounts',
+                      style: isDark
+                          ? titleTextDarkStyle.copyWith(
+                              fontWeight: FontWeight.bold)
+                          : titleTextLightStyle.copyWith(
+                              fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: 600.w,
+                    padding: EdgeInsets.all(Spacing.sm),
+                    child: GridView.builder(
+                      physics: ClampingScrollPhysics(),
+                      itemCount: state.data!.discs.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        DiscountModel disc = state.data!.discs[index];
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(3.0),
+                          onTap: () {
+                            ref.read(discProvider.notifier).disc(
+                                POSDtls.deviceNo,
+                                GlobalConfig.operatorNo,
+                                GlobalConfig.tableNo,
+                                GlobalConfig.salesNo,
+                                GlobalConfig.splitNo,
+                                salesRef ?? 0,
+                                disc.subFnID,
+                                disc.discTitle,
+                                0);
+                          },
+                          child: Ink(
+                            decoration: BoxDecoration(
+                                color: HexColor(disc.color ?? 'ffffff')
+                                    .withOpacity(0.9),
+                                border: Border.all(
+                                  color: isDark
+                                      ? primaryDarkColor.withOpacity(0.7)
+                                      : primaryLightColor,
+                                  width: 1.0,
+                                ),
+                                borderRadius: BorderRadius.circular(3.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: isDark
+                                        ? backgroundDarkColor
+                                        : Colors.white,
+                                    spreadRadius: 1.0,
+                                    blurRadius: 1.0,
+                                  )
+                                ]),
+                            child: Center(
+                              child: Text(disc.discTitle,
+                                  textAlign: TextAlign.center,
+                                  style: isDark
+                                      ? bodyTextDarkStyle
+                                      : bodyTextLightStyle),
+                            ),
+                          ),
+                        );
+                      },
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5,
+                          mainAxisSpacing: 1,
+                          mainAxisExtent: 60.h,
+                          crossAxisSpacing: 1),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 40.h,
+                ),
+              ],
+            ),
+          )
+        else if (state.workable == Workable.loading)
+          Container()
+        else if (state.workable == Workable.failure)
+          Container()
+      ],
     );
   }
 }

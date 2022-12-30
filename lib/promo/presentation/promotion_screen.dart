@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/common/widgets/alert_dialog.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
@@ -43,7 +45,7 @@ class _PromotionScreenState extends ConsumerState<PromotionScreen> {
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
     PromoState state = ref.watch(promoProvider);
-    int? salesRef;
+    // int? salesRef;
 
     ref.listen(promoProvider, (previous, PromoState next) {
       if (next.failiure != null) {
@@ -66,113 +68,224 @@ class _PromotionScreenState extends ConsumerState<PromotionScreen> {
         child: AppBarWidget(true),
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
-      body: Row(
-        children: [
-          Column(
-            children: [
-              SizedBox(
-                height: 5.h,
+      body: SafeArea(
+        child: Responsive.isMobile(context)
+            ? (ScreenUtil().orientation == Orientation.landscape
+                ? landscape(state)
+                : portrait(state))
+            : (ScreenUtil().orientation == Orientation.landscape
+                ? landscape(state)
+                : portrait(state)),
+      ),
+    );
+  }
+
+  Widget landscape(PromoState state) {
+    int? salesRef;
+    return Row(
+      children: [
+        Column(
+          children: [
+            Expanded(
+              child: SizedBox(
+                width: Responsive.isMobile(context) ? 400.w : 0.37.sw,
+                child: CheckOut(
+                    showCheckoutBtns: false,
+                    Callback: (OrderItemModel orderItem) {
+                      salesRef = orderItem.SalesRef;
+                    }),
               ),
-              CheckOut(Callback: (OrderItemModel orderItem) {
+            ),
+            // BillButtonList(
+            //   paymentRepository: GetIt.I<IPaymentRepository>(),
+            //   orderRepository: GetIt.I<IOrderRepository>(),
+            // ),
+          ],
+        ),
+        if (state.workable == Workable.ready)
+          Expanded(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 40.h,
+                  child: Center(
+                    child: Text(
+                      'Promotions',
+                      style: isDark
+                          ? titleTextDarkStyle.copyWith(
+                              fontWeight: FontWeight.bold)
+                          : titleTextLightStyle.copyWith(
+                              fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: 600.w,
+                    padding: EdgeInsets.all(Spacing.sm),
+                    child: GridView.builder(
+                      physics: ClampingScrollPhysics(),
+                      itemCount: state.data!.promos.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        PromotionModel promo = state.data!.promos[index];
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(3.0),
+                          onTap: () {
+                            // Apply Promotion
+                            ref.read(promoProvider.notifier).applyPromo(
+                                promo.id, promo.name, GlobalConfig.operatorNo);
+                          },
+                          child: Ink(
+                            decoration: BoxDecoration(
+                                color: (isDark
+                                        ? primaryDarkColor
+                                        : primaryLightColor)
+                                    .withOpacity(0.9),
+                                border: Border.all(
+                                  color: isDark
+                                      ? primaryDarkColor.withOpacity(0.7)
+                                      : primaryLightColor,
+                                  width: 1.0,
+                                ),
+                                borderRadius: BorderRadius.circular(3.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: isDark
+                                        ? backgroundDarkColor
+                                        : Colors.white,
+                                    spreadRadius: 1.0,
+                                    blurRadius: 1.0,
+                                  )
+                                ]),
+                            child: Center(
+                              child: Text(promo.name,
+                                  textAlign: TextAlign.center,
+                                  style: isDark
+                                      ? bodyTextDarkStyle
+                                      : bodyTextLightStyle),
+                            ),
+                          ),
+                        );
+                      },
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5,
+                          mainAxisSpacing: 1,
+                          mainAxisExtent: 60.h,
+                          crossAxisSpacing: 1),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 40.h,
+                ),
+              ],
+            ),
+          )
+        else if (state.workable == Workable.loading)
+          Container()
+        else if (state.workable == Workable.failure)
+          Container()
+      ],
+    );
+  }
+
+  Widget portrait(PromoState state) {
+    int? salesRef;
+    return Column(
+      children: [
+        Expanded(
+          flex: 3,
+          child: CheckOut(
+              showCheckoutBtns: false,
+              Callback: (OrderItemModel orderItem) {
                 salesRef = orderItem.SalesRef;
               }),
-              SizedBox(
-                height: 10.h,
-              ),
-              BillButtonList(
-                paymentRepository: GetIt.I<IPaymentRepository>(),
-                orderRepository: GetIt.I<IOrderRepository>(),
-              ),
-            ],
-          ),
-          SizedBox(
-            width: 26.w,
-          ),
-          if (state.workable == Workable.ready)
-            Expanded(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 40.h,
-                    child: Center(
-                      child: Text(
-                        'Promotions',
-                        style: isDark
-                            ? titleTextDarkStyle.copyWith(
-                                fontWeight: FontWeight.bold)
-                            : titleTextLightStyle.copyWith(
-                                fontWeight: FontWeight.bold),
-                      ),
+        ),
+        if (state.workable == Workable.ready)
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 40.h,
+                  child: Center(
+                    child: Text(
+                      'Promotions',
+                      style: isDark
+                          ? titleTextDarkStyle.copyWith(
+                              fontWeight: FontWeight.bold)
+                          : titleTextLightStyle.copyWith(
+                              fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Expanded(
-                    child: SizedBox(
-                      width: 600.w,
-                      child: GridView.builder(
-                        itemCount: state.data!.promos.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          PromotionModel promo = state.data!.promos[index];
-                          return InkWell(
-                            borderRadius: BorderRadius.circular(3.0),
-                            onTap: () {
-                              // Apply Promotion
-                              ref.read(promoProvider.notifier).applyPromo(
-                                  promo.id,
-                                  promo.name,
-                                  GlobalConfig.operatorNo);
-                            },
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                  color: (isDark
-                                          ? primaryDarkColor
-                                          : primaryLightColor)
-                                      .withOpacity(0.9),
-                                  border: Border.all(
+                ),
+                Expanded(
+                  child: Container(
+                    width: 600.w,
+                    padding: EdgeInsets.all(Spacing.sm),
+                    child: GridView.builder(
+                      physics: ClampingScrollPhysics(),
+                      itemCount: state.data!.promos.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        PromotionModel promo = state.data!.promos[index];
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(3.0),
+                          onTap: () {
+                            // Apply Promotion
+                            ref.read(promoProvider.notifier).applyPromo(
+                                promo.id, promo.name, GlobalConfig.operatorNo);
+                          },
+                          child: Ink(
+                            decoration: BoxDecoration(
+                                color: (isDark
+                                        ? primaryDarkColor
+                                        : backgroundColorVariant)
+                                    .withOpacity(0.9),
+                                border: Border.all(
+                                  color: isDark
+                                      ? primaryDarkColor.withOpacity(0.7)
+                                      : primaryLightColor,
+                                  width: 1.0,
+                                ),
+                                borderRadius: BorderRadius.circular(3.0),
+                                boxShadow: [
+                                  BoxShadow(
                                     color: isDark
-                                        ? primaryDarkColor.withOpacity(0.7)
-                                        : primaryLightColor,
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(3.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: isDark
-                                          ? backgroundDarkColor
-                                          : Colors.white,
-                                      spreadRadius: 1.0,
-                                      blurRadius: 1.0,
-                                    )
-                                  ]),
-                              child: Center(
-                                child: Text(promo.name,
-                                    textAlign: TextAlign.center,
-                                    style: isDark
-                                        ? bodyTextDarkStyle
-                                        : bodyTextLightStyle),
-                              ),
+                                        ? backgroundDarkColor
+                                        : Colors.white,
+                                    spreadRadius: 1.0,
+                                    blurRadius: 1.0,
+                                  )
+                                ]),
+                            child: Center(
+                              child: Text(promo.name,
+                                  textAlign: TextAlign.center,
+                                  style: isDark
+                                      ? bodyTextDarkStyle
+                                      : bodyTextLightStyle),
                             ),
-                          );
-                        },
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 5,
-                            mainAxisSpacing: 1,
-                            mainAxisExtent: 60.h,
-                            crossAxisSpacing: 1),
-                      ),
+                          ),
+                        );
+                      },
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5,
+                          mainAxisSpacing: 1,
+                          mainAxisExtent: 60.h,
+                          crossAxisSpacing: 1),
                     ),
                   ),
-                  SizedBox(
-                    height: 40.h,
-                  ),
-                ],
-              ),
-            )
-          else if (state.workable == Workable.loading)
-            Container()
-          else if (state.workable == Workable.failure)
-            Container()
-        ],
-      ),
+                ),
+                SizedBox(
+                  height: 40.h,
+                ),
+              ],
+            ),
+          )
+        else if (state.workable == Workable.loading)
+          Container()
+        else if (state.workable == Workable.failure)
+          Container()
+      ],
     );
   }
 }

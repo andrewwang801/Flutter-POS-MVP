@@ -63,8 +63,8 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
 
     return Center(
       child: Container(
-        width: Responsive.isMobile(context) ? 400.w : 0.5.sw,
-        height: Responsive.isMobile(context) ? 700.h : 0.6.sh,
+        width: Responsive.isMobile(context) ? 400.w : 0.4.sw,
+        height: Responsive.isMobile(context) ? 0.9.sh : 0.9.sh,
         child: pluState is PLUSuccessState ? _shoppingItem(1) : Container(),
       ),
     );

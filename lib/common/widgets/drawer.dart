@@ -5,11 +5,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
+import 'package:raptorpos/common/i18n/en.dart';
 import 'package:raptorpos/common/keyboard/virtual_keyboard_2.dart';
 import 'package:raptorpos/common/widgets/alert_dialog.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
+import 'package:raptorpos/discount/presentation/discount_screen.dart';
 import 'package:raptorpos/floor_plan/presentation/floor_plan_screen.dart';
 import 'package:raptorpos/floor_plan/presentation/widgets/cover_widget.dart';
 import 'package:raptorpos/floor_plan/provider/table_provider.dart';
@@ -23,6 +25,7 @@ import 'package:raptorpos/print/provider/print_provider.dart';
 import 'package:raptorpos/printer/presentation/printer_setting_screen.dart';
 import 'package:raptorpos/promo/application/promo_provider.dart';
 import 'package:raptorpos/promo/application/promo_state.dart';
+import 'package:raptorpos/promo/presentation/promotion_screen.dart';
 import 'package:raptorpos/sales_report/presentation/sales_report_screen.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 import 'package:raptorpos/trans/presentation/viewtrans_screen.dart';
@@ -105,7 +108,10 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
         newRemarks();
       }
     });
-    // GlobalConfig.functions.add(FunctionModel(66, 'View Trans', 26));
+
+    // GlobalConfig.functions.add(FunctionModel(999, 'View Trans', 26));
+    // GlobalConfig.functions.add(FunctionModel(1000, 'Discount', 26));
+    // GlobalConfig.functions.add(FunctionModel(1001, 'Promotion', 26));
     return Drawer(
       child: Column(
         children: [
@@ -165,7 +171,12 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
                               });
                           break;
                         case 111:
-                          Get.to(const ViewTransScreen());
+                          Responsive.isMobile(context)
+                              ? Get.to(ViewTransScreen())
+                              : ScreenUtil().orientation ==
+                                      Orientation.landscape
+                                  ? Get.to(TabletViewTransScreen())
+                                  : Get.to(ViewTransScreen());
                           break;
                         case 17:
                           break;
@@ -197,10 +208,19 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
                           voidPromotion();
                           break;
 
-                        // case 66:
+                        // case 999:
                         //   Responsive.isMobile(context)
                         //       ? Get.to(ViewTransScreen())
-                        //       : Get.to(TabletViewTransScreen());
+                        //       : ScreenUtil().orientation ==
+                        //               Orientation.landscape
+                        //           ? Get.to(TabletViewTransScreen())
+                        //           : Get.to(ViewTransScreen());
+                        //   break;
+                        // case 1000:
+                        //   Get.to(DiscountScreen());
+                        //   break;
+                        // case 1001:
+                        //   Get.to(PromotionScreen());
                         //   break;
 
                         default:

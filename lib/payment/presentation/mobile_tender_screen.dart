@@ -230,17 +230,17 @@ class _MobileCashScreenState extends ConsumerState<MobileTenderScreen>
         titleSpacing: 0,
         title: Text(
           'Table ${GlobalConfig.tableNo}   Cover ${GlobalConfig.cover}',
-          style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+          style: isDark ? normalTextDarkStyle : normalTextLightStyle,
           textAlign: TextAlign.left,
         ),
         actions: [
-          IconButton(
-              icon: Icon(isDark ? Icons.wb_sunny : Icons.nightlight_round),
-              color: isDark ? backgroundColor : primaryDarkColor,
-              onPressed: () {
-                isDark ? isDark = false : isDark = true;
-                ref.read(themeProvider.notifier).setTheme(isDark);
-              }),
+          // IconButton(
+          //     icon: Icon(isDark ? Icons.wb_sunny : Icons.nightlight_round),
+          //     color: isDark ? backgroundColor : primaryDarkColor,
+          //     onPressed: () {
+          //       isDark ? isDark = false : isDark = true;
+          //       ref.read(themeProvider.notifier).setTheme(isDark);
+          //     }),
           // Container(
           //   padding: EdgeInsets.all(Spacing.sm),
           //   child: ElevatedButton(

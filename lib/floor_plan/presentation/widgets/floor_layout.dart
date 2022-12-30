@@ -106,9 +106,9 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
                       ? ScreenUtil().orientation == Orientation.landscape
                           ? 8
                           : 5
-                      : 8,
-                  crossAxisSpacing: Responsive.isMobile(context) ? 20 : 40,
-                  mainAxisSpacing: Responsive.isMobile(context) ? 20 : 40,
+                      : 10,
+                  crossAxisSpacing: Responsive.isMobile(context) ? 20 : 50,
+                  mainAxisSpacing: Responsive.isMobile(context) ? 20 : 50,
                 ),
                 itemCount: state.tableList.length,
                 itemBuilder: (BuildContext context, int index) {
