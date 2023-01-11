@@ -97,7 +97,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
 
     return Container(
       width: Responsive.isMobile(context) ? 500.w : 360.w,
-      padding: EdgeInsets.all(Spacing.lg),
+      padding:
+          EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.sm),
       decoration: BoxDecoration(
         border: Border.all(width: 1.0, color: Colors.grey),
         borderRadius: BorderRadius.circular(4.0),
@@ -128,7 +129,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                   context: context,
                   initialDate: DateTime.now(),
                   firstDate: DateTime(2022),
-                  lastDate: DateTime(2022, 12));
+                  lastDate: DateTime(2025, 12));
 
               if (picked != null && picked != startDate) {
                 setState(() {
@@ -208,7 +209,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                   context: context,
                   initialDate: DateTime.now(),
                   firstDate: DateTime(2022),
-                  lastDate: DateTime(2022, 12));
+                  lastDate: DateTime(2025, 12));
 
               if (picked != null && picked != startDate) {
                 setState(() {
@@ -306,7 +307,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               },
               text: 'Print Report',
               borderColor: isDark ? primaryDarkColor : primaryLightColor,
-              fillColor: isDark ? primaryDarkColor : primaryLightColor),
+              fillColor: isDark ? primaryDarkColor : orange),
         ),
         horizontalSpaceTiny,
         Expanded(
@@ -316,7 +317,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               },
               text: 'Refresh',
               borderColor: isDark ? primaryDarkColor : primaryLightColor,
-              fillColor: isDark ? primaryDarkColor : primaryLightColor),
+              fillColor: isDark ? primaryDarkColor : orange),
         ),
         horizontalSpaceTiny,
         Expanded(
@@ -326,7 +327,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               },
               text: 'Cancel',
               borderColor: isDark ? primaryDarkColor : primaryLightColor,
-              fillColor: isDark ? primaryDarkColor : primaryLightColor),
+              fillColor: isDark ? primaryDarkColor : orange),
         ),
       ],
     );

@@ -2095,7 +2095,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
 
     final Database database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    final bool getPermission = dynamicToBool(data[0].get(0));
+    final bool getPermission = dynamicToBool(data[0].values.elementAt(0));
 
     return getPermission;
   }

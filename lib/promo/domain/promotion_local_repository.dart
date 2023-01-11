@@ -24,7 +24,7 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     Map<String, dynamic> tempData = data[0];
 
-    final bool op_promo = dynamicToBool(tempData.get(0));
+    final bool op_promo = dynamicToBool(tempData.values.elementAt(0));
 
     return op_promo;
   }
@@ -38,8 +38,8 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
     if (data.isEmpty) {
       throw Exception('Void promotion is not availaboe for this operator');
     }
-
-    final bool voidPromo = dynamicToBool(data[0].get(0));
+    Map<String, dynamic> tempData = data[0];
+    final bool voidPromo = dynamicToBool(tempData.values.elementAt(0));
 
     if (voidPromo) {
       query =
@@ -47,17 +47,18 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
       data = await dbHandler.rawQuery(query);
       if (data.isNotEmpty) {
         for (int i = 0; i < data.length; i++) {
-          final int promoId = dynamicToInt(data[i].get(0));
+          final int promoId = dynamicToInt(data[i].values.elementAt(0));
 
           query =
               'SELECT DiscountItems, BuyXfreeY, PrmnSellBand, X, Yfor, GroupDisc FROM Promotion WHERE PromotionID = $promoId';
           List<Map<String, dynamic>> data2 = await dbHandler.rawQuery(query);
 
-          final bool discItem = dynamicToBool(data2[0].get(0));
-          final bool prmnBuyXFreeY = dynamicToBool(data2[0].get(1));
-          final bool prmnSellBand = dynamicToBool(data2[0].get(2));
-          final int x = dynamicToInt(data2[0].get(3));
-          final int yFor = dynamicToInt(data2[0].get(4));
+          final bool discItem = dynamicToBool(data2[0].values.elementAt(0));
+          final bool prmnBuyXFreeY =
+              dynamicToBool(data2[0].values.elementAt(1));
+          final bool prmnSellBand = dynamicToBool(data2[0].values.elementAt(2));
+          final int x = dynamicToInt(data2[0].values.elementAt(3));
+          final int yFor = dynamicToInt(data2[0].values.elementAt(4));
           final bool groupDisc = dynamicToBool(data[0][5]);
 
           if (prmnSellBand) {
@@ -70,8 +71,9 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
             data2 = await dbHandler.rawQuery(query);
 
             for (int j = 0; j < data2.length; j++) {
-              final double newAmt = dynamicToDouble(data2[j].get(0));
-              final String iName = data2[j].get(1).toString();
+              final double newAmt =
+                  dynamicToDouble(data2[j].values.elementAt(0));
+              final String iName = data2[j].values.elementAt(1).toString();
 
               query =
                   'UPDATE HeldItems SET ItemAmount = $newAmt WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND ItemName = "$iName"';
@@ -90,8 +92,8 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                 'SELECT DISTINCT PLUSalesRef, SalesRef FROM BuyXFreeY_Temp WHERE SalesNo = $salesNo AND SplitNo = $splitNo';
             data2 = await dbHandler.rawQuery(query);
             for (int j = 0; j < data2.length; j++) {
-              final int sRefParent = dynamicToInt(data2[j].get(0));
-              final int sRefFree = dynamicToInt(data2[j].get(1));
+              final int sRefParent = dynamicToInt(data2[j].values.elementAt(0));
+              final int sRefFree = dynamicToInt(data2[j].values.elementAt(1));
 
               await orderRepository.voidOrder(salesNo, splitNo,
                   GlobalConfig.tableNo, sRefFree, '', operatorNo);
@@ -126,13 +128,15 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
     final Database databse = await dbHelper.database;
     final String strDate = currentDateTime('EEEE').substring(0, 3);
     final String query =
-        'SELECT PromotionName, PromotionID FROM Promotion WHERE PActive = 1 AND Prmn$strDate = 1 ORDER BY SortNo, PromotionName, PrmnPriority';
+        'SELECT PromotionName, PromotionID, RGBColour FROM Promotion WHERE PActive = 1 AND Prmn$strDate = 1 ORDER BY SortNo, PromotionName, PrmnPriority';
     final List<Map<String, dynamic>> data = await databse.rawQuery(query);
 
     final List<PromotionModel> promotionList = <PromotionModel>[];
     for (final Map<String, dynamic> element in data) {
       promotionList.add(PromotionModel(
-          element.get(0).toString(), dynamicToInt(element.get(1))));
+          element.values.elementAt(0).toString(),
+          dynamicToInt(element.values.elementAt(1)),
+          element.values.elementAt(2).toString()));
     }
 
     return promotionList;
@@ -140,7 +144,7 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
 
   // Get Promotion Details
   Future<List<String>> getPromotionDetails(int promoID) async {
-    final String strDate = currentDateTime('ddd');
+    final String strDate = currentDateTime('EEEE').substring(0, 3);
     final String query =
         'SELECT PromotionName, Discount, DiscountItems, DateStart, DateEnd, TimeStart1, TimeEnd1, TimeStart2, TimeEnd2, BuyXfreeY, PrmnSellBand, SellAt, X, Yfor, GroupDisc FROM Promotion WHERE PromotionID = $promoID  AND PActive = 1 AND Prmn$strDate = 1';
 
@@ -149,23 +153,23 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
 
     final List<String> temp = <String>[];
     for (Map<String, dynamic> tempData in data) {
-      temp.add(tempData[0].toString());
-      temp.add(tempData[1].toString());
-      temp.add(tempData[2].toString());
+      temp.add(tempData.values.elementAt(0).toString());
+      temp.add(tempData.values.elementAt(1).toString());
+      temp.add(tempData.values.elementAt(2).toString());
 
-      temp.add(tempData[3].toString().substring(0, 10));
-      temp.add(tempData[4].toString().substring(0, 10));
-      temp.add(tempData[5].toString().substring(11));
-      temp.add(tempData[6].toString().substring(11));
-      temp.add(tempData[7].toString().substring(11));
-      temp.add(tempData[8].toString().substring(11));
+      temp.add(tempData.values.elementAt(3).toString().substring(0, 10));
+      temp.add(tempData.values.elementAt(4).toString().substring(0, 10));
+      temp.add(tempData.values.elementAt(5).toString().substring(11));
+      temp.add(tempData.values.elementAt(6).toString().substring(11));
+      temp.add(tempData.values.elementAt(7).toString().substring(11));
+      temp.add(tempData.values.elementAt(8).toString().substring(11));
 
-      temp.add(tempData[9].toString());
-      temp.add(tempData[10].toString());
-      temp.add(tempData[11].toString());
-      temp.add(tempData[12].toString());
-      temp.add(tempData[13].toString());
-      temp.add(tempData[14].toString());
+      temp.add(tempData.values.elementAt(9).toString());
+      temp.add(tempData.values.elementAt(10).toString());
+      temp.add(tempData.values.elementAt(11).toString());
+      temp.add(tempData.values.elementAt(12).toString());
+      temp.add(tempData.values.elementAt(13).toString());
+      temp.add(tempData.values.elementAt(14).toString());
     }
     return temp;
   }
@@ -183,10 +187,10 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
       final bool discItem = promoArray[2].toBool();
       final String DateStart = promoArray[3].substring(0, 10);
       final String DateEnd = promoArray[4].substring(0, 10);
-      final String TimeStart1 = promoArray[5].substring(11);
-      final String TimeEnd1 = promoArray[6].substring(11);
-      final String TimeStart2 = promoArray[7].substring(11);
-      final String TimeEnd2 = promoArray[8].substring(11);
+      final String TimeStart1 = promoArray[5].substring(0, 10);
+      final String TimeEnd1 = promoArray[6].substring(0, 10);
+      final String TimeStart2 = promoArray[7].substring(0, 10);
+      final String TimeEnd2 = promoArray[8].substring(0, 10);
 
       final bool PrmnBuyXFreeY = promoArray[9].toBool();
       final bool PrmnSellBand = promoArray[10].toBool();
@@ -215,7 +219,7 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
           query =
               "SELECT COUNT(PLUNo) FROM HeldItems INNER JOIN PrmnSellBand ON HeldItems.PromotionID = PrmnSellBand.PromotionID AND HeldItems.PLUNo = PrmnSellBand.PLUNumber WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (TransStatus = ' ' OR TransStatus = 'D') AND FunctionID = 26 AND FOCItem = 0";
           data = await database.rawQuery(query);
-          final int countall = dynamicToInt(data[0].get(0));
+          final int countall = dynamicToInt(data[0].values.elementAt(0));
 
           if (countall > 0) {
             query =
@@ -227,8 +231,9 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
             data = await database.rawQuery(query);
 
             for (int i = 0; i < data.length; i++) {
-              final double newAmt = dynamicToDouble(data[i].get(0));
-              final String itemName = data[i].get(1).toString();
+              final double newAmt =
+                  dynamicToDouble(data[i].values.elementAt(0));
+              final String itemName = data[i].values.elementAt(1).toString();
 
               query =
                   'UPDATE HeldItems SET ItemAmount = $newAmt WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND ItemName = \"$itemName\"';
@@ -261,7 +266,7 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
           query =
               "SELECT COUNT(*) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (TransStatus = ' ' OR TransStatus = 'D') AND FunctionID = 26 AND (SDate >= '$DateStart' AND SDate <= '$DateEnd') AND ((STime >= '$TimeStart1' AND STime <= '$TimeEnd1') OR (STime >= '$TimeStart2' AND STime <= '$TimeEnd2')) AND (RedemptionItem = 0 OR RedemptionItem IS NULL) AND (BuyXfreeYapplied = 0 OR BuyXfreeYapplied IS NULL) AND FOCItem = 0";
           data = await database.rawQuery(query);
-          final int countall = dynamicToInt(data[0].get(0));
+          final int countall = dynamicToInt(data[0].values.elementAt(0));
 
           if (countall > 0) {
             query =
@@ -273,16 +278,16 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
             data = await database.rawQuery(query);
 
             if (data.isNotEmpty) {
-              final String PLUNo = data[0].get(0).toString();
+              final String PLUNo = data[0].values.elementAt(0).toString();
 
               query =
                   "SELECT SalesRef, Quantity FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (TransStatus = ' ' OR TransStatus = 'D') AND FunctionID = 26 AND (SDate >= '$DateStart' AND SDate <= '$DateEnd') AND ((STime >= '$TimeStart1' AND STime <= '$TimeEnd1') OR (STime >= '$TimeStart2' AND STime <= '$TimeEnd2')) AND (RedemptionItem = 0 OR RedemptionItem IS NULL) AND (BuyXfreeYapplied = 0 OR BuyXfreeYapplied IS NULL) AND FOCItem = 0 AND PLUNo = '$PLUNo' AND PromotionID = $promoId ORDER BY SalesRef DESC";
               data = await database.rawQuery(query);
 
-              final int SRef = dynamicToInt(data[0].get(0));
+              final int SRef = dynamicToInt(data[0].values.elementAt(0));
               int SumQty = 0;
               for (int i = 0; i < data.length; i++) {
-                final int qty = dynamicToInt(data[i].get(1));
+                final int qty = dynamicToInt(data[i].values.elementAt(1));
                 SumQty += qty;
               }
 
@@ -339,21 +344,22 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
               TimeEnd2 +
               "')) AND (RedemptionItem = 0 OR RedemptionItem IS NULL) AND (BuyXfreeYapplied = 0 OR BuyXfreeYapplied IS NULL) AND FOCItem = 0";
           data = await database.rawQuery(query);
-          int countall = dynamicToInt(data[0].get(0));
+          int countall = dynamicToInt(data[0].values.elementAt(0));
 
           if (countall > 0) {
             query =
                 "SELECT COUNT(*) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (TransStatus = ' ' OR TransStatus = 'D') AND FunctionID = 26 AND (RedemptionItem = 0 OR RedemptionItem IS NULL) AND (BuyXfreeYapplied = 0 OR BuyXfreeYapplied IS NULL) AND FOCItem = 0 AND PromotionID = $promoId AND PromotionType = '$promoName'";
             data = await database.rawQuery(query);
-            countall = dynamicToInt(data[0].get(0));
+            countall = dynamicToInt(data[0].values.elementAt(0));
 
             if (countall == 0) {
               query =
                   'SELECT DISTINCT PrmnPlus.PluNumber, PrmnPlus.PluQty FROM PrmnPlus INNER JOIN HeldItems ON PrmnPlus.PluNumber = HeldItems.PluNo WHERE PrmnPlus.PromotionID = $promoId AND HeldItems.FOCItem = 0 ORDER BY PluNumber';
               data = await database.rawQuery(query);
               if (data.length > 0) {
-                final String PLUNoPrm = data[0].get(0).toString();
-                final double QtyPrm = dynamicToDouble(data[0].get(1));
+                final String PLUNoPrm = data[0].values.elementAt(0).toString();
+                final double QtyPrm =
+                    dynamicToDouble(data[0].values.elementAt(1));
 
                 // ignore: prefer_interpolation_to_compose_strings
                 query = "SELECT Quantity, SalesRef FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (TransStatus = ' ' OR TransStatus = 'D') AND FunctionID = 26 AND (SDate >= '" +
@@ -372,8 +378,10 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                 data = await database.rawQuery(query);
 
                 if (data.isNotEmpty) {
-                  final double QtyItems = dynamicToDouble(data[0].get(0));
-                  final int SRefItems = dynamicToInt(data[0].get(1));
+                  final double QtyItems =
+                      dynamicToDouble(data[0].values.elementAt(0));
+                  final int SRefItems =
+                      dynamicToInt(data[0].values.elementAt(1));
 
                   if (QtyItems >= QtyPrm) {
                     // ignore: prefer_interpolation_to_compose_strings
@@ -462,21 +470,23 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
               TimeEnd2 +
               "')) AND (RedemptionItem = 0 OR RedemptionItem IS NULL) AND (BuyXfreeYapplied = 0 OR BuyXfreeYapplied IS NULL) AND FOCItem = 0";
           data = await database.rawQuery(query);
-          int countall = dynamicToInt(data[0].get(0));
+          int countall = dynamicToInt(data[0].values.elementAt(0));
 
           if (countall > 0) {
             query =
                 "SELECT COUNT(*) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (TransStatus = ' ' OR TransStatus = 'D') AND FunctionID = 26 AND (RedemptionItem = 0 OR RedemptionItem IS NULL) AND (BuyXfreeYapplied = 0 OR BuyXfreeYapplied IS NULL) AND FOCItem = 0 AND PromotionID = $promoId AND PromotionType = '$promoName'";
             data = await database.rawQuery(query);
-            countall = dynamicToInt(data[0].get(0));
+            countall = dynamicToInt(data[0].values.elementAt(0));
 
             if (countall == 0) {
               query =
                   "SELECT Department, PrmnGroups.DiscPercent FROM HeldItems INNER JOIN Departments ON (HeldItems.Department = Departments.DepartmentNo) INNER JOIN PrmnGroups ON (Departments.GroupNo = PrmnGroups.GroupNo) WHERE HeldItems.SalesNo = $salesNo AND HeldItems.SplitNo = $splitNo AND (HeldItems.TransStatus = ' ' OR HeldItems.TransStatus = 'D') AND HeldItems.FunctionID = 26 AND PrmnGroups.PromotionID = $promoId AND PrmnGroups.DiscPercent > 0 GROUP BY Department";
               data = await database.rawQuery(query);
               for (int i = 0; i < data.length; i++) {
-                final int deptGetPrm = dynamicToInt(data[i].get(0));
-                final double discPercent = dynamicToDouble(data[i].get(1));
+                final int deptGetPrm =
+                    dynamicToInt(data[i].values.elementAt(0));
+                final double discPercent =
+                    dynamicToDouble(data[i].values.elementAt(1));
 
                 // ignore: prefer_interpolation_to_compose_strings
                 query = "UPDATE HeldItems SET PromotionID = $promoId, cc_promo1 = '', PromotionType = '" +
@@ -544,7 +554,7 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
               TimeEnd2 +
               "')) AND (RedemptionItem = 0 OR RedemptionItem IS NULL) AND (BuyXfreeYapplied = 0 OR BuyXfreeYapplied IS NULL) AND FOCItem = 0";
           data = await database.rawQuery(query);
-          final int countall = dynamicToInt(data[0].get(0));
+          final int countall = dynamicToInt(data[0].values.elementAt(0));
 
           if (countall > 0) {
             query =
@@ -586,15 +596,21 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                   await database.rawQuery(query);
 
               for (int j = 0; j < data2.length; j++) {
-                final String FreePLUNo = data2[j].get(12).toString();
-                final String FreeItemName = data2[j].get(13).toString();
-                final String FreeItemName_Chinese = data2[j].get(16).toString();
-                final int FreeItemDept = dynamicToInt(data2[j].get(0));
-                final double FreeQty = dynamicToDouble(data2[j].get(11));
-                final double BuyQty1 = dynamicToDouble(data2[j].get(10));
+                final String FreePLUNo =
+                    data2[j].values.elementAt(12).toString();
+                final String FreeItemName =
+                    data2[j].values.elementAt(13).toString();
+                final String FreeItemName_Chinese =
+                    data2[j].values.elementAt(16).toString();
+                final int FreeItemDept =
+                    dynamicToInt(data2[j].values.elementAt(0));
+                final double FreeQty =
+                    dynamicToDouble(data2[j].values.elementAt(11));
+                final double BuyQty1 =
+                    dynamicToDouble(data2[j].values.elementAt(10));
 
-                final int SRef = dynamicToInt(data2[j].get(7));
-                final int Qty = dynamicToInt(data2[j].get(5));
+                final int SRef = dynamicToInt(data2[j].values.elementAt(7));
+                final int Qty = dynamicToInt(data2[j].values.elementAt(5));
                 int tempSeqNo = 0;
 
                 query =
@@ -602,14 +618,14 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                 List<Map<String, dynamic>> data3 =
                     await database.rawQuery(query);
                 if (data3.isNotEmpty) {
-                  tempSeqNo = dynamicToInt(data3[0].get(0));
+                  tempSeqNo = dynamicToInt(data3[0].values.elementAt(0));
                 }
 
                 for (int k = 0; k < data2.length; k++) {
                   query =
                       "SELECT COUNT(*) FROM BuyXFreeY_Temp WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND PLUNo = '$PLUNo' AND FreePLUNo = '$FreePLUNo' AND PLUSalesRef = $SRef";
                   data3 = await database.rawQuery(query);
-                  final int value = dynamicToInt(data3[0].get(0));
+                  final int value = dynamicToInt(data3[0].values.elementAt(0));
                   if (value <= 0) {
                     for (int l = 0; l < Qty; l++) {
                       tempSeqNo += 1;
@@ -627,12 +643,12 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                     PLUNo +
                     "' AND SalesNo = $salesNo AND SplitNo = $splitNo)";
                 data3 = await database.rawQuery(query);
-                double FreeY = dynamicToDouble(data3[0].get(0));
+                double FreeY = dynamicToDouble(data3[0].values.elementAt(0));
 
                 query =
                     "SELECT COUNT(*) FROM BuyXFreeY_Temp WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND PLUNo = '$PLUNo' AND freePLUNo = '$FreePLUNo' AND (SalesRef > 0 OR SalesRef IS NULL)";
                 data3 = await database.rawQuery(query);
-                double BuyQty2 = dynamicToDouble(data3[0].get(0));
+                double BuyQty2 = dynamicToDouble(data3[0].values.elementAt(0));
                 double FreeItemQty =
                     FreeQty * (BuyQty2 / BuyQty1 * BuyQty1) / BuyQty1;
                 int status;
@@ -663,7 +679,7 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                   query =
                       "SELECT IFNULL(SUM(quantity),0) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND PLUNo = '$FreePLUNo' AND FOCItem = 1 AND FOCType = 'buyxfreey' AND (TransStatus = ' ' OR TransStatus = 'D') AND SalesRef IN (SELECT SalesRef FROM BuyXFreeY_Temp WHERE PLUNo = '$PLUNo' AND SalesNo = $salesNo AND SplitNo = $splitNo)";
                   data3 = await database.rawQuery(query);
-                  FreeY = dynamicToDouble(data3[0].get(0));
+                  FreeY = dynamicToDouble(data3[0].values.elementAt(0));
 
                   if (FreeItemQty == 0 || FreeItemQty == FreeY) {
                     continue;
@@ -678,9 +694,12 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                   }
                 }
 
-                final double FreeItemPrice = dynamicToDouble(data2[j].get(14));
-                final int BuyXCtgry = dynamicToInt(data2[j].get(8));
-                final int TmpSeatNo = dynamicToInt(data2[j].get(15));
+                final double FreeItemPrice =
+                    dynamicToDouble(data2[j].values.elementAt(14));
+                final int BuyXCtgry =
+                    dynamicToInt(data2[j].values.elementAt(8));
+                final int TmpSeatNo =
+                    dynamicToInt(data2[j].values.elementAt(15));
 
                 int RcpId = 0;
                 double AvgCost = 0;
@@ -688,9 +707,9 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                 query =
                     "SELECT RecipeID,CostPrice,LnkTo FROM PLU WHERE PLU.PLUNumber = '$FreePLUNo'";
                 data3 = await database.rawQuery(query);
-                RcpId = dynamicToInt(data3[0].get(0));
-                AvgCost = dynamicToDouble(data3[0].get(1));
-                final String PLULnkTo = data3[0].get(2).toString();
+                RcpId = dynamicToInt(data3[0].values.elementAt(0));
+                AvgCost = dynamicToDouble(data3[0].values.elementAt(1));
+                final String PLULnkTo = data3[0].values.elementAt(2).toString();
 
                 final String SDate = currentDateTime('yyyy-MM-dd');
                 final String STime = currentDateTime('HH:mm:ss');
@@ -700,7 +719,8 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                   query =
                       "SELECT SUM(quantity) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND FOCItem = 1 AND FOCType = 'buyxfreey' AND TransStatus = ' ' AND PLUNo = '$PLUNo'";
                   data3 = await database.rawQuery(query);
-                  final double tempQty = dynamicToDouble(data3[0].get(0));
+                  final double tempQty =
+                      dynamicToDouble(data3[0].values.elementAt(0));
                   FreeItemQty = FreeItemQty - tempQty;
 
                   if (FreeItemQty < 1) {
@@ -731,7 +751,7 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                 query =
                     'SELECT SalesRef FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND ItemSeqNo = $ISeqNo';
                 data3 = await database.rawQuery(query);
-                PLUSRef = dynamicToInt(data3[0].get(0));
+                PLUSRef = dynamicToInt(data3[0].values.elementAt(0));
 
                 query =
                     "SELECT * FROM BuyXFreeY_Temp WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND freePLUNo = '$FreePLUNo' AND PLUNo = '$PLUNo' AND SalesRef IS NULL";
@@ -739,7 +759,7 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
 
                 final double QtyCount = (FreeItemQty * BuyQty1) / FreeQty;
                 for (int k = 0; k < QtyCount; k++) {
-                  final int iseqNo = dynamicToInt(data3[k].get(0));
+                  final int iseqNo = dynamicToInt(data3[k].values.elementAt(0));
                   query =
                       "UPDATE BuyXFreeY_Temp SET SalesRef = $PLUSRef, Qty = $FreeQty WHERE ItemSeqNo = $iseqNo AND freePLUNo = '$FreePLUNo' AND PLUNo = '$PLUNo' AND SalesNo = $salesNo AND SplitNo = $splitNo";
                   await database.rawQuery(query);
@@ -752,9 +772,9 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                 query =
                     "SELECT KP1, KP2, KP3 FROM PLU WHERE PLUNumber = '$FreePLUNo'";
                 data3 = await database.rawQuery(query);
-                final int KP1 = dynamicToInt(data3[0].get(0));
-                final int KP2 = dynamicToInt(data3[0].get(1));
-                final int KP3 = dynamicToInt(data3[0].get(2));
+                final int KP1 = dynamicToInt(data3[0].values.elementAt(0));
+                final int KP2 = dynamicToInt(data3[0].values.elementAt(1));
+                final int KP3 = dynamicToInt(data3[0].values.elementAt(2));
 
                 if (KP1 != 0) {
                   query =
@@ -777,7 +797,8 @@ class PromotionLocalRepository with TypeUtil, DateTimeUtil {
                 query =
                     "SELECT PLUSalesRef FROM BuyXFreeY_Temp WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND PLUNo = '$PLUNo'";
                 data3 = await database.rawQuery(query);
-                final int SRefParent = dynamicToInt(data3[0].get(0));
+                final int SRefParent =
+                    dynamicToInt(data3[0].values.elementAt(0));
 
                 query =
                     "UPDATE HeldItems SET promotionID = $promoId, PromotionType = '$promoName', BuyXfreeYapplied = 1, Promotionsaving = 0, operatorpromo = $operatorNo WHERE SalesRef = $SRefParent AND TransStatus=' '";

@@ -9,13 +9,17 @@ import 'package:raptorpos/common/utils/type_util.dart';
 import 'package:raptorpos/discount/application/discount_state.dart';
 import 'package:raptorpos/discount/domain/discount_repository.dart';
 import 'package:raptorpos/discount/model/discount_model.dart';
+import 'package:raptorpos/home/provider/order/order_state_notifier.dart';
 
 @Injectable()
 class DiscountController extends StateNotifier<DiscountState>
     with DateTimeUtil, TypeUtil {
-  DiscountController(this.repository) : super(DiscountState());
+  DiscountController(this.repository,
+      {@factoryParam required this.orderController})
+      : super(DiscountState());
 
   final DiscountRepository repository;
+  final OrderStateNotifier orderController;
 
   Future<void> fetchDiscs() async {
     try {
@@ -329,11 +333,11 @@ class DiscountController extends StateNotifier<DiscountState>
       }
 
       if (coverBased) {
-        discAmnt = (fnParm / 100) * (total + surcharge - disc);
-      } else {
         discAmnt = (intCoverBased / nCover) *
             (fnParm / 100) *
             (total + surcharge - disc);
+      } else {
+        discAmnt = (fnParm / 100) * (total + surcharge - disc);
       }
     }
     // Get PShift, Start
@@ -531,7 +535,7 @@ class DiscountController extends StateNotifier<DiscountState>
                         'Discount $discTitle Failed! Further discounting is not allowed after a Bill Discount. Void Previous Bill Discount and try again'));
             return;
           } else {
-            if (coverBased == 1) {
+            if (coverBased) {
               int nCB = await repository.countCoverbasedType(
                   coverbasedtype, salesNo, splitNo);
 
@@ -794,7 +798,7 @@ class DiscountController extends StateNotifier<DiscountState>
                             await repository.getAmount(salesNo, splitNo);
                         total = vals[0];
                         disc = vals[1];
-                        surcharge = vals[3];
+                        surcharge = vals[2];
 
                         if (fnFeature == 1) {
                           if (discTotalAmt == 0) {
@@ -899,6 +903,8 @@ class DiscountController extends StateNotifier<DiscountState>
           }
         }
       }
+
+      orderController.fetchOrderItems();
     } catch (e) {
       state = state.copyWith(
           workable: Workable.ready, failiure: Failiure(errMsg: e.toString()));

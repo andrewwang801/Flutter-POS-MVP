@@ -115,7 +115,7 @@ class _ZDayReportScreenState extends ConsumerState<ZDayReportScreen> {
             },
             text: 'DO Z DAY',
             borderColor: isDark ? primaryDarkColor : primaryLightColor,
-            fillColor: isDark ? primaryDarkColor : primaryLightColor),
+            fillColor: isDark ? primaryDarkColor : orange),
         horizontalSpaceRegular,
         CustomButton(
             callback: () {
@@ -123,7 +123,7 @@ class _ZDayReportScreenState extends ConsumerState<ZDayReportScreen> {
             },
             text: 'Cancel',
             borderColor: isDark ? primaryDarkColor : primaryLightColor,
-            fillColor: isDark ? primaryDarkColor : primaryLightColor),
+            fillColor: isDark ? primaryDarkColor : orange),
       ],
     );
   }

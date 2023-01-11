@@ -153,22 +153,22 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               horizontalSpaceTiny,
-              Container(
-                width: 36,
-                height: 36,
-                child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      shape: StadiumBorder(),
-                    ),
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: const Icon(
-                      Icons.menu,
-                      size: mdiconsize,
-                    )),
-              ),
+              // Container(
+              //   width: 36,
+              //   height: 36,
+              //   child: OutlinedButton(
+              //       style: OutlinedButton.styleFrom(
+              //         padding: EdgeInsets.zero,
+              //         shape: StadiumBorder(),
+              //       ),
+              //       onPressed: () {
+              //         Scaffold.of(context).openDrawer();
+              //       },
+              //       child: const Icon(
+              //         Icons.menu,
+              //         size: mdiconsize,
+              //       )),
+              // ),
               _tableLayoutDropDown(),
             ],
           ),
@@ -224,22 +224,22 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(
-                width: Responsive.isMobile(context) ? 36 : 36,
-                height: Responsive.isMobile(context) ? 36 : 36,
-                child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      shape: StadiumBorder(),
-                    ),
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: const Icon(
-                      Icons.menu,
-                      size: smiconSize,
-                    )),
-              ),
+              // SizedBox(
+              //   width: Responsive.isMobile(context) ? 36 : 36,
+              //   height: Responsive.isMobile(context) ? 36 : 36,
+              //   child: OutlinedButton(
+              //       style: OutlinedButton.styleFrom(
+              //         padding: EdgeInsets.zero,
+              //         shape: StadiumBorder(),
+              //       ),
+              //       onPressed: () {
+              //         Scaffold.of(context).openDrawer();
+              //       },
+              //       child: const Icon(
+              //         Icons.menu,
+              //         size: smiconSize,
+              //       )),
+              // ),
               _tableLayoutDropDown(),
               Expanded(
                 child: 1.sw > 900
@@ -443,22 +443,33 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
       underline: Container(),
       icon: Icon(Icons.keyboard_arrow_down),
       value: 0,
+      alignment: Alignment.center,
       selectedItemBuilder: (BuildContext context) {
         return [
           SizedBox(
             width: Responsive.isMobile(context) ? 0.25.sw : 0.2.sw,
-            child: Center(
-              child: Text(
-                'Table Layout',
-                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Table Layout',
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                ),
+              ],
             ),
           ),
           SizedBox(
             width: Responsive.isMobile(context) ? 0.25.sw : 0.2.sw,
-            child: Text(
-              'Online',
-              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Online',
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                ),
+              ],
             ),
           ),
         ];

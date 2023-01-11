@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,7 @@ import 'package:raptorpos/common/services/printer_manager.dart';
 import 'package:raptorpos/common/utils/datetime_util.dart';
 import 'package:raptorpos/common/utils/strings_util.dart';
 import 'package:raptorpos/common/utils/type_util.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/payment/repository/i_payment_repository.dart';
 import 'package:raptorpos/print/repository/i_print_repository.dart';
 import '../../common/extension/string_extension.dart';
@@ -525,9 +527,11 @@ class PrintController extends StateNotifier<PrintState>
     return tempText;
   }
 
-  Future<String> getBillForPreview(int salesNo, int splitNo, int cover,
+  Future<List<Widget>> getBillForPreview(int salesNo, int splitNo, int cover,
       String tableNo, String rcptNo) async {
     String preview = '';
+    List<Widget> widgets = <Widget>[];
+
     final List<List<String>> scArray =
         await paymentRepository.getSalesCatData(salesNo);
     final List<double> priceArray = await paymentRepository.getAmountOrder(
@@ -541,24 +545,79 @@ class PrintController extends StateNotifier<PrintState>
 
     preview +=
         '${addSpace(POSDtls.ScreenHeader1, (20 - POSDtls.ScreenHeader1.length) ~/ 2)}\n';
-    preview +=
-        '${addSpace(POSDtls.ScreenHeader2, (20 - POSDtls.ScreenHeader2.length) ~/ 2)}\n';
+    widgets.add(Text('${POSDtls.ScreenHeader1}'));
+
+    preview += '${POSDtls.ScreenHeader2}';
+    widgets.add(Text('${POSDtls.ScreenHeader2}'));
+
     preview +=
         '${addSpace(POSDtls.ScreenHeader3, (20 - POSDtls.ScreenHeader3.length) ~/ 2)}\n\n\n';
+    widgets.add(Text('${POSDtls.ScreenHeader3}'));
+    widgets.add(verticalSpaceMedium);
 
     final String tbl = 'TABLE : $tableNo';
     preview += '${addSpace(tbl, (20 - tbl.length) ~/ 2)}\n';
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('TABLE :')),
+        Expanded(
+            child: Text(
+          tableNo,
+          textAlign: TextAlign.end,
+        )),
+      ],
+    ));
 
     final String pax = 'Pax: $cover';
     final String OpName = 'OP:${GlobalConfig.operatorName}';
     preview += '$pax${addSpace(OpName, 40 - pax.length - OpName.length)}\n';
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Pax:')),
+        Expanded(
+            child: Text(
+          '$cover',
+          textAlign: TextAlign.end,
+        )),
+      ],
+    ));
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('OP:')),
+        Expanded(
+            child: Text(
+          '${GlobalConfig.operatorName}',
+          textAlign: TextAlign.end,
+        )),
+      ],
+    ));
+
     preview += 'POSTitle:${POSDtls.strPOSTitle}\n';
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('POSTitle:')),
+        Expanded(
+            child: Text(
+          '${POSDtls.strPOSTitle}',
+          textAlign: TextAlign.end,
+        )),
+      ],
+    ));
 
     final String rcpt = 'Rcpt#:$rcptNo';
     final String dateprint = addSpace(date, 40 - rcpt.length - date.length);
     preview += '$rcpt$dateprint\n';
-
     preview += "${addChar("-", 40)}\n";
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('Rcpt#:')),
+        Expanded(
+            child: Text(
+          '$rcptNo',
+          textAlign: TextAlign.end,
+        )),
+      ],
+    ));
 
     double sTotal = priceArray[2];
     final double itemTotal = sTotal;
@@ -570,6 +629,14 @@ class PrintController extends StateNotifier<PrintState>
 
       final String dash = addChar('-', (38 - ctgName.length) ~/ 2);
       preview += '$dash $ctgName $dash-\n';
+      widgets.add(verticalSpaceSmall);
+      widgets.add(Center(
+        child: Text(
+          '------------- $ctgName --------------',
+          textAlign: TextAlign.center,
+        ),
+      ));
+      widgets.add(verticalSpaceSmall);
 
       for (int j = 0; j < itemArray.length; j++) {
         final double qty = itemArray[j][0].toDouble();
@@ -605,48 +672,80 @@ class PrintController extends StateNotifier<PrintState>
         String strQty = '';
         if (qty != 0 && !prep) {
           strQty = addSpace(qty.toString(), 3 - qty.toString().length);
-          iName = addSpace(iName, 1);
-          strIAmount =
-              addSpace(strIAmount, 37 - iName.length - strIAmount.length);
+          //iName = addSpace(iName, 1);
+          //strIAmount =
+          addSpace(strIAmount, 37 - iName.length - strIAmount.length);
         } else if (prep) {
           if (POSDtls.PrintPrepWithPrice) {
             preview += '     *';
             strQty = addSpace(qty.toString(), 3 - qty.toString().length);
-            iName = addSpace(iName, 1);
-            strIAmount =
-                addSpace(strIAmount, 31 - iName.length - strIAmount.length);
+            //iName = addSpace(iName, 1);
+            //strIAmount =
+            addSpace(strIAmount, 31 - iName.length - strIAmount.length);
           }
         } else {
           strQty = '0';
           strQty = addSpace(strQty, 3 - strQty.length);
-          iName = addSpace(iName, 1);
-          strIAmount =
-              addSpace(strIAmount, 39 - iName.length - strIAmount.length);
+          //iName = addSpace(iName, 1);
+          //strIAmount =
+          addSpace(strIAmount, 39 - iName.length - strIAmount.length);
         }
 
         preview += '$strQty $iName $strIAmount\n';
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$qty')),
+            Expanded(child: Text('$iName')),
+            Expanded(
+                child: Text(
+              '$strIAmount',
+              textAlign: TextAlign.end,
+            )),
+          ],
+        ));
+
         if (tempIName2.isNotEmpty) {
           // preview += '$iName2\n';
         }
 
         if (discType.isNotEmpty && discType != 'FOC Item') {
-          discType = addSpace(discType, 4);
+          //discType = addSpace(discType, 4);
           String strDisc = '( $discValue)';
           strDisc = addSpace(strDisc, 40 - discType.length - strDisc.length);
 
           preview += '$discType$strDisc\n';
+          widgets.add(Row(
+            children: <Widget>[
+              Expanded(child: Text('$discType')),
+              Expanded(
+                  child: Text(
+                '$discValue',
+                textAlign: TextAlign.end,
+              )),
+            ],
+          ));
 
           sTotal -= discValue;
         }
 
         if (promoValue != 0) {
           if (POSDtls.PrintPrmnDtls) {
-            promoName = addSpace(promoName, 4);
+            //promoName = addSpace(promoName, 4);
             String strPromo = '( $promoValue)';
             strPromo =
                 addSpace(strPromo, 40 - promoName.length - strPromo.length);
 
             preview += '$promoName$strPromo\n';
+            widgets.add(Row(
+              children: <Widget>[
+                Expanded(child: Text('$promoName')),
+                Expanded(
+                    child: Text(
+                  '$promoValue',
+                  textAlign: TextAlign.end,
+                )),
+              ],
+            ));
           }
 
           sTotal -= promoValue;
@@ -658,40 +757,92 @@ class PrintController extends StateNotifier<PrintState>
         await paymentRepository.getPromotionData(salesNo);
     if (promoArray.isNotEmpty) {
       String itemText = 'ITEMS TOTAL';
-      itemText = addSpace(itemText, 4);
+      //itemText = addSpace(itemText, 4);
       String strTotal = itemTotal.toString();
 
-      strTotal = addSpace(strTotal, 39 - itemText.length - strTotal.length);
+      //strTotal = addSpace(strTotal, 39 - itemText.length - strTotal.length);
 
       preview += "${addChar("-", 40)}\n";
+      widgets.add(verticalSpaceMedium);
+      widgets.add(Center(child: Text('-------------------------------------')));
+      widgets.add(verticalSpaceSmall);
+      widgets.add(verticalSpaceRegular);
       preview += ' $itemText$strTotal\n';
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('$itemText')),
+          Expanded(
+              child: Text(
+            '$strTotal',
+            textAlign: TextAlign.end,
+          )),
+        ],
+      ));
 
       for (int i = 0; i < promoArray.length; i++) {
         String pName = promoArray[i][0];
         final double pValue = promoArray[i][1].toDouble();
         String strPValue = pValue.toString();
 
-        strPValue = '( $strPValue)';
-        pName = addSpace(pName, 4);
-        strPValue = addSpace(strPValue, 39 - pName.length - strPValue.length);
+        //strPValue = '( $strPValue)';
+        //pName = addSpace(pName, 4);
+        //strPValue = addSpace(strPValue, 39 - pName.length - strPValue.length);
 
         preview += ' $pName$strPValue\n';
+        widgets.add(verticalSpaceMedium);
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$pName')),
+            Expanded(
+                child: Text(
+              '$strPValue',
+              textAlign: TextAlign.end,
+            )),
+          ],
+        ));
       }
     }
 
     preview += '${addChar('-', 40)}\n';
+    widgets.add(verticalSpaceSmall);
+    widgets.add(Center(child: Text('-------------------------------------')));
+    widgets.add(verticalSpaceSmall);
+
     if (sTotal > 0) {
       String strST = sTotal.toString();
-      strST = addSpace(strST, 26 - strST.length);
+      //strST = addSpace(strST, 26 - strST.length);
 
       preview += '     SUBTOTAL $strST\n';
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('SUBTOTAL')),
+          Expanded(
+              child: Text(
+            '$strST',
+            textAlign: TextAlign.end,
+          )),
+        ],
+      ));
     }
 
     preview += '${addChar('-', 40)}\n';
+    widgets.add(verticalSpaceSmall);
+    widgets.add(Center(child: Text('-------------------------------------')));
+    widgets.add(verticalSpaceSmall);
     if (sTotal > 0) {
       String strSTotal = sTotal.toString();
-      strSTotal = addSpace(strSTotal, 26 - strSTotal.length);
+      //strSTotal = addSpace(strSTotal, 26 - strSTotal.length);
       preview += '     SUBTOTAL $strSTotal\n';
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('SUBTOTAL')),
+          Expanded(
+              child: Text(
+            '$strSTotal',
+            textAlign: TextAlign.end,
+          )),
+        ],
+      ));
 
       final List<double> taxArray =
           await paymentRepository.findTax(salesNo, splitNo, tableNo, 2);
@@ -711,6 +862,16 @@ class PrintController extends StateNotifier<PrintState>
                 addSpace(strTaxValue, 39 - taxName.length - strTaxValue.length);
 
             preview += '$taxName$strTaxValue\n';
+            widgets.add(Row(
+              children: <Widget>[
+                Expanded(child: Text('taxName')),
+                Expanded(
+                    child: Text(
+                  '$strTaxValue',
+                  textAlign: TextAlign.end,
+                )),
+              ],
+            ));
           }
           taxTotal += taxValue;
         }
@@ -719,33 +880,76 @@ class PrintController extends StateNotifier<PrintState>
       if (POSDtls.PrintTotalTax) {
         final String title = addSpace(POSDtls.TotalTaxTitle, 5);
         String strTaxTotal = taxTotal.toString();
-        strTaxTotal =
-            addSpace(strTaxTotal, 39 - title.length - strTaxTotal.length);
+        //strTaxTotal =
+        addSpace(strTaxTotal, 39 - title.length - strTaxTotal.length);
 
         preview += '$title$strTaxTotal\n';
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$POSDtls.TotalTaxTitle')),
+            Expanded(
+                child: Text(
+              '$strTaxTotal',
+              textAlign: TextAlign.end,
+            )),
+          ],
+        ));
       }
 
       preview += '${addChar('-', 40)}\n';
+      widgets.add(verticalSpaceSmall);
+      widgets.add(Center(child: Text('-------------------------------------')));
+      widgets.add(verticalSpaceSmall);
     } else {
       String strSTotal = sTotal.toString();
-      strSTotal = addSpace(strSTotal, 26 - strSTotal.length);
+      //strSTotal = addSpace(strSTotal, 26 - strSTotal.length);
       preview += '     SUBTOTAL $strSTotal\n';
+      widgets.add(Row(
+        children: <Widget>[
+          Expanded(child: Text('SUBTOTAL')),
+          Expanded(
+              child: Text(
+            '$strSTotal',
+            textAlign: TextAlign.end,
+          )),
+        ],
+      ));
     }
 
     final double gTotal = priceArray[0];
     String strGTotal = gTotal.toString();
-    strGTotal = addSpace(strGTotal, 32 - strGTotal.length);
+    //strGTotal = addSpace(strGTotal, 32 - strGTotal.length);
 
     preview += '  TOTAL $strGTotal\n';
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('TOTAL')),
+        Expanded(
+            child: Text(
+          '$strGTotal',
+          textAlign: TextAlign.end,
+        )),
+      ],
+    ));
 
     String strTotalItem = 'Total Item : ${totalItemArray[0]}';
-    strTotalItem = addSpace(strTotalItem, 5);
+    //strTotalItem = addSpace(strTotalItem, 5);
 
     String strTotalQty = 'Total Qty : ${totalItemArray[1]}';
-    strTotalQty =
-        addSpace(strTotalQty, 40 - strTotalItem.length - strTotalQty.length);
+    //strTotalQty =
+    addSpace(strTotalQty, 40 - strTotalItem.length - strTotalQty.length);
 
     preview += '$strTotalItem$strTotalQty\n';
+    widgets.add(Row(
+      children: <Widget>[
+        Expanded(child: Text('$strTotalItem')),
+        Expanded(
+            child: Text(
+          '$strTotalQty',
+          textAlign: TextAlign.end,
+        )),
+      ],
+    ));
 
     if (paymentArray.isNotEmpty) {
       double paidAmt = 0;
@@ -755,10 +959,20 @@ class PrintController extends StateNotifier<PrintState>
         final String payName = paymentArray[i][0];
         paidAmt = paymentArray[i][1].toDouble();
         String strPaidAmt = paidAmt.toString();
-        strPaidAmt =
-            addSpace(strPaidAmt, 39 - payName.length - strPaidAmt.length);
+        //strPaidAmt =
+        addSpace(strPaidAmt, 39 - payName.length - strPaidAmt.length);
 
         preview += '$payName $strPaidAmt\n';
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('$payName')),
+            Expanded(
+                child: Text(
+              '$strPaidAmt',
+              textAlign: TextAlign.end,
+            )),
+          ],
+        ));
 
         sumpaidAmt += paidAmt;
       }
@@ -767,21 +981,51 @@ class PrintController extends StateNotifier<PrintState>
       if (changeAmt == 0) {
         changeAmt = gTotal - sumpaidAmt;
         String strChange = changeAmt.toString();
-        strChange = addSpace(strChange, 32 - strChange.length);
+        //strChange = addSpace(strChange, 32 - strChange.length);
 
         preview += 'Balance $strChange\n\n';
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('Balance')),
+            Expanded(
+                child: Text(
+              '$strChange',
+              textAlign: TextAlign.end,
+            )),
+          ],
+        ));
       } else {
         String strChange = changeAmt.toString();
-        strChange = addSpace(strChange, 33 - strChange.length);
+        //strChange = addSpace(strChange, 33 - strChange.length);
 
         preview += 'Change $strChange\n\n';
+        widgets.add(Row(
+          children: <Widget>[
+            Expanded(child: Text('Change')),
+            Expanded(
+                child: Text(
+              '$strChange',
+              textAlign: TextAlign.end,
+            )),
+          ],
+        ));
       }
     }
 
     preview += '${addChar('=', 40)}\n';
     preview += '             Closed Bill\n';
     preview += '${addChar('=', 40)}\n';
-    return preview;
+
+    widgets.add(verticalSpaceMedium);
+    widgets.add(Center(child: Text('=====================================')));
+    widgets.add(Center(
+        child: Text(
+      'Closed Bill',
+      textAlign: TextAlign.center,
+    )));
+    widgets.add(Center(child: Text('=====================================')));
+    // return preview;
+    return widgets;
   }
 
   Future<String> getOpenBill(int printSNo) async {

@@ -76,7 +76,8 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
 
     price = state.pluDetails[1].toDouble() * 1.0;
     final String itemName = state.pluDetails[0];
-    int qty = (state.orderSelect?.Quantity ?? 1) + qtyAdd;
+    int qty =
+        qtyAdd == 0 ? ((state.orderSelect?.Quantity ?? 1) + qtyAdd) : qtyAdd;
     subTotal = state.pluDetails[1].toDouble() * qty;
     _prepSelect = state.prepSelect;
 
@@ -270,24 +271,26 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                   ),
                   onPressed: () {
                     // create order item && modifier
-                    if (widget.update) {
-                      ref.read(orderProvoder.notifier).updateOrderItem(
-                          widget.pluNo,
-                          _modifierController.text,
-                          qty,
-                          foc,
-                          _prepSelect,
-                          widget.orderItem ?? OrderItemModel());
-                    } else {
-                      ref.read(orderProvoder.notifier).createOrderItem(
-                          widget.pluNo,
-                          _modifierController.text,
-                          qty,
-                          foc,
-                          _prepSelect);
-                      // foc item
+                    if (_formKey.currentState!.validate()) {
+                      if (widget.update) {
+                        ref.read(orderProvoder.notifier).updateOrderItem(
+                            widget.pluNo,
+                            _modifierController.text,
+                            qty,
+                            foc,
+                            _prepSelect,
+                            widget.orderItem ?? OrderItemModel());
+                      } else {
+                        ref.read(orderProvoder.notifier).createOrderItem(
+                            widget.pluNo,
+                            _modifierController.text,
+                            qty,
+                            foc,
+                            _prepSelect);
+                        // foc item
+                      }
+                      Get.back();
                     }
-                    Get.back();
                   },
                   child: Text('Save Changes'),
                 ),
@@ -309,6 +312,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
         padding: EdgeInsets.zero,
         constraints: BoxConstraints(),
         onPressed: () {
+          qtyAdd = _qtyController.text.toInt();
           if (qtyAdd > 0) {
             setState(() {
               qtyAdd--;
@@ -335,6 +339,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
         padding: EdgeInsets.zero,
         constraints: BoxConstraints(),
         onPressed: () {
+          qtyAdd = _qtyController.text.toInt();
           setState(() {
             qtyAdd++;
             _qtyController.text = '$qtyAdd';
@@ -349,22 +354,32 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
     );
   }
 
+  final _formKey = GlobalKey<FormState>();
   Widget _qtyEdit() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
       width: Responsive.isMobile(context) ? 60.w : 40.w,
-      child: TextFormField(
-        controller: _qtyController,
-        textAlign: TextAlign.center,
-        decoration: InputDecoration(
-          isDense: true,
-          focusColor: red,
-          hoverColor: red,
-          contentPadding: EdgeInsets.symmetric(
-              vertical: Spacing.xs, horizontal: Spacing.xs),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(width: 1.0, color: red),
-            borderRadius: BorderRadius.circular(Spacing.xs),
+      child: Form(
+        key: _formKey,
+        child: TextFormField(
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return '';
+            }
+            return null;
+          },
+          controller: _qtyController,
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(
+            isDense: true,
+            focusColor: red,
+            hoverColor: red,
+            contentPadding: EdgeInsets.symmetric(
+                vertical: Spacing.xs, horizontal: Spacing.xs),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(width: 1.0, color: red),
+              borderRadius: BorderRadius.circular(Spacing.xs),
+            ),
           ),
         ),
       ),

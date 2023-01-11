@@ -159,7 +159,7 @@ class OrderLocalRepository
     // 'SELECT PLUName, Department, Sell ${POSDtls.DefPShift}, KP1, KP2, KP3, LnkTo, RecipeID, CostPrice, Preparation, PLUName_Chinese, RentalItem, comments, TrackPrepItem, DeptTrackPrepItem, TaxTag FROM PLU WHERE PLUNumber = \'$pluNo \'';
 
     final String query =
-        "SELECT PLUName, Department, Sell1, KP1, KP2, KP3, LnkTo, RecipeID, CostPrice, Preparation, PLUName_Chinese, RentalItem, comments, TrackPrepItem, DeptTrackPrepItem, TaxTag FROM PLU WHERE PLUNumber = '$pluNo'";
+        "SELECT PLUName, Department, Sell1, KP1, KP2, KP3, LnkTo, RecipeID, CostPrice, Preparation, PLUName_Chinese, RentalItem, comments, TrackPrepItem, DeptTrackPrepItem, TaxTag, PromotionId FROM PLU WHERE PLUNumber = '$pluNo'";
 
     final Database db = await database.database;
     final List<Map<String, dynamic>> maps = await db.rawQuery(query);
@@ -854,21 +854,21 @@ class OrderLocalRepository
         "SELECT IFNULL(SUM(VoidCount), 0) FROM OpHistory WHERE (DateIn || ' ' || TimeIn) = '$dateTime' AND OperatorNo = $operatorNo";
     List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
     Map<String, dynamic> tempData = data[0];
-    int vCount = dynamicToInt(tempData.get(0));
+    int vCount = dynamicToInt(tempData.values.elementAt(0));
 
     if (salesRef == 0) {
       query =
           'SELECT Max(SalesRef) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (SetMenuRef = 0 OR PLUSalesRef = $salesRef)';
       data = await dbHandler.rawQuery(query);
       tempData = data[0];
-      salesRef = dynamicToInt(tempData.get(0));
+      salesRef = dynamicToInt(tempData.values.elementAt(0));
     }
 
     query =
         "SELECT COUNT(*) FROM HeldItems WHERE SalesRef = $salesRef AND SalesNo = $salesNo AND TransStatus = ' ' AND TblHold = 1";
     data = await dbHandler.rawQuery(query);
     tempData = data[0];
-    final int postVoidCount = dynamicToInt(tempData.get(0));
+    final int postVoidCount = dynamicToInt(tempData.values.elementAt(0));
     String addquery = "";
 
     if (postVoidCount > 0) {
@@ -916,7 +916,7 @@ class OrderLocalRepository
     final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
 
     int postVoid = 0;
-    if (data.isNotEmpty) postVoid = dynamicToInt(data[0].get(0));
+    if (data.isNotEmpty) postVoid = dynamicToInt(data[0].values.elementAt(0));
     return postVoid;
   }
 
@@ -961,11 +961,11 @@ class OrderLocalRepository
       Map<String, dynamic> tempData = data[i];
 
       orderprepList.add(OrderPrepModel(
-          prepNumber: tempData.get(0).toString(),
-          prepName: tempData.get(1).toString(),
-          prepQuantity: dynamicToDouble(tempData.get(2)),
-          prepAmount: dynamicToDouble(tempData.get(3)),
-          prepSalesRef: dynamicToInt(tempData.get(4))));
+          prepNumber: tempData.values.elementAt(0).toString(),
+          prepName: tempData.values.elementAt(1).toString(),
+          prepQuantity: dynamicToDouble(tempData.values.elementAt(2)),
+          prepAmount: dynamicToDouble(tempData.values.elementAt(3)),
+          prepSalesRef: dynamicToInt(tempData.values.elementAt(4))));
     }
 
     return orderprepList;
@@ -985,9 +985,9 @@ class OrderLocalRepository
       Map<String, dynamic> tempData = data[i];
 
       ordermodList.add(OrderModData(
-          modName: tempData.get(0).toString(),
-          modPrice: dynamicToDouble(tempData.get(1)),
-          modSalesRef: dynamicToInt(tempData.get(2))));
+          modName: tempData.values.elementAt(0).toString(),
+          modPrice: dynamicToDouble(tempData.values.elementAt(1)),
+          modSalesRef: dynamicToInt(tempData.values.elementAt(2))));
     }
 
     return ordermodList;
@@ -1015,7 +1015,7 @@ class OrderLocalRepository
     List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
     Map<String, dynamic> tempData = data[0];
 
-    final bool allVoidAccess = dynamicToBool(tempData.get(0));
+    final bool allVoidAccess = dynamicToBool(tempData.values.elementAt(0));
     if (allVoidAccess) {
       final String dateIn = currentDateTime('yyyy-MM-dd');
       final String timeIn = currentDateTime('07:00:00.000');
@@ -1026,7 +1026,7 @@ class OrderLocalRepository
           "SELECT IFNULL(SUM(VoidCount), 0) FROM OpHistory WHERE (DateIn || ' ' || TimeIn) = '$datetime' AND OperatorNo = $operatorNo";
       data = await dbHandler.rawQuery(query);
       tempData = data[0];
-      int voidCount = dynamicToInt(tempData.get(0));
+      int voidCount = dynamicToInt(tempData.values.elementAt(0));
       voidCount++;
 
       query =
@@ -1039,20 +1039,20 @@ class OrderLocalRepository
       query = 'SELECT SubFunctionID FROM SubFunction WHERE FunctionID = 32';
       data = await dbHandler.rawQuery(query);
       tempData = data[0];
-      int subFuncID = dynamicToInt(tempData.get(0));
+      int subFuncID = dynamicToInt(tempData.values.elementAt(0));
 
       query =
           "SELECT SalesRef, PLUSalesRef FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo'";
       data = await dbHandler.rawQuery(query);
       for (int i = 0; i < data.length; i++) {
         tempData = data[i];
-        int salesRef = dynamicToInt(tempData.get(0));
+        int salesRef = dynamicToInt(tempData.values.elementAt(0));
 
         query =
             "SELECT COUNT(*) FROM HeldItems WHERE SalesRef = $salesRef AND SalesNo = $salesNo AND TransStatus = ' ' AND TblHold = 1";
         List<Map<String, dynamic>> data2 = await dbHandler.rawQuery(query);
         Map<String, dynamic> tempData2 = data2[0];
-        int postVoidCount = dynamicToInt(tempData2.get(0));
+        int postVoidCount = dynamicToInt(tempData2.values.elementAt(0));
         String addquery = '';
 
         if (postVoidCount > 0) {
@@ -1103,7 +1103,7 @@ class OrderLocalRepository
             "SELECT COUNT(TableNo) FROM HeldTables WHERE TableNo = '$tableNo'";
         data = await dbHandler.rawQuery(query);
         tempData = data[0];
-        int countTables = dynamicToInt(tempData.get(0));
+        int countTables = dynamicToInt(tempData.values.elementAt(0));
         if (countTables < 1) {
           query =
               "UPDATE TblLayout SET TBLStatus = 'A' WHERE TBLNo = '$tableNo'";

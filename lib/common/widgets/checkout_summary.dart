@@ -88,7 +88,7 @@ class checkout_summary extends StatelessWidget {
                     : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
               ),
               Text(
-                discount.currencyString('\$'),
+                discount.toStringAsFixed(2).currencyString('\$'),
                 style: isDark
                     ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
                     : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),

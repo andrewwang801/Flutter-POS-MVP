@@ -54,9 +54,9 @@ class _CheckoutListState extends ConsumerState<CheckoutList> {
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      // if (widget.callback != null) {
-                      //   widget.callback!(state.orderItemTree![index].orderItem);
-                      // }
+                      if (widget.callback != null) {
+                        widget.callback!(state.orderItemTree![index].orderItem);
+                      }
                       setState(() {
                         selectedIndex = index;
                       });

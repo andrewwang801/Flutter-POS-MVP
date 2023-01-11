@@ -60,7 +60,7 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
                   Get.to(const ViewTransScreen());
                   break;
                 case 1:
-                  String bill = await GetIt.I<PrintController>()
+                  List<Widget> widgets = await GetIt.I<PrintController>()
                       .getBillForPreview(
                           GlobalConfig.salesNo,
                           GlobalConfig.splitNo,
@@ -73,7 +73,13 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
                         return Dialog(
                           child: Padding(
                             padding: const EdgeInsets.all(32.0),
-                            child: Text(bill),
+                            child: SingleChildScrollView(
+                              // child: Text(zDayReport),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [...widgets ?? []],
+                              ),
+                            ),
                           ),
                         );
                       });

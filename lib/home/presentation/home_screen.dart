@@ -79,22 +79,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       }
     }
 
-    ref.listen(printProvider, (previous, next) {
-      if (next is PrintSuccessState) {
-      } else if (next is PrintErrorState) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AppAlertDialog(
-                insetPadding: EdgeInsets.all(20),
-                title: 'Error',
-                isDark: isDark,
-                message: next.errMsg,
-                onConfirm: () {},
-              );
-            });
-      }
-    });
+    // ref.listen(printProvider, (previous, next) {
+    //   if (next is PrintSuccessState) {
+    //   } else if (next is PrintErrorState) {
+    //     showDialog(
+    //         context: context,
+    //         builder: (BuildContext context) {
+    //           return AppAlertDialog(
+    //             insetPadding: EdgeInsets.all(20),
+    //             title: 'Error',
+    //             isDark: isDark,
+    //             message: next.errMsg,
+    //             onConfirm: () {},
+    //           );
+    //         });
+    //   }
+    // });
 
     return Responsive(
         mobile: _mobile(),

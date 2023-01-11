@@ -49,65 +49,65 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
 
-    ref.listen(promoProvider, (previous, PromoState next) {
-      if (next.failiure != null) {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AppAlertDialog(
-                onConfirm: () {},
-                title: 'Error',
-                isDark: isDark,
-                message: next.failiure!.errMsg,
-              );
-            });
-      }
-    });
+    // ref.listen(promoProvider, (previous, PromoState next) {
+    //   if (next.failiure != null) {
+    //     showDialog(
+    //         context: context,
+    //         builder: (context) {
+    //           return AppAlertDialog(
+    //             onConfirm: () {},
+    //             title: 'Error',
+    //             isDark: isDark,
+    //             message: next.failiure!.errMsg,
+    //           );
+    //         });
+    //   }
+    // });
 
-    ref.listen(functionProvider, (previous, FunctionState next) {
-      if (next.failiure != null) {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AppAlertDialog(
-                onConfirm: () {},
-                title: 'Error',
-                isDark: isDark,
-                message: next.failiure!.errMsg,
-              );
-            });
-      }
-    });
+    // ref.listen(functionProvider, (previous, FunctionState next) {
+    //   if (next.failiure != null) {
+    //     showDialog(
+    //         context: context,
+    //         builder: (context) {
+    //           return AppAlertDialog(
+    //             onConfirm: () {},
+    //             title: 'Error',
+    //             isDark: isDark,
+    //             message: next.failiure!.errMsg,
+    //           );
+    //         });
+    //   }
+    // });
 
-    ref.listen(orderProvoder, (previous, OrderState next) {
-      if (next.operation == OPERATIONS.SHOW_TABLE_MANAGEMENT) {
-        Get.to(() => const FloorPlanScreen());
-      } else if (next.operation == OPERATIONS.SHOW_TABLE_NUM) {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return IntrinsicHeight(
-                child: IntrinsicWidth(
-                  child: Dialog(
-                    backgroundColor:
-                        isDark ? primaryDarkColor : backgroundColorVariant,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(Spacing.sm)),
-                    child: CoverWidget(
-                      callback: (int tableNo) {
-                        ref
-                            .read(tableProvider.notifier)
-                            .tableNoNotify(tableNo.toString());
-                      },
-                    ),
-                  ),
-                ),
-              );
-            });
-      } else if (next.operation == OPERATIONS.SHOW_KEYBOARD) {
-        newRemarks();
-      }
-    });
+    // ref.listen(orderProvoder, (previous, OrderState next) {
+    //   if (next.operation == OPERATIONS.SHOW_TABLE_MANAGEMENT) {
+    //     Get.to(() => const FloorPlanScreen());
+    //   } else if (next.operation == OPERATIONS.SHOW_TABLE_NUM) {
+    //     showDialog(
+    //         context: context,
+    //         builder: (context) {
+    //           return IntrinsicHeight(
+    //             child: IntrinsicWidth(
+    //               child: Dialog(
+    //                 backgroundColor:
+    //                     isDark ? primaryDarkColor : backgroundColorVariant,
+    //                 shape: RoundedRectangleBorder(
+    //                     borderRadius: BorderRadius.circular(Spacing.sm)),
+    //                 child: CoverWidget(
+    //                   callback: (int tableNo) {
+    //                     ref
+    //                         .read(tableProvider.notifier)
+    //                         .tableNoNotify(tableNo.toString());
+    //                   },
+    //                 ),
+    //               ),
+    //             ),
+    //           );
+    //         });
+    //   } else if (next.operation == OPERATIONS.SHOW_KEYBOARD) {
+    //     newRemarks();
+    //   }
+    // });
 
     // GlobalConfig.functions.add(FunctionModel(999, 'View Trans', 26));
     // GlobalConfig.functions.add(FunctionModel(1000, 'Discount', 26));
@@ -146,13 +146,14 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
                               () => ProgressHUD(child: PrinterSettingScreen()));
                           break;
                         case 73:
-                          String bill = await GetIt.I<PrintController>()
-                              .getBillForPreview(
-                                  GlobalConfig.salesNo,
-                                  GlobalConfig.splitNo,
-                                  GlobalConfig.cover,
-                                  GlobalConfig.tableNo,
-                                  GlobalConfig.rcptNo);
+                          List<Widget> widgets =
+                              await GetIt.I<PrintController>()
+                                  .getBillForPreview(
+                                      GlobalConfig.salesNo,
+                                      GlobalConfig.splitNo,
+                                      GlobalConfig.cover,
+                                      GlobalConfig.tableNo,
+                                      GlobalConfig.rcptNo);
                           showDialog(
                               context: context,
                               builder: (context) {
@@ -160,11 +161,25 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
                                   shape: RoundedRectangleBorder(
                                       borderRadius:
                                           BorderRadius.circular(Spacing.sm)),
-                                  child: Padding(
+                                  child: Container(
+                                    height: 0.8.sh,
+                                    width: Responsive.isMobile(context)
+                                        ? (ScreenUtil().orientation ==
+                                                Orientation.landscape
+                                            ? 0.4.sw
+                                            : 0.8.sw)
+                                        : (ScreenUtil().orientation ==
+                                                Orientation.landscape
+                                            ? 0.4.sw
+                                            : 0.6.sw),
                                     padding: const EdgeInsets.all(32.0),
-                                    child: Text(
-                                      bill,
-                                      style: TextStyle(fontSize: bodyFontSize),
+                                    child: SingleChildScrollView(
+                                      // child: Text(zDayReport),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [...widgets ?? []],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -208,23 +223,24 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
                           voidPromotion();
                           break;
 
-                        // case 999:
-                        //   Responsive.isMobile(context)
-                        //       ? Get.to(ViewTransScreen())
-                        //       : ScreenUtil().orientation ==
-                        //               Orientation.landscape
-                        //           ? Get.to(TabletViewTransScreen())
-                        //           : Get.to(ViewTransScreen());
-                        //   break;
-                        // case 1000:
-                        //   Get.to(DiscountScreen());
-                        //   break;
-                        // case 1001:
-                        //   Get.to(PromotionScreen());
-                        //   break;
+                        case 999:
+                          Responsive.isMobile(context)
+                              ? Get.to(ViewTransScreen())
+                              : ScreenUtil().orientation ==
+                                      Orientation.landscape
+                                  ? Get.to(TabletViewTransScreen())
+                                  : Get.to(ViewTransScreen());
+                          break;
+                        case 1000:
+                          Get.to(DiscountScreen());
+                          break;
+                        case 1001:
+                          Get.to(PromotionScreen());
+                          break;
 
                         default:
                       }
+                      Scaffold.of(context).openEndDrawer();
                     },
                   );
                 }),
