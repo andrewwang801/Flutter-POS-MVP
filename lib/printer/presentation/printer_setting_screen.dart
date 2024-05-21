@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:raptorpos/common/widgets/alert_dialog.dart';
 import 'package:raptorpos/print/provider/print_provider.dart';
 import 'package:raptorpos/print/provider/print_state.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../common/services/iprinter_service.dart';
 import '../../common/services/printer_manager.dart';
@@ -34,6 +35,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
   List<PrinterModel> printers = <PrinterModel>[];
   int printerID = 0;
 
+  late bool isDark;
   @override
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
@@ -117,6 +119,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
         }
       },
     );
+    isDark = ref.watch(themeProvider);
 
     ref.watch(printerProvider);
     return Scaffold(
@@ -150,6 +153,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                           child: IntrinsicWidth(
                         child: IntrinsicHeight(
                           child: PrinterAddWidget(
+                            isDark: isDark,
                             printerID: printerID,
                           ),
                         ),
@@ -157,8 +161,10 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                     });
               },
               text: 'ADD',
-              borderColor: primaryDarkColor,
-              fillColor: primaryDarkColor),
+              borderColor: isDark
+                  ? primaryButtonBorderDarkColor
+                  : primaryButtonBorderColor,
+              fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
           SizedBox(
             width: 15.w,
           ),
@@ -175,6 +181,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                           child: IntrinsicWidth(
                         child: IntrinsicHeight(
                           child: PrinterUpdateWidget(
+                            isDark: isDark,
                             printer: printers[selectedPrinter!],
                           ),
                         ),
@@ -182,8 +189,10 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                     });
               },
               text: 'UPDATE',
-              borderColor: primaryDarkColor,
-              fillColor: primaryDarkColor),
+              borderColor: isDark
+                  ? primaryButtonBorderDarkColor
+                  : primaryButtonBorderColor,
+              fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
           SizedBox(
             width: 15.w,
           ),
@@ -196,8 +205,10 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                 }
               },
               text: 'DELETE',
-              borderColor: primaryDarkColor,
-              fillColor: primaryDarkColor),
+              borderColor: isDark
+                  ? primaryButtonBorderDarkColor
+                  : primaryButtonBorderColor,
+              fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
           SizedBox(
             width: 15.w,
           ),
@@ -208,8 +219,10 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                 Get.back();
               },
               text: 'CLOSE',
-              borderColor: primaryDarkColor,
-              fillColor: primaryDarkColor),
+              borderColor: isDark
+                  ? primaryButtonBorderDarkColor
+                  : primaryButtonBorderColor,
+              fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
         ],
       ),
     );
@@ -223,6 +236,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
         return EmptyPrintersWidget(
           message: 'There are no printers connected. Please add printers.',
           icon: Icons.print_rounded,
+          isDark: isDark,
         );
       }
       return ListView.builder(
@@ -256,9 +270,13 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 10.w),
         decoration: BoxDecoration(
-          color: index.isOdd ? backgroundDarkColor : primaryDarkColor,
+          color: index.isOdd
+              ? (isDark ? backgroundDarkColor : backgroundColor)
+              : (isDark
+                  ? secondaryBackgroundDarkColor
+                  : secondaryBackgroundColor),
           border: (selectedPrinter != null && selectedPrinter == index)
-              ? Border.all(width: 1.0, color: Colors.green)
+              ? Border.all(width: 1.0, color: backgroundColor)
               : Border.all(width: 0, color: Colors.transparent),
         ),
         child: Row(
@@ -268,36 +286,42 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                 child: Text(
                   printer.printerID.toString(),
                   textAlign: TextAlign.center,
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                 )),
             Expanded(
                 flex: 2,
                 child: Text(
                   printer.printerDeviceName,
                   textAlign: TextAlign.center,
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                 )),
             Expanded(
                 flex: 2,
                 child: Text(
                   printer.printerType,
                   textAlign: TextAlign.center,
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                 )),
             Expanded(
                 flex: 2,
                 child: Text(
                   printer.interfaceType.toString(),
                   textAlign: TextAlign.center,
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                 )),
             Expanded(
                 flex: 2,
                 child: Text(
                   printer.address,
                   textAlign: TextAlign.center,
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                 )),
             Expanded(
                 flex: 2,
                 child: Text(
                   printer.port.toString(),
                   textAlign: TextAlign.center,
+                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                 )),
             CustomButton(
               text: isConnected ? 'Disconnect' : 'Connect',
@@ -327,7 +351,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
       child: Text(
         'Printers',
         textAlign: TextAlign.center,
-        style: titleTextDarkStyle,
+        style: isDark ? titleTextDarkStyle : titleTextLightStyle,
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:raptorpos/common/widgets/appbar.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/workable.dart';
@@ -73,15 +74,9 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
       backgroundColor: isDark
           ? backgroundDarkColor
           : const Color.fromARGB(255, 244, 238, 233),
-      appBar: AppBar(
-        title: Text('Raptor POS', style: titleTextDarkStyle),
-        actions: [
-          IconButton(
-              icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
-              onPressed: () {
-                isDark ? isDark = false : isDark = true;
-              })
-        ],
+      appBar: PreferredSize(
+        child: AppBarWidget(true),
+        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
       body: Row(
         children: [
@@ -182,18 +177,18 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
             },
             child: Container(
               decoration: BoxDecoration(
-                  color: primaryDarkColor,
+                  color: isDark ? primaryDarkColor : primaryLightColor,
                   border: Border.all(
                     color: isDark
                         ? primaryDarkColor.withOpacity(0.7)
-                        : Colors.green,
+                        : primaryLightColor,
                   ),
                   borderRadius: BorderRadius.circular(3.0),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                       color: isDark
                           ? primaryDarkColor.withOpacity(0.7)
-                          : Colors.white,
+                          : primaryLightColor.withOpacity(0.7),
                       spreadRadius: 1.0,
                       blurRadius: 1.0,
                     )

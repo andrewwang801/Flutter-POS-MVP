@@ -112,6 +112,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             child: NumPad(
                                 buttonHeight: 60,
                                 buttonWidth: 60,
+                                buttonColor: isDark
+                                    ? primaryButtonDarkColor
+                                    : primaryButtonColor,
                                 delete: () {},
                                 onSubmit: () {},
                                 controller: _myController),

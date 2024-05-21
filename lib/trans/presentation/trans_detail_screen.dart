@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../common/extension/string_extension.dart';
 import '../../common/widgets/alert_dialog.dart';
+import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
@@ -105,15 +106,9 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
     isDark = ref.watch(themeProvider);
     return Scaffold(
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
-      appBar: AppBar(
-        title: Text('Raptor POS', style: titleTextDarkStyle),
-        actions: [
-          IconButton(
-              icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
-              onPressed: () {
-                isDark ? isDark = false : isDark = true;
-              })
-        ],
+      appBar: PreferredSize(
+        child: AppBarWidget(false),
+        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
       body: Column(
         children: [
@@ -131,13 +126,17 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                                 backgroundColor:
                                     MaterialStateProperty.resolveWith((states) {
                                   if (states.contains(MaterialState.pressed)) {
-                                    return primaryButtonDarkColor
-                                        .withOpacity(0.6);
+                                    return isDark
+                                        ? primaryButtonDarkColor
+                                            .withOpacity(0.6)
+                                        : primaryButtonColor.withOpacity(0.6);
                                   } else if (states
                                       .contains(MaterialState.hovered)) {
                                     return Colors.red;
                                   } else {
-                                    return primaryButtonDarkColor;
+                                    return isDark
+                                        ? primaryButtonDarkColor
+                                        : primaryButtonColor;
                                   }
                                 }),
                                 fixedSize:
@@ -145,7 +144,9 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                                   return Size(100.w, 25.h);
                                 }),
                                 textStyle: MaterialStateProperty.resolveWith(
-                                    (states) => bodyTextDarkStyle),
+                                    (states) => isDark
+                                        ? bodyTextDarkStyle
+                                        : bodyTextLightStyle),
                               ),
                               onPressed: () {
                                 ref
@@ -184,10 +185,12 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
               List<String> item = state.transData!.billAdjArray[index];
               return Container(
                 color: (selectedMediaIndex == index)
-                    ? Colors.green
-                    : index.isEven
+                    ? isDark
                         ? primaryDarkColor
-                        : backgroundDarkColor,
+                        : primaryLightColor
+                    : index.isEven
+                        ? secondaryBackgroundDarkColor
+                        : secondaryBackgroundColor,
                 child: ListTile(
                   onTap: () {
                     medaiTitle = item[0];
@@ -268,7 +271,10 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
     if (state.workable == Workable.ready) {
       if (state.transData!.transDetail.isEmpty) {
         return EmptyPrintersWidget(
-            message: 'There are no items', icon: Icons.search);
+          message: 'There are no items',
+          icon: Icons.search,
+          isDark: isDark,
+        );
       }
       rows = List.generate(state.transData!.transDetail.length, (index) {
         List<String> e = state.transData!.transDetail[index];
@@ -284,15 +290,26 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
               DataCell(Text('- $amount'))
             else
               DataCell(Text('$amount')),
-            DataCell(Text(e[3])),
-            DataCell(Text('$disc')),
-            DataCell(Text(e[5])),
-            DataCell(Text(e[6])),
-            DataCell(Text(e[7])),
-            DataCell(Text(e[8])),
-            DataCell(Text(e[9])),
-            DataCell(Text(e[10])),
-            DataCell(Text(e[11])),
+            DataCell(Text(
+              e[3],
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            )),
+            DataCell(Text('$disc',
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+            DataCell(Text(e[5],
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+            DataCell(Text(e[6],
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+            DataCell(Text(e[7],
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+            DataCell(Text(e[8],
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+            DataCell(Text(e[9],
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+            DataCell(Text(e[10],
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+            DataCell(Text(e[11],
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
           ],
           onSelectChanged: (bool? value) {
             setState(() {
@@ -308,9 +325,11 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
             if (selectedIndex == index) {
               return Colors.green;
             } else if (index.isEven) {
-              return primaryDarkColor;
+              return isDark ? backgroundDarkColor : backgroundColor;
             } else {
-              return backgroundDarkColor;
+              return isDark
+                  ? secondaryBackgroundDarkColor
+                  : secondaryBackgroundColor;
             }
           }),
         );
@@ -327,18 +346,54 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
           child: SizedBox(
             child: DataTable(
               columns: <DataColumn>[
-                DataColumn(label: Text('QTY', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('ItemName', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('Amount', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('DiscType', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('Disc', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('Operator', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('PrmnType', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('Prmn', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('Mode', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('Status', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('St No', style: bodyTextDarkStyle)),
-                DataColumn(label: Text('Mem ID', style: bodyTextDarkStyle)),
+                DataColumn(
+                    label: Text('QTY',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('ItemName',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('Amount',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('DiscType',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('Disc',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('Operator',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('PrmnType',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('Prmn',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('Mode',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('Status',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('St No',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('Mem ID',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
               ],
               columnSpacing: 40,
               horizontalMargin: 10,
@@ -487,8 +542,10 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
                   }
                 },
                 text: btnTexts[index],
-                borderColor: Colors.green,
-                fillColor: Colors.green);
+                borderColor:
+                    isDark ? primaryButtonDarkColor : primaryButtonColor,
+                fillColor:
+                    isDark ? primaryButtonDarkColor : primaryButtonColor);
           }),
     );
   }

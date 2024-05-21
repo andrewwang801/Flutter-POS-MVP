@@ -6,11 +6,15 @@ import '../../../constants/text_style_constant.dart';
 
 class EmptyPrintersWidget extends StatelessWidget {
   const EmptyPrintersWidget(
-      {Key? key, required this.message, required this.icon})
+      {Key? key,
+      required this.message,
+      required this.icon,
+      required this.isDark})
       : super(key: key);
 
   final String message;
   final IconData icon;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +32,7 @@ class EmptyPrintersWidget extends StatelessWidget {
           ),
           Text(
             message,
-            style: bodyTextDarkStyle,
+            style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
           ),
         ],
       ),

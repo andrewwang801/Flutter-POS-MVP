@@ -32,6 +32,8 @@ class MainButtonList extends ConsumerStatefulWidget {
 }
 
 class _MainButtonListState extends ConsumerState<MainButtonList> {
+  late bool isDark;
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +41,7 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = ref.watch(themeProvider);
+    isDark = ref.watch(themeProvider);
     return SizedBox(
       width: 600.w,
       height: 40.h,
@@ -81,7 +83,7 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
                 : isDark
                     ? primaryDarkColor
                     : Colors.white,
-            borderColor: isDark ? primaryDarkColor : Colors.green,
+            borderColor: isDark ? primaryDarkColor : primaryLightColor,
           );
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -104,6 +106,8 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
                 child: NumPad(
                     buttonWidth: 60,
                     buttonHeight: 60,
+                    buttonColor:
+                        isDark ? primaryButtonDarkColor : primaryButtonColor,
                     delete: () {},
                     onSubmit: () {},
                     controller: _myController),

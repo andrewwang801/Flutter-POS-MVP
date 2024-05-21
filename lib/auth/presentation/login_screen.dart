@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/widgets/alert_dialog.dart';
@@ -25,6 +26,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   String pin = '';
   final TextEditingController _controller = TextEditingController();
+
+  late bool isDark;
 
   @override
   void initState() {
@@ -57,6 +60,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             });
       }
     });
+
+    isDark = ref.watch(themeProvider);
 
     return Scaffold(
       appBar: PreferredSize(
@@ -92,7 +97,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           width: 250.w,
           height: 25.h,
           decoration: BoxDecoration(
-            color: primaryDarkColor.withOpacity(0.8),
+            color: isDark
+                ? primaryDarkColor.withOpacity(0.8)
+                : primaryLightColor.withOpacity(0.8),
           ),
           child: Center(
             child: Text(
@@ -110,6 +117,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               buttonHeight: 130.h / 4,
               delete: () {},
               onSubmit: () {},
+              buttonColor: isDark ? primaryButtonDarkColor : primaryButtonColor,
               controller: _controller),
         ),
         SizedBox(
@@ -120,8 +128,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             height: 25.h,
             callback: pinSignIn,
             text: 'Sign In',
-            borderColor: primaryDarkColor,
-            fillColor: primaryDarkColor),
+            borderColor: isDark ? primaryDarkColor : primaryLightColor,
+            fillColor: isDark ? primaryDarkColor : primaryLightColor),
       ],
     );
   }

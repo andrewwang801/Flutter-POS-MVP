@@ -13,7 +13,8 @@ import '../provider/printer_provider.dart';
 import '../provider/printer_state.dart';
 
 class PrinterUpdateWidget extends ConsumerWidget {
-  PrinterUpdateWidget({required this.printer, Key? key}) : super(key: key) {
+  PrinterUpdateWidget({required this.isDark, required this.printer, Key? key})
+      : super(key: key) {
     printerName = printer.printerDeviceName;
     printerAddress = printer.address;
     printerPort = printer.port.toString();
@@ -21,6 +22,7 @@ class PrinterUpdateWidget extends ConsumerWidget {
   }
 
   final PrinterModel printer;
+  final bool isDark;
 
   String printerName = '';
   String printerAddress = '';
@@ -112,8 +114,10 @@ class PrinterUpdateWidget extends ConsumerWidget {
               await updatePrinter(ref, _printer);
             },
             text: 'UPDATE',
-            borderColor: primaryDarkColor,
-            fillColor: primaryDarkColor),
+            borderColor: isDark
+                ? primaryButtonBorderDarkColor
+                : primaryButtonBorderColor,
+            fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
         SizedBox(
           width: 20.w,
         ),
@@ -122,8 +126,10 @@ class PrinterUpdateWidget extends ConsumerWidget {
               Get.back();
             },
             text: 'CANCEL',
-            borderColor: primaryDarkColor,
-            fillColor: primaryDarkColor)
+            borderColor: isDark
+                ? primaryButtonBorderDarkColor
+                : primaryButtonBorderColor,
+            fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor)
       ],
     );
   }

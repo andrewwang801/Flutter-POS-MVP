@@ -13,9 +13,11 @@ import '../provider/printer_provider.dart';
 import '../provider/printer_state.dart';
 
 class PrinterAddWidget extends ConsumerWidget {
-  PrinterAddWidget({required this.printerID, Key? key}) : super(key: key);
+  PrinterAddWidget({required this.isDark, required this.printerID, Key? key})
+      : super(key: key);
 
   final int printerID;
+  final bool isDark;
 
   String printerName = '';
   String printerAddress = '';
@@ -107,8 +109,10 @@ class PrinterAddWidget extends ConsumerWidget {
               await addPrinter(ref, printer);
             },
             text: 'ADD',
-            borderColor: primaryDarkColor,
-            fillColor: primaryDarkColor),
+            borderColor: isDark
+                ? primaryButtonBorderDarkColor
+                : primaryButtonBorderColor,
+            fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor),
         SizedBox(
           width: 20.w,
         ),
@@ -117,8 +121,10 @@ class PrinterAddWidget extends ConsumerWidget {
               Get.back();
             },
             text: 'CANCEL',
-            borderColor: primaryDarkColor,
-            fillColor: primaryDarkColor)
+            borderColor: isDark
+                ? primaryButtonBorderDarkColor
+                : primaryButtonBorderColor,
+            fillColor: isDark ? primaryButtonDarkColor : primaryButtonColor)
       ],
     );
   }
