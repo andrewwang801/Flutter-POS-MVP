@@ -8,6 +8,7 @@ import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/common/widgets/custom_button.dart';
 import 'package:raptorpos/constants/color_constant.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
@@ -57,13 +58,17 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
   );
 
   void scrollToNext() {
-    _scrollController.animateTo(_scrollController.offset + 87.w,
-        duration: const Duration(milliseconds: 500), curve: Curves.ease);
+    _scrollController.animateTo(
+        _scrollController.offset + (300.w - 24.0 * 2 - 6.w) / 3 + 3.w,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease);
   }
 
   void scrollToPrev() {
-    _scrollController.animateTo(_scrollController.offset - 87.w,
-        duration: const Duration(milliseconds: 500), curve: Curves.ease);
+    _scrollController.animateTo(
+        _scrollController.offset - (300.w - 24.0 * 2 - 6.w) / 3 - 3.w,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease);
   }
 
   @override
@@ -76,7 +81,10 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
       child: Row(
         children: [
           GestureDetector(
-            child: const Icon(Icons.arrow_back_ios_rounded),
+            child: Icon(
+              Icons.arrow_back_ios_rounded,
+              size: iconSize,
+            ),
             onTap: () {
               scrollToPrev();
             },
@@ -122,13 +130,16 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 1,
-                mainAxisExtent: 84.w,
+                mainAxisExtent: (300.w - 24.0 * 2 - 6.w) / 3,
                 mainAxisSpacing: 3.w,
               ),
             ),
           ),
           GestureDetector(
-            child: const Icon(Icons.arrow_forward_ios_rounded),
+            child: Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: iconSize,
+            ),
             onTap: () {
               scrollToNext();
             },

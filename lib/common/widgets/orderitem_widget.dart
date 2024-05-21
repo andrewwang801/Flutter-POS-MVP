@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:raptorpos/common/widgets/orderitem_interface.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
+import 'package:raptorpos/home/model/order_mod_model.dart';
+import 'package:raptorpos/home/model/order_prep_model.dart';
 import 'package:raptorpos/home/presentation/widgets/menu_item_detail.dart';
 
 import '../../constants/text_style_constant.dart';
@@ -10,9 +12,15 @@ import '../GlobalConfig.dart';
 
 @immutable
 class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
-  ParentOrderItemWidget({required this.orderItem, required this.isDark});
+  ParentOrderItemWidget(
+      {required this.orderItem,
+      required this.isDark,
+      this.orderModList,
+      this.orderPrepList});
 
   final OrderItemModel orderItem;
+  final List<OrderModData>? orderModList;
+  final List<OrderPrepModel>? orderPrepList;
   final List<IOrderItem> children = [];
 
   bool detail = false;
@@ -79,82 +87,115 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
             contentPadding: EdgeInsets.zero,
             dense: true,
             child: ExpansionTile(
-              title: Container(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 14),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        "${orderItem.Quantity}",
-                        textAlign: TextAlign.left,
-                        style: isDark
-                            ? textStyle
-                            : textStyle.copyWith(color: Colors.black),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 7,
-                      child: Row(children: [
-                        SizedBox(
-                          width: level * 20,
-                        ),
-                        Expanded(
-                          child: Text(
-                            orderItem.ItemName ?? '',
-                            textAlign: TextAlign.left,
-                            style: isDark
-                                ? textStyle
-                                : textStyle.copyWith(color: Colors.black),
-                          ),
-                        ),
-                      ]),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Text(
-                          '${orderItem.ItemAmount}',
-                          textAlign: TextAlign.left,
-                          style: isDark
-                              ? textStyle
-                              : textStyle.copyWith(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Text(
-                          categoryType(orderItem.CategoryId!),
-                          textAlign: TextAlign.left,
-                          style: isDark
-                              ? textStyle
-                              : textStyle.copyWith(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              title: OrderItemRowWidget(isDark, textStyle),
               trailing: children.isEmpty
                   ? const SizedBox(
                       width: 20,
                     )
                   : const SizedBox(
                       width: 20, child: Icon(Icons.arrow_drop_down_sharp)),
-              initiallyExpanded: false,
-              children: children
-                  .map((IOrderItem child) =>
-                      child.render(context, 0, isDark, callback))
-                  .toList(),
+              initiallyExpanded: true,
+              children: [
+                ...prepWidgets(orderPrepList ?? []),
+                ...modWidgets(orderModList ?? []),
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Container OrderItemRowWidget(bool isDark, TextStyle textStyle) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 14),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              "${orderItem.Quantity}",
+              textAlign: TextAlign.left,
+              style:
+                  isDark ? textStyle : textStyle.copyWith(color: Colors.black),
+            ),
+          ),
+          Expanded(
+            flex: 7,
+            child: Row(children: [
+              SizedBox(
+                width: level * 20,
+              ),
+              Expanded(
+                child: Text(
+                  orderItem.ItemName ?? '',
+                  textAlign: TextAlign.left,
+                  style: isDark
+                      ? textStyle
+                      : textStyle.copyWith(color: Colors.black),
+                ),
+              ),
+            ]),
+          ),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5.0),
+              child: Text(
+                '${orderItem.ItemAmount}',
+                textAlign: TextAlign.left,
+                style: isDark
+                    ? textStyle
+                    : textStyle.copyWith(color: Colors.black),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5.0),
+              child: Text(
+                categoryType(orderItem.CategoryId!),
+                textAlign: TextAlign.left,
+                style: isDark
+                    ? textStyle
+                    : textStyle.copyWith(color: Colors.black),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> prepWidgets(List<OrderPrepModel> preps) {
+    return preps.map((e) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Expanded(child: Text('Prep Item : ')),
+            Expanded(child: Text(e.prepName)),
+            Expanded(child: Text(e.prepQuantity.toString())),
+          ],
+        ),
+      );
+    }).toList();
+  }
+
+  List<Widget> modWidgets(List<OrderModData> mods) {
+    return mods.map((e) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Expanded(child: Text('Modifier : ')),
+            Expanded(child: Text(e.modName)),
+            Expanded(child: Text(e.modPrice.toString())),
+          ],
+        ),
+      );
+    }).toList();
   }
 
   @override

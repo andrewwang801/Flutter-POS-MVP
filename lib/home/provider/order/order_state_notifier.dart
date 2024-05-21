@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
+import 'package:raptorpos/home/model/prep/prep_model.dart';
 
 import '../../../common/GlobalConfig.dart';
 import '../../../common/constants/strings.dart';
@@ -123,13 +124,13 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           Tax8: 0,
           Tax9: 0,
           PromotionId: 0,
-          TransMode: '',
+          TransMode: GlobalConfig.TransMode,
           RefundID: 0,
           TransStatus: ' ',
           FunctionID: 26,
           SubFunctionID: 0,
-          MembershipID: 0,
-          LoyaltyCardNo: '',
+          MembershipID: InitSalesVar.memId,
+          LoyaltyCardNo: InitSalesVar.LoyaltyCardNo,
           AvgCost: avgCost,
           RecipeId: rcpId,
           PriceShift: 0,
@@ -153,7 +154,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           TblHold: 0,
           RentalItem: rentalItem.toInt(),
           SeatNo: 0,
-          SalesAreaID: '0',
+          SalesAreaID: POSDtls.strSalesAreaID,
           ServerNo: operatorNo,
           comments: comments.toInt(),
           Trackprep: trackPrep.toInt(),
@@ -289,44 +290,78 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
             GlobalConfig.salesNo,
             GlobalConfig.splitNo,
             GlobalConfig.tableNo,
-            sRef,
+            // sRef,
+            modSRef,
             '',
             GlobalConfig.operatorNo);
       }
 
       List<String> prepKey = prepSelect.keys.toList();
       if (prepArr.isNotEmpty) {
-        if (prepArr.length == prepKey.length) {
-          for (int i = 0; i < prepKey.length; i++) {
-            final String prepPLUNo = prepKey[0];
-            Map<String, String> prepDtls = prepSelect[prepPLUNo] ?? {};
-            final int prepQty = prepDtls['Quantity']?.toInt() ?? 0;
+        List<String> prepNumberList = prepArr.map((e) => e.prepNumber).toList();
 
-            for (int j = 0; j < prepArr.length; j++) {
-              final int prepSRef = prepArr[j].prepSalesRef;
-              final String prepPLUNoExist = prepArr[j].prepNumber;
+        for (int i = 0; i < prepKey.length; i++) {
+          final String prepPLUNo = prepKey[i];
+          Map<String, String> prepDtls = prepSelect[prepPLUNo] ?? {};
+          final int prepQty = prepDtls['Quantity']?.toInt() ?? 0;
 
-              if (prepPLUNo == prepPLUNoExist) {
-                await orderRepository.updateItemQuantity(
-                    GlobalConfig.salesNo,
-                    GlobalConfig.splitNo,
-                    GlobalConfig.tableNo,
-                    prepQty,
-                    prepSRef);
-                break;
-              } else {
-                await prepOrderItem(
-                    POSDtls.deviceNo,
-                    GlobalConfig.operatorNo,
-                    GlobalConfig.tableNo,
-                    GlobalConfig.salesNo,
-                    GlobalConfig.splitNo,
-                    prepPLUNo,
-                    GlobalConfig.cover,
-                    qty,
-                    sRef);
-              }
-            }
+          if (prepNumberList.contains(prepPLUNo)) {
+            final int prepSRef = prepArr
+                .firstWhere((element) => element.prepNumber == prepPLUNo)
+                .prepSalesRef;
+            await orderRepository.updateItemQuantity(GlobalConfig.salesNo,
+                GlobalConfig.splitNo, GlobalConfig.tableNo, prepQty, prepSRef);
+          } else {
+            await prepOrderItem(
+                POSDtls.deviceNo,
+                GlobalConfig.operatorNo,
+                GlobalConfig.tableNo,
+                GlobalConfig.salesNo,
+                GlobalConfig.splitNo,
+                prepPLUNo,
+                GlobalConfig.cover,
+                qty,
+                sRef);
+          }
+
+          // for (int j = 0; j < prepArr.length; j++) {
+          //   final int prepSRef = prepArr[j].prepSalesRef;
+          //   final String prepPLUNoExist = prepArr[j].prepNumber;
+
+          //   if (prepPLUNo == prepPLUNoExist) {
+          //     await orderRepository.updateItemQuantity(
+          //         GlobalConfig.salesNo,
+          //         GlobalConfig.splitNo,
+          //         GlobalConfig.tableNo,
+          //         prepQty,
+          //         prepSRef);
+          //     break;
+          //   } else {
+          //     await prepOrderItem(
+          //         POSDtls.deviceNo,
+          //         GlobalConfig.operatorNo,
+          //         GlobalConfig.tableNo,
+          //         GlobalConfig.salesNo,
+          //         GlobalConfig.splitNo,
+          //         prepPLUNo,
+          //         GlobalConfig.cover,
+          //         qty,
+          //         sRef);
+          //   }
+          // }
+        }
+        for (int j = 0; j < prepArr.length; j++) {
+          final int prepSRef = prepArr[j].prepSalesRef;
+          final String prepPLUNoExist = prepArr[j].prepNumber;
+
+          if (!prepSelect.keys.contains(prepPLUNoExist)) {
+            await orderRepository.voidOrder(
+                GlobalConfig.salesNo,
+                GlobalConfig.splitNo,
+                GlobalConfig.tableNo,
+                prepSRef,
+                '',
+                GlobalConfig.operatorNo);
           }
         }
       } else {
@@ -367,7 +402,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
         bills: await calcBill(),
         paymentPermission: await paymentRepository.checkPaymentPermission(
             GlobalConfig.operatorNo, 5),
-        orderItemTree: configureTree(orderItems),
+        orderItemTree: await configureTree(orderItems),
         workable: Workable.ready,
       );
     } catch (e) {
@@ -400,7 +435,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           bills: await calcBill(),
           paymentPermission: await paymentRepository.checkPaymentPermission(
               GlobalConfig.operatorNo, 5),
-          orderItemTree: configureTree(orderItems),
+          orderItemTree: await configureTree(orderItems),
           workable: Workable.ready,
         );
       }
@@ -450,7 +485,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
               bills: await calcBill(),
               paymentPermission: await paymentRepository.checkPaymentPermission(
                   GlobalConfig.operatorNo, 5),
-              orderItemTree: configureTree(orderItems),
+              orderItemTree: await configureTree(orderItems),
               workable: Workable.ready,
             );
           }
@@ -488,7 +523,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
                   bills: await calcBill(),
                   paymentPermission: await paymentRepository
                       .checkPaymentPermission(GlobalConfig.operatorNo, 5),
-                  orderItemTree: configureTree(orderItems),
+                  orderItemTree: await configureTree(orderItems),
                   workable: Workable.ready,
                 );
               }
@@ -593,8 +628,8 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
             TableNo: tableNo,
             SalesNo: salesNo,
             SplitNo: splitNo,
-            // SalesRef: 1,
-            PLUSalesRef: 0,
+            // SalesRef: salesRef,
+            PLUSalesRef: salesRef,
             ItemSeqNo: itemSeqNo,
             PLUNo: pluNo,
             Department: 0,
@@ -619,7 +654,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
             PromotionId: 0,
             TransMode: '',
             RefundID: 0,
-            TransStatus: ' ',
+            TransStatus: 'M',
             FunctionID: 26,
             SubFunctionID: 0,
             MembershipID: 0,
@@ -690,8 +725,10 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
       return;
     }
 
+    // OrderItemModel? orderItem =
+    //     await orderRepository.getItemParentData(salesNo, splitNo, _salesRef!);
     OrderItemModel? orderItem =
-        await orderRepository.getItemParentData(salesNo, splitNo, _salesRef!);
+        await orderRepository.getItemParentData(salesNo, splitNo, pluSalesRef);
 
     if (orderItem == null && orderItem!.CategoryId != null) return;
 
@@ -744,7 +781,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           SalesNo: salesNo,
           SplitNo: splitNo,
           // SalesRef: 1,
-          PLUSalesRef: _salesRef,
+          PLUSalesRef: 0,
           ItemSeqNo: itemSeqNo,
           PLUNo: pluNo,
           Department: dept,
@@ -767,13 +804,13 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           Tax8: 0,
           Tax9: 0,
           PromotionId: 0,
-          TransMode: '',
+          TransMode: GlobalConfig.TransMode,
           RefundID: 0,
           TransStatus: ' ',
           FunctionID: 26,
           SubFunctionID: 0,
-          MembershipID: 0,
-          LoyaltyCardNo: '',
+          MembershipID: InitSalesVar.memId,
+          LoyaltyCardNo: InitSalesVar.LoyaltyCardNo,
           AvgCost: avgCost,
           RecipeId: rcpId,
           PriceShift: 0,
@@ -797,7 +834,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           TblHold: 0,
           RentalItem: rentalItem.toInt(),
           SeatNo: 0,
-          SalesAreaID: '0',
+          SalesAreaID: POSDtls.strSalesAreaID,
           ServerNo: operatorNo,
           comments: comments.toInt(),
           Trackprep: trackPrep.toInt(),
@@ -810,9 +847,10 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           salesNo.toString(),
           splitNo.toString(),
           tablNo,
-          itemSeqNo.toString()
+          itemSeqNo.toString(),
+          pluSalesRef.toString(),
         ];
-        await orderRepository.updatePLUSalesRef(values, 1);
+        await orderRepository.updatePLUSalesRef(values, 2);
         _salesRef = await orderRepository.getItemSalesRef(
             salesNo, splitNo, tablNo, itemSeqNo, 0);
         int? pluSalesNo =
@@ -979,7 +1017,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
         bills: await calcBill(),
         paymentPermission: await paymentRepository.checkPaymentPermission(
             GlobalConfig.operatorNo, 5),
-        orderItemTree: configureTree(orderItems),
+        orderItemTree: await configureTree(orderItems),
         workable: Workable.ready,
       );
     } catch (e) {
@@ -1008,7 +1046,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
         workable: Workable.ready,
         paymentPermission: await paymentRepository.checkPaymentPermission(
             GlobalConfig.operatorNo, 5),
-        orderItemTree: configureTree(orderItems),
+        orderItemTree: await configureTree(orderItems),
       );
     } catch (e) {
       print('Error: ${e.toString()}');
@@ -1017,35 +1055,51 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
     }
   }
 
-  List<ParentOrderItemWidget> configureTree(List<OrderItemModel> orderItems) {
+  Future<List<ParentOrderItemWidget>> configureTree(
+      List<OrderItemModel> orderItems) async {
     List<OrderItemModel> parentItems = orderItems.where((element) {
       return element.Preparation == 0;
     }).toList();
-    final List<ParentOrderItemWidget> parentItemWidgets = parentItems.map((e) {
-      final ParentOrderItemWidget parentOrderItemWidget =
-          ParentOrderItemWidget(orderItem: e, isDark: false);
+    final Future<List<ParentOrderItemWidget>> parentItemWidgets =
+        Future.wait(parentItems.map((e) async {
+      List<OrderModData> modArr = await orderRepository.getOrderModData(
+          GlobalConfig.salesNo,
+          GlobalConfig.splitNo,
+          e.SalesRef ?? 0,
+          GlobalConfig.tableNo);
+      List<OrderPrepModel> prepArr = await orderRepository.getOrderPrepData(
+          GlobalConfig.salesNo,
+          GlobalConfig.splitNo,
+          e.SalesRef ?? 0,
+          GlobalConfig.tableNo);
+
+      final ParentOrderItemWidget parentOrderItemWidget = ParentOrderItemWidget(
+          orderItem: e,
+          isDark: false,
+          orderModList: modArr,
+          orderPrepList: prepArr);
       orderItems.removeWhere(
           (OrderItemModel element) => element.SalesRef == e.SalesRef);
 
-      List<OrderItemModel> subOrderItems = <OrderItemModel>[];
-      for (int i = 0; i < orderItems.length; i++) {
-        final OrderItemModel orderitem = orderItems[i];
-        if (orderitem.Preparation == 0) {
-          break;
-        }
-        parentOrderItemWidget.addChild(ParentOrderItemWidget(
-          orderItem: orderitem,
-          isDark: false,
-        ));
-        subOrderItems.add(orderitem);
-      }
-      subOrderItems.forEach((element) {
-        orderItems
-            .removeWhere((orderItem) => orderItem.SalesRef == element.SalesRef);
-      });
-      subOrderItems.clear();
+      // List<OrderItemModel> subOrderItems = <OrderItemModel>[];
+      // for (int i = 0; i < orderItems.length; i++) {
+      //   final OrderItemModel orderItem = orderItems[i];
+      // if (orderitem.Preparation == 0) {
+      //   break;
+      // }
+      // parentOrderItemWidget.addChild(ParentOrderItemWidget(
+      //   orderItem: orderitem,
+      //   isDark: false,
+      // ));
+      // subOrderItems.add(orderitem);
+      // }
+      // subOrderItems.forEach((element) {
+      //   orderItems
+      //       .removeWhere((orderItem) => orderItem.SalesRef == element.SalesRef);
+      // });
+      // subOrderItems.clear();
       return parentOrderItemWidget;
-    }).toList();
+    }));
     return parentItemWidgets;
   }
 
