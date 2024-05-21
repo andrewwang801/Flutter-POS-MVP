@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/print/provider/print_state.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/string_extension.dart';
@@ -98,6 +99,10 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
   void initState() {
     ref.read(paymentProvider.notifier).fetchPaymentData(0, 0);
 
+    // Print
+    ref.read(printProvider.notifier).kpPrint();
+    // End of Print
+
     _paymentRepository = widget.paymentRepository;
     _controller.addListener(() {
       setState(() {
@@ -121,6 +126,22 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
     PaymentState state = ref.watch(paymentProvider);
+
+    ref.listen(printProvider, (previous, next) {
+      if (next is PrintSuccessState) {
+      } else if (next is PrintErrorState) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                insetPadding: EdgeInsets.all(20),
+                title: 'Error',
+                message: next.errMsg,
+                onConfirm: () {},
+              );
+            });
+      }
+    });
 
     ref.listen<PaymentState>(paymentProvider, (prev, next) async {
       if (next is PaymentSuccessState) {
@@ -198,8 +219,8 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
     if (state is! PaymentSuccessState) {
       return Center(child: const Text('loading...'));
     } else {
-      tenderArray = state.tenderArray!;
-      tenderDetail = state.tenderDetail!;
+      tenderArray = state.tenderArray ?? [];
+      tenderDetail = state.tenderDetail ?? [];
       return Column(
         children: [
           SizedBox(

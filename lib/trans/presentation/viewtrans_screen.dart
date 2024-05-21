@@ -284,7 +284,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                       Get.to(TransDetailScreen());
                       break;
                     case 3:
-                      Get.to(CashScreen());
+                      // Get.to(CashScreen());
                       break;
                     default:
                       break;

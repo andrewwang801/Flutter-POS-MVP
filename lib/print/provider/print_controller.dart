@@ -117,53 +117,67 @@ class PrintController extends StateNotifier<PrintState>
   }
 
   Future<void> doPrint(int status, int printSNo, String printData) async {
-    if (printerManager.getPrinters().isEmpty) {
-      state = PrintErrorState(errMsg: 'There is no printer connected');
-    } else {
-      if (status == 1) {
-        await printerManager.print(printData);
-      } else if (status == 2) {
-        await printerManager.print(printData);
-      } else if (status == 3) {
-        final String printText = await printBill(printSNo, printData);
-        await printerManager.print(printText);
-      } else if (status == 4) {
-        await printerManager.print(printData);
-      } else if (status == 5) {
-        String printText = await printOpenBill(printSNo);
-        await printerManager.print(printData);
+    try {
+      if (printerManager.getPrinters().isEmpty) {
+        state = PrintErrorState(errMsg: 'There is no printer connected');
+      } else {
+        if (status == 1) {
+          await printerManager.print(printData);
+        } else if (status == 2) {
+          await printerManager.print(printData);
+        } else if (status == 3) {
+          final String printText = await getBill(printSNo, printData);
+          await printerManager.print(printText);
+        } else if (status == 4) {
+          await printerManager.print(printData);
+        } else if (status == 5) {
+          final String printText = await getOpenBill(printSNo);
+          await printerManager.print(printData);
+        }
+        state = PrintSuccessState();
       }
-      state = PrintSuccessState();
+    } catch (e) {
+      state = PrintErrorState(errMsg: e.toString());
     }
   }
 
   Future<void> kpPrint() async {
-    List<List<String>> kpscArray = await printRepository.getKPSalesCategory(
-        GlobalConfig.salesNo, GlobalConfig.splitNo, 'HeldItems', 'KPStatus', 0);
-    if (kpscArray.isNotEmpty) {
-      await kpPrinting(GlobalConfig.salesNo, GlobalConfig.splitNo,
-          GlobalConfig.tableNo, 'HeldItems', 'KPStatus', 0, 0);
-
-      if (POSDtls.blnKPPrintMaster) {
-        await masterKPPrint(GlobalConfig.salesNo, GlobalConfig.splitNo,
+    try {
+      List<List<String>> kpscArray = await printRepository.getKPSalesCategory(
+          GlobalConfig.salesNo,
+          GlobalConfig.splitNo,
+          'HeldItems',
+          'KPStatus',
+          0);
+      if (kpscArray.isNotEmpty) {
+        await kpPrinting(GlobalConfig.salesNo, GlobalConfig.splitNo,
             GlobalConfig.tableNo, 'HeldItems', 'KPStatus', 0, 0);
-      }
 
-      if (printerManager.getPrinters().isEmpty) {
-        state = PrintErrorState(errMsg: 'There is no printer connected');
-      } else {
-        for (String printData in printArr) {
-          // Print Action
-          await doPrint(2, 0, printData);
+        if (POSDtls.blnKPPrintMaster) {
+          await masterKPPrint(GlobalConfig.salesNo, GlobalConfig.splitNo,
+              GlobalConfig.tableNo, 'HeldItems', 'KPStatus', 0, 0);
         }
-        printArr.clear();
-        await printRepository.updateKPPrintItem(
-            GlobalConfig.salesNo, GlobalConfig.splitNo);
+
+        if (printerManager.getPrinters().isEmpty) {
+          state = PrintErrorState(errMsg: 'There is no printer connected');
+        } else {
+          for (String printData in printArr) {
+            // Print Action
+            // await doPrint(2, 0, printData);
+            await printerManager.print(printData);
+          }
+          printArr.clear();
+          await printRepository.updateKPPrintItem(
+              GlobalConfig.salesNo, GlobalConfig.splitNo);
+          state = PrintSuccessState();
+        }
       }
+    } catch (e) {
+      state = PrintErrorState(errMsg: e.toString());
     }
   }
 
-  Future<String> printBill(int printSNo, String printStatus) async {
+  Future<String> getBill(int printSNo, String printStatus) async {
     List<List<String>> refundArray = <List<String>>[];
 
     if (printStatus == 'Refund') {
@@ -448,7 +462,7 @@ class PrintController extends StateNotifier<PrintState>
     return tempText;
   }
 
-  Future<String> printOpenBill(int printSNo) async {
+  Future<String> getOpenBill(int printSNo) async {
     return '';
   }
 }

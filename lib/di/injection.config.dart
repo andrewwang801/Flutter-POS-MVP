@@ -60,8 +60,8 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       get<_i10.IOrderRepository>(), get<_i12.IPaymentRepository>()));
   gh.factory<_i21.PLUStateNotifier>(() => _i21.PLUStateNotifier(
       get<_i6.IMenuRepository>(), get<_i10.IOrderRepository>()));
-  gh.factory<_i22.PaymentStateNotifer>(
-      () => _i22.PaymentStateNotifer(get<_i12.IPaymentRepository>()));
+  gh.factory<_i22.PaymentStateNotifer>(() => _i22.PaymentStateNotifer(
+      get<_i12.IPaymentRepository>(), get<_i10.IOrderRepository>()));
   gh.factory<_i23.PrintController>(() => _i23.PrintController(
       get<_i14.IPrintRepository>(),
       get<_i12.IPaymentRepository>(),
