@@ -9,13 +9,14 @@ import '../../constants/text_style_constant.dart';
 import '../../home/model/order_item_model.dart';
 
 class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
+  ParentOrderItemWidget({required this.orderItem, required this.isDark});
+
   final OrderItemModel orderItem;
   final List<IOrderItem> children = [];
 
   bool detail = false;
   int level = 0;
-
-  ParentOrderItemWidget({required this.orderItem});
+  final bool isDark;
 
   void addChild(IOrderItem child) {
     child.parent = this;
@@ -23,7 +24,8 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
   }
 
   @override
-  Widget render(BuildContext context, int padding, {bool detail = false}) {
+  Widget render(BuildContext context, int padding, bool isDark,
+      {bool detail = false}) {
     level = (orderItem.Preparation ?? 0) == 1 ? 1 : 0;
     TextStyle textStyle =
         bodyTextDarkStyle.copyWith(fontSize: modifierItemFontSize);
@@ -75,7 +77,9 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                       child: Text(
                         "${orderItem.Quantity}",
                         textAlign: TextAlign.left,
-                        style: textStyle,
+                        style: isDark
+                            ? textStyle
+                            : textStyle.copyWith(color: Colors.black),
                       ),
                     ),
                     Expanded(
@@ -85,8 +89,13 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                           width: level * 20,
                         ),
                         Expanded(
-                          child: Text(orderItem.ItemName ?? '',
-                              textAlign: TextAlign.left, style: textStyle),
+                          child: Text(
+                            orderItem.ItemName ?? '',
+                            textAlign: TextAlign.left,
+                            style: isDark
+                                ? textStyle
+                                : textStyle.copyWith(color: Colors.black),
+                          ),
                         ),
                       ]),
                     ),
@@ -97,7 +106,9 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                         child: Text(
                           '${orderItem.ItemAmount}',
                           textAlign: TextAlign.left,
-                          style: textStyle,
+                          style: isDark
+                              ? textStyle
+                              : textStyle.copyWith(color: Colors.black),
                         ),
                       ),
                     ),
@@ -108,7 +119,9 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                         child: Text(
                           '${orderItem.CategoryId}',
                           textAlign: TextAlign.left,
-                          style: textStyle,
+                          style: isDark
+                              ? textStyle
+                              : textStyle.copyWith(color: Colors.black),
                         ),
                       ),
                     ),
@@ -121,8 +134,9 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                     )
                   : SizedBox(
                       width: 20, child: Icon(Icons.arrow_drop_down_sharp)),
-              children:
-                  children.map((child) => child.render(context, 0)).toList(),
+              children: children
+                  .map((child) => child.render(context, 0, isDark))
+                  .toList(),
               initiallyExpanded: false,
             ),
           ),
@@ -133,7 +147,7 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
 
   @override
   Widget build(BuildContext context) {
-    return render(context, 5, detail: detail);
+    return render(context, 5, isDark, detail: detail);
   }
 
   @override

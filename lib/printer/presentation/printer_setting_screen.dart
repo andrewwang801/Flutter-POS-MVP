@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:raptorpos/common/widgets/alert_dialog.dart';
+import 'package:raptorpos/print/provider/print_provider.dart';
+import 'package:raptorpos/print/provider/print_state.dart';
 
 import '../../common/services/iprinter_service.dart';
 import '../../common/services/printer_manager.dart';
@@ -46,6 +48,20 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(printProvider, (previous, next) {
+      if (next is PrintSuccessState) {
+      } else if (next is PrintErrorState) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AppAlertDialog(
+                title: 'Error',
+                message: next.errMsg,
+                onConfirm: () {},
+              );
+            });
+      }
+    });
     ref.listen(
       printerProvider,
       (previous, next) {

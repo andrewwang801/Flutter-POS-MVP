@@ -53,6 +53,11 @@ class TableController extends StateNotifier<TableState>
           }
         }
       } else {
+        GlobalConfig.salesNo = tableList[0][0].toInt();
+        GlobalConfig.splitNo = tableList[0][1].toInt();
+        GlobalConfig.tableNo = tableList[0][2];
+        GlobalConfig.cover = tableList[0][3].toInt();
+        GlobalConfig.rcptNo = tableList[0][4];
         if (state is TableSuccessState) {
           TableSuccessState prevState = state as TableSuccessState;
           state = prevState.copyWith(notify_type: NOTIFY_TYPE.GOTO_MAIN);

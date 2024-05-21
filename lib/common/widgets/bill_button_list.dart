@@ -40,9 +40,8 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
   final List<String> billBtnTexts = [
     'CASH',
     'PAYMENT',
-    'DISC',
-    'Print Bill',
     'DINE-IN',
+    'DISC',
     'PROMO',
   ];
 
@@ -100,23 +99,26 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
                       case 1:
                         await doTenderPayment(state);
                         break;
+                      // Sales Category
                       case 2:
+                        setState(() {
+                          if (POSDtls.categoryID == 1) {
+                            POSDtls.categoryID = 3;
+                          } else if (POSDtls.categoryID == 3) {
+                            POSDtls.categoryID = 1;
+                          }
+                        });
                         break;
                       case 3:
-                        Get.to(FloorPlanScreen());
                         break;
                       case 4:
-                        Get.to(ViewTransScreen());
-                        break;
-                      case 5:
-                        Get.to(SalesCategoryScreen());
                         break;
                       default:
                         Get.to(ViewTransScreen());
                         break;
                     }
                   },
-                  text: billBtnTexts[index],
+                  text: index == 2 ? categoryType() : billBtnTexts[index],
                   fillColor: isDark ? primaryDarkColor : Colors.white,
                   borderColor: isDark ? primaryDarkColor : Colors.green,
                 );
@@ -182,11 +184,8 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
             GlobalConfig.splitNo, GlobalConfig.tableNo, sTotal, gTotal, 0);
         // fetch updated order items
         ref.read(orderProvoder.notifier).fetchOrderItems();
-
         // Print
         await ref.read(printProvider.notifier).kpPrint();
-        // End of Print
-        ref.read(paymentProvider.notifier).fetchPaymentData(0, 0);
         Get.to(TenderScreen(
           gTotal: gTotal,
           paymentRepository: GetIt.I<IPaymentRepository>(),
@@ -201,5 +200,15 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
             });
       }
     } else {}
+  }
+
+  String categoryType() {
+    if (POSDtls.categoryID == 1) {
+      return 'Take Away';
+    } else if (POSDtls.categoryID == 3) {
+      return 'DINE IN';
+    } else {
+      return 'Delivery';
+    }
   }
 }

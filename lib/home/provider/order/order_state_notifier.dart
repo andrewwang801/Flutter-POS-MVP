@@ -731,7 +731,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
     }).toList();
     final List<ParentOrderItemWidget> parentItemWidgets = parentItems.map((e) {
       final ParentOrderItemWidget parentOrderItemWidget =
-          ParentOrderItemWidget(orderItem: e);
+          ParentOrderItemWidget(orderItem: e, isDark: false);
       orderItems.removeWhere(
           (OrderItemModel element) => element.SalesRef == e.SalesRef);
 
@@ -741,8 +741,10 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
         if (orderitem.Preparation == 0) {
           break;
         }
-        parentOrderItemWidget
-            .addChild(ParentOrderItemWidget(orderItem: orderitem));
+        parentOrderItemWidget.addChild(ParentOrderItemWidget(
+          orderItem: orderitem,
+          isDark: false,
+        ));
         subOrderItems.add(orderitem);
       }
       subOrderItems.forEach((element) {

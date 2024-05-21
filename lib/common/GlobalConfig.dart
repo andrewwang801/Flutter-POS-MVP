@@ -1,16 +1,22 @@
+// ignore_for_file: non_constant_identifier_names, unnecessary_late
+
 import 'dart:core';
+
+import '../auth/model/operator_model.dart';
 
 // ignore: avoid_classes_with_only_static_members
 class GlobalConfig {
+  static OperatorModel? operator;
+
   static String token = '';
   static String username = '';
 
   static String PLUNumber = '';
   static String PLUName = '';
 
-  static int salesNo = 114;
-  static int splitNo = 1;
-  static int cover = 2;
+  static late int salesNo;
+  static late int splitNo;
+  static late int cover;
   static String tableNo = '3';
   static String rcptNo = 'A2200000014';
   //static bool ShowFunc = false;
@@ -166,7 +172,7 @@ class POSDtls {
   static late String hpyStart3;
   static late String hpyEnd3;
   static late int defCtgryID;
-  static late int ctgryID;
+  // static late int ctgryID;
   static late int mnuLvl;
   static late String tblNameType;
   static late int firstTable;
@@ -306,7 +312,7 @@ class POSDtls {
   static late int intMenuBottom;
   static late bool DispWelcomeOnly;
   static late bool StartWithOpenTbls;
-  static late bool TBLManagement;
+  static late bool TBLManagement = true;
   static late int NumKpBHdrLines;
   static late bool LineBetKPHdr;
   static late bool LineBetKPItems;

@@ -148,13 +148,18 @@ class PrintController extends StateNotifier<PrintState>
         await masterKPPrint(GlobalConfig.salesNo, GlobalConfig.splitNo,
             GlobalConfig.tableNo, 'HeldItems', 'KPStatus', 0, 0);
       }
-      for (String printData in printArr) {
-        // Print Action
-        await doPrint(2, 0, printData);
+
+      if (printerManager.getPrinters().isEmpty) {
+        state = PrintErrorState(errMsg: 'There is no printer connected');
+      } else {
+        for (String printData in printArr) {
+          // Print Action
+          await doPrint(2, 0, printData);
+        }
+        printArr.clear();
+        await printRepository.updateKPPrintItem(
+            GlobalConfig.salesNo, GlobalConfig.splitNo);
       }
-      printArr.clear();
-      await printRepository.updateKPPrintItem(
-          GlobalConfig.salesNo, GlobalConfig.splitNo);
     }
   }
 
