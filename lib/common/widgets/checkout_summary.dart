@@ -36,114 +36,106 @@ class checkout_summary extends StatelessWidget {
       stotal = state.bills![2].toDouble();
     }
 
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.all(15.0),
-        decoration: BoxDecoration(
-          color: isDark
-              ? Responsive.isMobile(context)
-                  ? primaryDarkColor
-                  : backgroundDarkColor
-              : backgroundColorVariant,
-          borderRadius: BorderRadius.circular(Spacing.sm),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Payment Summary',
-              style: isDark
-                  ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
-                  : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 5.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  kSubTotal,
+    return Container(
+      padding: EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Responsive.isMobile(context)
+                ? backgroundDarkColor
+                : backgroundDarkColor
+            : backgroundColorVariant,
+        borderRadius: BorderRadius.circular(Spacing.sm),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Payment Summary',
+            style: isDark
+                ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                kSubTotal,
+                style: isDark
+                    ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                    : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                stotal.currencyString('\$'),
+                style: isDark
+                    ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                    : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                kDiscount,
+                style: isDark
+                    ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                    : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                discount.currencyString('\$'),
+                style: isDark
+                    ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                    : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                kTax,
+                style: isDark
+                    ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                    : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '\$ ${totalTax.toStringAsFixed(2)}',
+                style: isDark
+                    ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                    : bodyTextLightStyle.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(kTotal,
                   style: isDark
-                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                      ? bodyTextDarkStyle.copyWith(
+                          color: Colors.red, fontWeight: FontWeight.bold)
                       : bodyTextLightStyle.copyWith(
-                          fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  stotal.currencyString('\$'),
+                          color: Colors.red, fontWeight: FontWeight.bold)),
+              Text(gTotal.toStringAsFixed(2).currencyString('\$'),
                   style: isDark
-                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                      ? bodyTextDarkStyle.copyWith(
+                          color: Colors.red, fontWeight: FontWeight.bold)
                       : bodyTextLightStyle.copyWith(
-                          fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  kDiscount,
-                  style: isDark
-                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
-                      : bodyTextLightStyle.copyWith(
-                          fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  discount.currencyString('\$'),
-                  style: isDark
-                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
-                      : bodyTextLightStyle.copyWith(
-                          fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  kTax,
-                  style: isDark
-                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
-                      : bodyTextLightStyle.copyWith(
-                          fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '\$ ${totalTax.toStringAsFixed(2)}',
-                  style: isDark
-                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
-                      : bodyTextLightStyle.copyWith(
-                          fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(kTotal,
-                    style: isDark
-                        ? bodyTextDarkStyle.copyWith(
-                            color: Colors.red, fontWeight: FontWeight.bold)
-                        : bodyTextLightStyle.copyWith(
-                            color: Colors.red, fontWeight: FontWeight.bold)),
-                Text(gTotal.toStringAsFixed(2).currencyString('\$'),
-                    style: isDark
-                        ? bodyTextDarkStyle.copyWith(
-                            color: Colors.red, fontWeight: FontWeight.bold)
-                        : bodyTextLightStyle.copyWith(
-                            color: Colors.red, fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ],
-        ),
+                          color: Colors.red, fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ],
       ),
     );
   }

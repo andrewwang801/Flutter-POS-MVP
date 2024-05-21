@@ -111,7 +111,7 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
     return Scaffold(
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: PreferredSize(
-        child: AppBarWidget(false),
+        child: AppBarWidget(true),
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
       body: Column(
@@ -119,63 +119,62 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
           Expanded(child: transTable()),
           verticalSpaceMedium,
           SizedBox(
-              height: 150.h,
+              // height: 150.h,
               child: Row(
-                children: [
-                  Expanded(
-                    child: showBillAdjust
-                        ? Column(children: [
-                            Expanded(child: mediaListView()),
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.resolveWith((states) {
-                                  if (states.contains(MaterialState.pressed)) {
-                                    return isDark
-                                        ? primaryButtonDarkColor
-                                            .withOpacity(0.6)
-                                        : primaryButtonColor.withOpacity(0.6);
-                                  } else if (states
-                                      .contains(MaterialState.hovered)) {
-                                    return Colors.red;
-                                  } else {
-                                    return isDark
-                                        ? primaryButtonDarkColor
-                                        : primaryButtonColor;
-                                  }
-                                }),
-                                fixedSize:
-                                    MaterialStateProperty.resolveWith((states) {
-                                  return Size(100.w, 25.h);
-                                }),
-                                textStyle: MaterialStateProperty.resolveWith(
-                                    (states) => isDark
-                                        ? bodyTextDarkStyle
-                                        : bodyTextLightStyle),
-                              ),
-                              onPressed: () {
-                                ref
-                                    .read(transDetailProvier.notifier)
-                                    .doBillAdjust(
-                                        medaiTitle,
-                                        funcID,
-                                        sFuncID,
-                                        widget.salesNo,
-                                        widget.splitNo,
-                                        sRef,
-                                        fMedia,
-                                        widget.rcptNo,
-                                        amount);
-                              },
-                              child: Text('Select'),
-                            ),
-                            verticalSpaceMedium,
-                          ])
-                        : Container(),
-                  ),
-                  transFunctions(),
-                ],
-              )),
+            children: [
+              Expanded(
+                child: showBillAdjust
+                    ? Column(children: [
+                        Expanded(child: mediaListView()),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith((states) {
+                              if (states.contains(MaterialState.pressed)) {
+                                return isDark
+                                    ? primaryButtonDarkColor.withOpacity(0.6)
+                                    : primaryButtonColor.withOpacity(0.6);
+                              } else if (states
+                                  .contains(MaterialState.hovered)) {
+                                return Colors.red;
+                              } else {
+                                return isDark
+                                    ? primaryButtonDarkColor
+                                    : primaryButtonColor;
+                              }
+                            }),
+                            fixedSize:
+                                MaterialStateProperty.resolveWith((states) {
+                              return Size(100.w, 25.h);
+                            }),
+                            textStyle: MaterialStateProperty.resolveWith(
+                                (states) => isDark
+                                    ? bodyTextDarkStyle
+                                    : bodyTextLightStyle),
+                          ),
+                          onPressed: () {
+                            ref.read(transDetailProvier.notifier).doBillAdjust(
+                                medaiTitle,
+                                funcID,
+                                sFuncID,
+                                widget.salesNo,
+                                widget.splitNo,
+                                sRef,
+                                fMedia,
+                                widget.rcptNo,
+                                amount);
+                          },
+                          child: Text('Select'),
+                        ),
+                        verticalSpaceMedium,
+                      ])
+                    : Container(),
+              ),
+              Responsive.isMobile(context)
+                  ? mobileTransFunctions()
+                  : transFunctions(),
+            ],
+          )),
         ],
       ),
     );
@@ -508,9 +507,102 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
     );
   }
 
+  Widget mobileTransFunctions() {
+    final double marginTop = 3.5.h;
+    return Column(
+      children: [
+        Stack(
+          children: [
+            Container(
+              width: 0.7.sw,
+              padding: EdgeInsets.all(25.0),
+              margin: EdgeInsets.only(top: marginTop),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.green),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: <Widget>[
+                      const Expanded(
+                        flex: 3,
+                        child: Text('Cover'),
+                      ),
+                      Expanded(
+                        flex: 6,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 20.h,
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                    fillColor: Colors.white,
+                                    border: OutlineInputBorder(),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 2.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      const Expanded(
+                        flex: 3,
+                        child: Text('Tip'),
+                      ),
+                      Expanded(
+                        flex: 6,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 20.h,
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                    fillColor: Colors.white,
+                                    border: OutlineInputBorder(),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 2.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              child: Container(
+                color: isDark ? backgroundDarkColor : backgroundColor,
+                child: Text('Table Details',
+                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+              ),
+            ),
+          ],
+        ),
+        buttonGroup(),
+      ],
+    );
+  }
+
   Widget buttonGroup() {
     return Container(
       width: 300.w,
+      height: 0.2.sh,
       padding: const EdgeInsets.all(12.0),
       child: GridView.builder(
           itemCount: btnTexts.length,

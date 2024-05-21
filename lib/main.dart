@@ -25,22 +25,8 @@ void main() async {
   await POSDtls.initPOSDtls();
   await POSDefault.initPOSDefaults();
 
-  final data = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-  // if (data.size.shortestSide < 600) {
-  //   SystemChrome.setPreferredOrientations([
-  //     DeviceOrientation.portraitUp,
-  //     DeviceOrientation.portraitDown,
-  //   ]).then((value) {
-  //     runApp(ProviderScope(child: const MyApp()));
-  //   });
-  // } else {
-  //   SystemChrome.setPreferredOrientations([
-  //     DeviceOrientation.landscapeLeft,
-  //     DeviceOrientation.landscapeRight,
-  //   ]).then((value) {
-  //     runApp(ProviderScope(child: const MyApp()));
-  //   });
-  // }
+  // final data = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+
   runApp(ProviderScope(child: const MyApp()));
 }
 
@@ -52,6 +38,16 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     bool isDark = ref.watch(themeProvider);
     return OrientationBuilder(builder: (_, orientation) {
+      if (orientation == Orientation.landscape) {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight
+        ]);
+      } else {
+        SystemChrome.setPreferredOrientations(
+            [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+      }
+
       return ScreenUtilInit(
           designSize: orientation == Orientation.landscape
               ? Size(926, 428)

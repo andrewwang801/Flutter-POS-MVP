@@ -150,10 +150,10 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         padding: EdgeInsets.only(
           top: 8.0,
           left: ScreenUtil().orientation == Orientation.landscape
-              ? MediaQuery.of(context).padding.left
+              ? MediaQuery.of(context).padding.left + Spacing.sm
               : 8.0,
           right: ScreenUtil().orientation == Orientation.landscape
-              ? MediaQuery.of(context).padding.right
+              ? MediaQuery.of(context).padding.right + Spacing.sm
               : 8.0,
           bottom: ScreenUtil().orientation == Orientation.landscape
               ? MediaQuery.of(context).padding.bottom
@@ -222,6 +222,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
             TransSalesData trans = filteredTransArray[index];
             return transCard((trans) {
               showActionBottomSheet(trans);
+              selectedTrans = trans;
             }, trans);
           }));
     } else if (state.workable == Workable.failure) {
@@ -335,6 +336,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
 
   void showActionBottomSheet(TransSalesData trans) {
     showModalBottomSheet(
+        isScrollControlled: true,
         context: context,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Spacing.sm),
@@ -347,6 +349,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                 child: Column(
                   children: [
                     transCard(null, trans),
+                    verticalSpaceSmall,
                     ElevatedButton(
                       onPressed: () {
                         openTrans();
@@ -360,6 +363,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                         ),
                       ),
                     ),
+                    verticalSpaceSmall,
                     ElevatedButton(
                       onPressed: () {
                         viewTrans();
@@ -373,6 +377,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                         ),
                       ),
                     ),
+                    verticalSpaceSmall,
                     ElevatedButton(
                       onPressed: () {
                         refundTrans();
@@ -386,6 +391,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                         ),
                       ),
                     ),
+                    verticalSpaceSmall,
                     ElevatedButton(
                       onPressed: () {
                         kitchenReprint();
@@ -399,6 +405,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                         ),
                       ),
                     ),
+                    verticalSpaceSmall,
                     ElevatedButton(
                       onPressed: () {
                         reprintBill();

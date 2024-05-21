@@ -36,7 +36,12 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
   @override
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
-    return Responsive(mobile: _mobile(), tablet: _tablet(), desktop: _tablet());
+    return Responsive(
+        mobile: _mobile(),
+        mobileLandscape: _tablet(),
+        tabletPortrait: _mobile(),
+        tablet: _tablet(),
+        desktop: _tablet());
   }
 
   void showInfoBottomSheet() {
@@ -135,10 +140,10 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
       padding: EdgeInsets.only(
           top: ScreenUtil().statusBarHeight,
           right: ScreenUtil().orientation == Orientation.landscape
-              ? MediaQuery.of(context).padding.right
+              ? MediaQuery.of(context).padding.right + Spacing.sm
               : 0,
           left: ScreenUtil().orientation == Orientation.landscape
-              ? MediaQuery.of(context).padding.left
+              ? MediaQuery.of(context).padding.left + Spacing.sm
               : 0),
       // width: 428.w,
       // color: isDark ? primaryDarkColor : backgroundColor,
@@ -149,8 +154,8 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
             children: [
               horizontalSpaceTiny,
               Container(
-                width: 30.w,
-                height: 30.w,
+                width: 36,
+                height: 36,
                 child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -463,7 +468,59 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
 
   Widget _statusCard(MaterialColor statusColor, String statusString) {
     return Responsive(
+      tabletPortrait: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 30.w,
+              height: 30.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                    color: isDark ? primaryDarkColor : Colors.white, width: 1),
+                color: statusColor,
+              ),
+            ),
+            SizedBox(
+              height: 4.w,
+            ),
+            Center(
+                child: Text(statusString,
+                    style: isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+          ],
+        ),
+      ),
       tablet: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 15.w,
+              height: 15.w,
+              decoration: BoxDecoration(
+                border: Border.all(
+                    color: isDark ? primaryDarkColor : Colors.white, width: 1),
+                color: statusColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(
+              width: 2.w,
+            ),
+            Center(
+              child: Text(
+                statusString,
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+      mobileLandscape: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

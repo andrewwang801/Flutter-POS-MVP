@@ -77,6 +77,53 @@ class _MenuExpandableSectionState extends ConsumerState<MenuExpandableSection> {
                         );
                       },
                     ),
+                    mobileLandscape: GridView.builder(
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      itemCount: _menuItems.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount:
+                            ScreenUtil().orientation == Orientation.landscape
+                                ? Responsive.isMobile(context)
+                                    ? 3
+                                    : 5
+                                : 1,
+                        mainAxisExtent:
+                            Responsive.isMobile(context) ? 150.h : 90.h,
+                        crossAxisSpacing: Spacing.sm,
+                        mainAxisSpacing: Spacing.sm,
+                      ),
+                      itemBuilder: (BuildContext context, int index) {
+                        final MenuItemModel item = _menuItems[index];
+
+                        return GestureDetector(
+                          onTap: () {},
+                          child: MenuItemCard(
+                            null,
+                            menuItem: item,
+                          ),
+                        );
+                      },
+                    ),
+                    tabletPortrait: ListView.separated(
+                      shrinkWrap: true,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider();
+                      },
+                      physics: ClampingScrollPhysics(),
+                      itemCount: _menuItems.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final MenuItemModel item = _menuItems[index];
+
+                        return GestureDetector(
+                          onTap: () {},
+                          child: MenuItemCard(
+                            null,
+                            menuItem: item,
+                          ),
+                        );
+                      },
+                    ),
                     tablet: GridView.builder(
                       shrinkWrap: true,
                       physics: ClampingScrollPhysics(),
@@ -85,7 +132,7 @@ class _MenuExpandableSectionState extends ConsumerState<MenuExpandableSection> {
                         crossAxisCount:
                             ScreenUtil().orientation == Orientation.landscape
                                 ? 5
-                                : 3,
+                                : 1,
                         mainAxisExtent:
                             Responsive.isMobile(context) ? 80.h : 90.h,
                         crossAxisSpacing: Spacing.sm,

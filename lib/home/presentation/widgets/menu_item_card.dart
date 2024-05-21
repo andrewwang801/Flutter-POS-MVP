@@ -98,6 +98,8 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
       // },
       child: Responsive(
         mobile: _moibleItemCard(),
+        mobileLandscape: _tabletItemCard(),
+        tabletPortrait: _moibleItemCard(),
         tablet: _tabletItemCard(),
         desktop: _tabletItemCard(),
       ),
@@ -205,7 +207,7 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
                   ),
                   child: FittedBox(
                     child: Text(
-                      'Add to cart',
+                      'Add to card',
                       style: bodyTextDarkStyle,
                     ),
                   ),

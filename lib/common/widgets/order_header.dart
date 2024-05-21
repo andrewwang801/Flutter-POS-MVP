@@ -27,11 +27,11 @@ class _OrderHeaderState extends ConsumerState<OrderHeader> {
     });
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
+      // padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
       child: ListTile(
         tileColor: isDark
             ? Responsive.isMobile(context)
-                ? primaryDarkColor
+                ? backgroundDarkColor
                 : backgroundDarkColor
             : backgroundColorVariant,
         shape: RoundedRectangleBorder(

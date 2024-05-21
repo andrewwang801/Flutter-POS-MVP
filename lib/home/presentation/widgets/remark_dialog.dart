@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:raptorpos/common/keyboard/virtual_keyboard_2.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../common/extension/workable.dart';
 import '../../../constants/color_constant.dart';
@@ -31,23 +32,26 @@ class _RemarksDialogState extends ConsumerState<RemarksDialog> {
   @override
   Widget build(BuildContext context) {
     OrderState state = ref.watch(orderProvoder);
+    bool isDark = ref.watch(themeProvider);
+
     List<List<String>> remarks = [];
     if (state.workable == Workable.ready && state.remarks != null) {
       remarks = state.remarks!;
     }
 
     return Dialog(
+      backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       child: Container(
         padding: const EdgeInsets.all(Spacing.md),
-        width: 300.w,
-        height: 250.h,
+        width: 0.8.sw,
+        height: 0.7.sh,
         child: Column(
           children: [
             Padding(
               padding: EdgeInsets.all(Spacing.md),
               child: Text(
                 'Entry Void Remarks',
-                style: titleTextDarkStyle,
+                style: isDark ? titleTextDarkStyle : titleTextLightStyle,
               ),
             ),
             Expanded(
@@ -61,8 +65,12 @@ class _RemarksDialogState extends ConsumerState<RemarksDialog> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5)),
                         tileColor: index == selectedIndex
-                            ? primaryDarkColor
-                            : backgroundDarkColor,
+                            ? isDark
+                                ? primaryDarkColor
+                                : backgroundColorVariant
+                            : isDark
+                                ? primaryDarkColor
+                                : backgroundColorVariant,
                         onTap: () {
                           setState(() {
                             strRemarks = remarks[index][1];
@@ -76,27 +84,35 @@ class _RemarksDialogState extends ConsumerState<RemarksDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                ElevatedButton(
-                    onPressed: () {
-                      if (selectedIndex != -1) {
-                        selectRemarks();
-                        Get.back();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(primary: primaryDarkColor),
-                    child: Text('Select')),
-                ElevatedButton(
-                    onPressed: () {
-                      newRemarks();
-                    },
-                    style: ElevatedButton.styleFrom(primary: primaryDarkColor),
-                    child: Text('New Remarks')),
-                ElevatedButton(
-                    onPressed: () {
-                      cancel();
-                    },
-                    style: ElevatedButton.styleFrom(primary: primaryDarkColor),
-                    child: Text('Close')),
+                Expanded(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        if (selectedIndex != -1) {
+                          selectRemarks();
+                          Get.back();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(primary: orange),
+                      child: Text('Select')),
+                ),
+                horizontalSpaceTiny,
+                Expanded(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        newRemarks();
+                      },
+                      style: ElevatedButton.styleFrom(primary: orange),
+                      child: Text('New Remarks')),
+                ),
+                horizontalSpaceTiny,
+                Expanded(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        cancel();
+                      },
+                      style: ElevatedButton.styleFrom(primary: orange),
+                      child: Text('Close')),
+                ),
               ],
             )
           ],

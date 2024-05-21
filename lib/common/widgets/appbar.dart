@@ -25,20 +25,21 @@ class AppBarWidget extends ConsumerWidget {
               },
               icon: Icon(
                 Icons.keyboard_arrow_left,
-                color: Colors.white,
-                size: Responsive.isTablet(context) ? lgiconSize : smiconSize,
+                color: isDark ? Colors.white : Colors.black,
+                size: Responsive.isTablet(context) ? lgiconSize : mdiconsize,
               ),
-            ),
-          IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
+            )
+          else
+            IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
         ],
       ),
       actions: [
-        IconButton(
-            icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
-            onPressed: () {
-              isDark ? isDark = false : isDark = true;
-              ref.read(themeProvider.notifier).setTheme(isDark);
-            })
+        // IconButton(
+        //     icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
+        //     onPressed: () {
+        //       isDark ? isDark = false : isDark = true;
+        //       ref.read(themeProvider.notifier).setTheme(isDark);
+        //     })
       ],
     );
   }

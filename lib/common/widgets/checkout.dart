@@ -20,8 +20,10 @@ import 'alert_dialog.dart';
 import 'checkout_list.dart';
 
 class CheckOut extends ConsumerStatefulWidget {
-  const CheckOut({this.Callback, Key? key}) : super(key: key);
+  const CheckOut({this.showCheckoutBtns = true, this.Callback, Key? key})
+      : super(key: key);
   final Function(OrderItemModel)? Callback;
+  final showCheckoutBtns;
 
   @override
   _CheckOutState createState() => _CheckOutState();
@@ -81,9 +83,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                     child: CheckoutList(
                       callback: widget.Callback,
                     ))),
-            verticalSpaceSmall,
+            verticalSpaceTiny,
             checkout_summary(isDark: isDark, state: state, totalTax: totalTax),
-            CheckOutButtons(),
+            if (widget.showCheckoutBtns) CheckOutButtons(),
           ],
         ),
       ),
