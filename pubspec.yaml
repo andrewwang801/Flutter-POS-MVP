@@ -38,10 +38,20 @@ dependencies:
   get: ^4.6.1
   provider: ^6.0.2
   shared_preferences: ^2.0.15
+  sqflite: ^2.0.2+1
+  get_it: ^7.2.0
+  injectable: ^1.5.3
+  path_provider: ^2.0.10
+  path: ^1.8.0
+  json_serializable: ^6.2.0
+  equatable: ^2.0.3
+  json_annotation: ^4.5.0
+  flutter_riverpod: ^1.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -49,6 +59,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  injectable_generator: ^1.5.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -60,9 +71,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/pos.db
     - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
