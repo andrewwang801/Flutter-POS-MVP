@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-final double iconSize = 24.0;
+const double lgiconSize = 24.0;
+const double smiconSize = 12.0;
 final double paddingDimen = 12.0.w;
 final double bodyFontSize = 14.0.sp;
 final double modifierItemFontSize = 12.0.sp;

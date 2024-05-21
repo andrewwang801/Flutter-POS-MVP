@@ -88,6 +88,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: Image.asset(
         'assets/images/raptor-logo.png',
         fit: BoxFit.contain,
+        color: isDark ? backgroundColor : backgroundDarkColor,
       ),
     );
   }
@@ -98,7 +99,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          width: 250.w,
+          width: Responsive.isMobile(context) ? 220.h : 160.h,
           height: Responsive.isMobile(context) ? 40.h : 25.h,
           decoration: BoxDecoration(
             color: isDark
@@ -117,25 +118,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           height: 5.h,
         ),
         Container(
-          width: 250.w,
-          height: Responsive.isMobile(context) ? 220.h : 120.h,
+          width: Responsive.isMobile(context) ? 220.h : 160.h,
           color: Colors.transparent,
-          child: NumPad(
-              delete: () {},
-              onSubmit: () {},
-              buttonColor: isDark ? primaryButtonDarkColor : primaryButtonColor,
-              controller: _controller),
+          child: AspectRatio(
+            aspectRatio: 1.0,
+            child: NumPad(
+                delete: () {},
+                onSubmit: () {},
+                buttonColor:
+                    isDark ? primaryButtonDarkColor : primaryButtonColor,
+                controller: _controller),
+          ),
         ),
         SizedBox(
           height: 10.h,
         ),
-        CustomButton(
-            width: 250.w,
-            height: Responsive.isMobile(context) ? 40.h : 25.h,
-            callback: pinSignIn,
-            text: 'Sign In',
-            borderColor: isDark ? primaryDarkColor : primaryLightColor,
-            fillColor: isDark ? primaryDarkColor : primaryLightColor),
+        ElevatedButton(
+          onPressed: () {
+            pinSignIn();
+          },
+          style: ButtonStyle(
+            fixedSize: MaterialStateProperty.all(
+              Size(
+                Responsive.isMobile(context) ? 220.h : 160.h,
+                Responsive.isMobile(context) ? 40.h : 25.h,
+              ),
+            ),
+            backgroundColor: MaterialStateProperty.all(
+                isDark ? primaryDarkColor : primaryLightColor),
+          ),
+          child: Text(
+            'Sign In',
+            style: isDark
+                ? buttonTextDarkStyle
+                : buttonTextLightStyle.copyWith(color: Colors.white),
+          ),
+        ),
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 
 import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
@@ -27,7 +28,7 @@ class AppBarWidget extends ConsumerWidget {
                 icon: Icon(
                   Icons.keyboard_arrow_left,
                   color: Colors.white,
-                  size: iconSize,
+                  size: Responsive.isTablet(context) ? lgiconSize : smiconSize,
                 )),
         ],
       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -8,14 +7,11 @@ import 'package:raptorpos/common/keyboard/virtual_keyboard_2.dart';
 import 'package:raptorpos/common/widgets/appbar.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
 
-import '../../common/GlobalConfig.dart';
-import '../../common/extension/workable.dart';
 import '../../common/widgets//bill_button_list.dart';
 import '../../common/widgets//checkout.dart';
 import '../../common/widgets/alert_dialog.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/dimension_constant.dart';
-import '../../constants/text_style_constant.dart';
 import '../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../floor_plan/presentation/widgets/cover_widget.dart';
 import '../../floor_plan/provider/table_provider.dart';
@@ -23,18 +19,12 @@ import '../../home/provider/order/order_provider.dart';
 import '../../home/provider/order/order_state.dart';
 import '../../home/repository/order/i_order_repository.dart';
 import '../../payment/repository/i_payment_repository.dart';
-import '../../print/provider/print_controller.dart';
-import '../../printer/presentation/printer_setting_screen.dart';
 import '../../promo/application/promo_provider.dart';
 import '../../promo/application/promo_state.dart';
-import '../../sales_report/application/sales_report_controller.dart';
-import '../../sales_report/presentation/sales_report_screen.dart';
 import '../../theme/theme_state_notifier.dart';
-import '../../trans/presentation/trans.dart';
-import '../../zday_report/presentation/zday_report_screen.dart';
 import '../application/function_provider.dart';
 import '../application/function_state.dart';
-import '../model/function_model.dart';
+import 'widgets/funclist_widget.dart';
 
 List<MaterialColor> functionColors = [
   Colors.green,
@@ -123,13 +113,14 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
     });
 
     isDark = ref.watch(themeProvider);
+
     return Scaffold(
       backgroundColor: isDark
           ? backgroundDarkColor
           : const Color.fromARGB(255, 244, 238, 233),
       appBar: PreferredSize(
-        child: AppBarWidget(true),
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
+        child: AppBarWidget(true),
       ),
       body: Row(
         children: [
@@ -143,7 +134,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                 child: CheckOut(428.h -
                     10.h -
                     10.h -
-                    (Responsive.isMobile(context) ? 50.h : 40.h) -
+                    (Responsive.isMobile(context) ? 35.h : 40.h) -
                     appBarHeight -
                     ScreenUtil().statusBarHeight -
                     16),
@@ -168,7 +159,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               Expanded(
                 child: SizedBox(
                   width: Responsive.isMobile(context) ? 470.w : 550.w,
-                  child: funcGridView(),
+                  child: FuncGridView(isDark),
                 ),
               ),
               SizedBox(
@@ -181,126 +172,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
     );
   }
 
-  Widget funcGridView() {
-    FunctionState state = ref.watch(functionProvider);
-
-    if (state.workable == Workable.loading) {
-      return Container();
-    } else if (state.workable == Workable.ready) {
-      List<FunctionModel> functions =
-          state.data?.functionList ?? <FunctionModel>[];
-      return GridView.builder(
-        itemCount: functions.length,
-        itemBuilder: (BuildContext context, int index) {
-          final FunctionModel function = functions[index];
-          return InkWell(
-            borderRadius: BorderRadius.circular(3.0),
-            onTap: () async {
-              switch (function.functionID) {
-                case 109:
-                  Get.to(() => ProgressHUD(child: PrinterSettingScreen()));
-                  break;
-                case 73:
-                  String bill = await GetIt.I<PrintController>()
-                      .getBillForPreview(
-                          GlobalConfig.salesNo,
-                          GlobalConfig.splitNo,
-                          GlobalConfig.cover,
-                          GlobalConfig.tableNo,
-                          GlobalConfig.rcptNo);
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                          child: Padding(
-                            padding: const EdgeInsets.all(32.0),
-                            child: Text(bill),
-                          ),
-                        );
-                      });
-                  break;
-                case 111:
-                  Get.to(const ViewTransScreen());
-                  break;
-                case 17:
-                  break;
-                // All Void
-                case 32:
-                  allVoid();
-                  break;
-
-                // Sales Report
-                case 19:
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return SalesReportScreen();
-                      });
-                  break;
-
-                // ZDay Report
-                case 174:
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return ZDayReportScreen();
-                      });
-                  break;
-
-                // Void Promo
-                case 65:
-                  voidPromotion();
-                  break;
-                default:
-              }
-            },
-            child: Ink(
-              padding: EdgeInsets.all(2.0),
-              decoration: BoxDecoration(
-                  color: isDark ? primaryDarkColor : primaryLightColor,
-                  border: Border.all(
-                    color: isDark
-                        ? primaryDarkColor.withOpacity(0.7)
-                        : primaryLightColor,
-                  ),
-                  borderRadius: BorderRadius.circular(3.0),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: isDark
-                          ? primaryDarkColor.withOpacity(0.7)
-                          : primaryLightColor.withOpacity(0.7),
-                      spreadRadius: 1.0,
-                      blurRadius: 1.0,
-                    )
-                  ]),
-              child: Center(
-                child: Text(function.title,
-                    textAlign: TextAlign.center,
-                    style: isDark ? buttonTextDarkStyle : buttonTextLightStyle),
-              ),
-            ),
-          );
-        },
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 5,
-            mainAxisSpacing: 1,
-            mainAxisExtent: 60.h,
-            crossAxisSpacing: 1),
-      );
-    } else {
-      return Container();
-    }
-  }
-
-  void voidPromotion() {
-    ref.read(promoProvider.notifier).voidPromotion();
-  }
-
-  void allVoid() {
-    ref.read(functionProvider.notifier).voidAllOrder();
-  }
-
-  newRemarks() {
+  void newRemarks() {
     showDialog(
         context: context,
         builder: (context) {

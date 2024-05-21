@@ -256,17 +256,18 @@ class _CashScreenState extends ConsumerState<CashScreen> {
             height: Responsive.isMobile(context) ? 10.h : 30.h,
           ),
           Expanded(
-            child: SizedBox(
-              width: 270.w,
-              height: numpadHeight,
-              child: NumPad(
-                  buttonColor:
-                      isDark ? primaryButtonDarkColor : primaryButtonColor,
-                  delete: () {},
-                  onSubmit: () {
-                    doPayment(payment);
-                  },
-                  controller: _controller),
+            child: AspectRatio(
+              aspectRatio: 1.0,
+              child: SizedBox(
+                child: NumPad(
+                    buttonColor:
+                        isDark ? primaryButtonDarkColor : primaryButtonColor,
+                    delete: () {},
+                    onSubmit: () {
+                      doPayment(payment);
+                    },
+                    controller: _controller),
+              ),
             ),
           ),
           Responsive.isMobile(context) ? verticalSpaceTiny : verticalSpaceLarge,

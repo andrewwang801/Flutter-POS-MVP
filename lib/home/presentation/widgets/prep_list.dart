@@ -63,7 +63,7 @@ class _PreListWidgetState extends ConsumerState<PreListWidget> {
                 CustomButton(
                     callback: () {
                       for (var prep in widget.preps) {
-                        if (prep.quantity! > 0) {
+                        if (prep.quantity != null && prep.quantity! > 0) {
                           _prepSlect[prep.number!] = {
                             'PLUName': prep.name!,
                             'Quantity': prep.quantity!.toString()

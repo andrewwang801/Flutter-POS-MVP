@@ -478,7 +478,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
             child: DropdownButton<String>(
                 underline: const SizedBox(),
                 isExpanded: true,
-                iconSize: iconSize,
+                iconSize:
+                    Responsive.isTablet(context) ? lgiconSize : smiconSize,
                 style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                 value: operator,
                 items: dropDownMenuItems,
@@ -524,7 +525,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               ),
               child: DropdownButton<String>(
                   underline: const SizedBox(),
-                  iconSize: iconSize,
+                  iconSize:
+                      Responsive.isTablet(context) ? lgiconSize : smiconSize,
                   isExpanded: true,
                   style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                   value: salesStatue,
@@ -661,7 +663,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
 
   // Rfid wdiget
   Widget rfidWidget() {
-    return Row(
+    return Wrap(
       children: <Widget>[
         Expanded(
           flex: 4,
@@ -724,7 +726,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           physics: const ScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisExtent: Responsive.isMobile(context) ? 40.h : 25.h,
+            mainAxisExtent: Responsive.isMobile(context) ? 35.h : 25.h,
             mainAxisSpacing: 5.h,
             crossAxisSpacing: 5.w,
           ),

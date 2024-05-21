@@ -3,6 +3,8 @@ import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
+import 'package:raptorpos/print/provider/print_controller.dart';
 
 import '../../../common/GlobalConfig.dart';
 import '../../../common/widgets/custom_button.dart';
@@ -46,7 +48,7 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
     isDark = ref.watch(themeProvider);
     return SizedBox(
       width: 600.w,
-      height: Responsive.isMobile(context) ? 50.h : 40.h,
+      height: Responsive.isMobile(context) ? 35.h : 40.h,
       child: GridView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: btnTexts.length,
@@ -57,16 +59,38 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
                 case 0:
                   Get.to(const ViewTransScreen());
                   break;
+                case 1:
+                  String bill = await GetIt.I<PrintController>()
+                      .getBillForPreview(
+                          GlobalConfig.salesNo,
+                          GlobalConfig.splitNo,
+                          GlobalConfig.cover,
+                          GlobalConfig.tableNo,
+                          GlobalConfig.rcptNo);
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32.0),
+                            child: Text(bill),
+                          ),
+                        );
+                      });
+                  break;
                 case 2:
                   await ref
                       .read(printProvider.notifier)
-                      .doPrint(3, GlobalConfig.salesNo, '');
-                  break;
-                case 5:
-                  Get.to(FloorPlanScreen());
+                      .printBill(GlobalConfig.salesNo, '');
                   break;
                 case 3:
                   Get.to(FunctionsScreen(), transition: Transition.rightToLeft);
+                  break;
+                // void
+                case 4:
+                  break;
+                case 5:
+                  Get.to(FloorPlanScreen());
                   break;
                 case 6:
                   Get.to(
@@ -75,8 +99,6 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
                         child: PrinterSettingScreen(),
                       ),
                       transition: Transition.rightToLeft);
-                  break;
-                case 4:
                   break;
                 default:
                   break;

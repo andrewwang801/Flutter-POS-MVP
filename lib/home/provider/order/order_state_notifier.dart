@@ -437,6 +437,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
               GlobalConfig.operatorNo, 5),
           orderItemTree: await configureTree(orderItems),
           workable: Workable.ready,
+          operation: OPERATIONS.NONE,
         );
       }
     } catch (e) {
@@ -487,6 +488,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
                   GlobalConfig.operatorNo, 5),
               orderItemTree: await configureTree(orderItems),
               workable: Workable.ready,
+              operation: OPERATIONS.NONE,
             );
           }
         } else {
@@ -525,6 +527,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
                       .checkPaymentPermission(GlobalConfig.operatorNo, 5),
                   orderItemTree: await configureTree(orderItems),
                   workable: Workable.ready,
+                  operation: OPERATIONS.NONE,
                 );
               }
             }
