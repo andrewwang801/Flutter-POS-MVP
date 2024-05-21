@@ -5,7 +5,7 @@ mixin TypeUtil {
 
   double dynamicToDouble(dynamic dyn) {
     if (dyn is int) {
-      double result = dyn.toDouble();
+      final double result = dyn.toDouble();
       return ((result * 100).round().toDouble()) / 100;
     } else if (dyn is double) {
       return dyn;
@@ -21,6 +21,12 @@ mixin TypeUtil {
     return maps.map((Map<String, dynamic> e) {
       return e.values.map((dynamic v) => v.toString()).toList();
     }).toList();
+  }
+}
+
+extension MapX on Map<String, dynamic> {
+  dynamic get(int i) {
+    return values.elementAt(i);
   }
 }
 

@@ -1109,6 +1109,9 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
     query =
         'SELECT IFNULL(MembershipId, 0), RcptNo, Covers FROM HeldTables WHERE SalesNo = $salesNo AND SplitNo = $splitNo';
     data = await db.rawQuery(query);
+    if (data.isEmpty) {
+      throw Exception('No Table Selected');
+    }
     tempdata = data[0];
     int MembershipId = dynamicToInt(tempdata.values.elementAt(0));
     String RcptNo = tempdata.values.elementAt(1).toString();
@@ -1698,11 +1701,8 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
             }
 
             if (POSDefault.GenerateReceiptNoEnd) {
-              condition = 'SalesNo = $salesNo AND SplitNo = $splitNo';
-              await db.delete('RcptNoCtrlEndTemp',
-                  where: 'SalesNo = ? AND SplitNo = ?',
-                  whereArgs: [salesNo, splitNo]);
-              // deleteData('RcptNoCtrlEndTemp', condition);
+              // await db.rawDelete(
+              // "DELETE FROM RcptNoCtrlEndTemp WHERE SalesNo = $salesNo AND SplitNo = $splitNo");
             }
           }
         }

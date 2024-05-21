@@ -52,9 +52,10 @@ class _PreListWidgetState extends ConsumerState<PreListWidget> {
                         PrepModel prep = widget.preps[index];
                         if (widget.prepSelect.containsKey(prep.number)) {
                           prep.quantity = widget.prepSelect[prep.number]
-                                      ?['Quantity']
-                                  ?.toInt() ??
-                              0;
+                                  ?['Quantity']
+                              ?.toInt();
+                        } else {
+                          prep.quantity = 0;
                         }
                         return PrepItemCard(prep, prepItemHandler);
                       }),

@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
-import 'package:raptorpos/common/widgets/alert_dialog.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
-import 'package:raptorpos/payment/presentation/tender_screen.dart';
 import 'package:raptorpos/payment/repository/i_payment_repository.dart';
-import 'package:raptorpos/print/provider/print_provider.dart';
-import 'package:raptorpos/print/provider/print_state.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
-import '../../constants/color_constant.dart';
-import '../../common/widgets/appbar.dart';
-import '../../common/widgets/header.dart';
-import '../../common/widgets/numpad.dart';
-import '../../common/widgets/bill_button_list.dart';
-import '../../common/widgets/checkout.dart';
 import './widgets/main_button_list.dart';
 import './widgets/menu_item_list.dart';
 import './widgets/menu_list.dart';
+import '../../common/widgets/appbar.dart';
+import '../../common/widgets/bill_button_list.dart';
+import '../../common/widgets/checkout.dart';
+import '../../common/widgets/numpad.dart';
+import '../../constants/color_constant.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -48,14 +43,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: AppBarWidget(false),
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     setState(() {
-      //       _showNumPad = !_showNumPad;
-      //     });
-      //   },
-      //   child: Icon(Icons.numbers),
-      // ),
       body: Column(
         children: [
           Expanded(

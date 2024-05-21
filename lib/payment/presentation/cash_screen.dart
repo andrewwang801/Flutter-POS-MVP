@@ -82,7 +82,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
     });
     paymentState = ref.watch(paymentProvider);
     ref.listen<PaymentState>(paymentProvider, (prev, next) async {
-      if (next is PaymentSuccessState && next.paid) {
+      if (next is PaymentSuccessState && (next.paid ?? false)) {
         switch (next.status) {
           case PaymentStatus.PAID:
             await ref
@@ -98,6 +98,7 @@ class _CashScreenState extends ConsumerState<CashScreen> {
           case PaymentStatus.CLOSE_RECIPT:
             break;
           case PaymentStatus.SHOW_ALERT:
+          case null:
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -117,7 +118,26 @@ class _CashScreenState extends ConsumerState<CashScreen> {
             break;
           case PaymentStatus.NONE:
             break;
+          case PaymentStatus.PAYMENT_REMOVED:
+            break;
+          case PaymentStatus.PERMISSION_ERROR:
+            break;
         }
+      } else if (next is PaymentErrorState) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                insetPadding: EdgeInsets.all(20),
+                title: 'Error',
+                message: next.msg,
+                onConfirm: () {
+                  ref
+                      .read(paymentProvider.notifier)
+                      .updatePaymentStatus(PaymentStatus.PAID);
+                },
+              );
+            });
       }
     });
 

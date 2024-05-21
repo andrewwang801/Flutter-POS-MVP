@@ -806,6 +806,19 @@ class OrderLocalRepository with TypeUtil implements IOrderRepository {
     List<Map<String, dynamic>> maps = await db.rawQuery(query);
     return mapListToString2D(maps);
   }
+
+  @override
+  Future<void> updateCovers(
+      int salesNo, int splitNo, String tableNo, int cover) async {
+    Database db = await database.database;
+
+    String query =
+        "UPDATE HeldTables SET Covers = $cover WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo'";
+    await db.rawQuery(query);
+    query =
+        "UPDATE HeldItems SET Covers = $cover WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo'";
+    await db.rawQuery(query);
+  }
 }
 
 final Provider<IOrderRepository> orderLocalRepoProvider =

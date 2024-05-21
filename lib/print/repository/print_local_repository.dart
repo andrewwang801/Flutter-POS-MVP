@@ -833,14 +833,14 @@ class PrintLocalRepository extends IPrintRepository
       if (data.isEmpty) {
         return '';
       }
-      int kpOrderNo = dynamicToInt(data[0][0]);
+      int kpOrderNo = dynamicToInt(data[0].values.elementAt(0));
       if (kpOrderNo > 0) {
         query = 'SELECT IFNULL(MAX(KPOrderNo), 0) FROM KPOrderRemarks';
         data = await dbHandler.rawQuery(query);
         if (data.isEmpty) {
           return '';
         }
-        final int tempKpOrderNo = dynamicToInt(data[0][0]);
+        final int tempKpOrderNo = dynamicToInt(data[0].values.elementAt(0));
 
         if (kpOrderNo > tempKpOrderNo) {
           kpOrderNo = tempKpOrderNo;
@@ -850,7 +850,7 @@ class PrintLocalRepository extends IPrintRepository
             'SELECT Remarks FROM KPOrderRemarks WHERE KPOrderNo = $kpOrderNo';
         data = await dbHandler.rawQuery(query);
         if (data.isNotEmpty) {
-          final String remarks = data[0][0].toString();
+          final String remarks = data[0].values.elementAt(0).toString();
           int space = crntPrLen - remarks.length;
           if (space > 1) {
             space = (space / 2) as int;
@@ -872,7 +872,7 @@ class PrintLocalRepository extends IPrintRepository
     }
 
     if (array.isNotEmpty) {
-      final bool blnAutoCheck = dynamicToBool(array[0][0]);
+      final bool blnAutoCheck = dynamicToBool(array[0].values.elementAt(0));
       if (blnAutoCheck) {
         strMasterKP += textPrintFormat('N', 'L', '2') + tblNo + '\n';
       } else {
@@ -886,7 +886,8 @@ class PrintLocalRepository extends IPrintRepository
           'SELECT Remarks FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo';
       array = await dbHandler.rawQuery(query);
       if (array.isNotEmpty) {
-        final String remarks = 'RE : ' + array[0][0].toString();
+        final String remarks =
+            'RE : ' + array[0].values.elementAt(0).toString();
         strMasterKP += textPrintFormat('N', 'L', '2') + remarks + '\n';
       } else {
         strMasterKP += textPrintFormat('N', 'L', '2') + 'RE : -' + '\n';
@@ -899,22 +900,22 @@ class PrintLocalRepository extends IPrintRepository
       masterPrintStr = 'MasterKPPrint $masterID';
     }
     query =
-        "SELECT HeldItems.PLUNo, HeldItems.ItemName, HeldItems.ItemName_Chinese, HeldItems.Quantity, HeldItems.ItemSeqNo, HeldItems.Preparation, HeldItems.TransStatus, HeldItems.PLUSalesRef, HeldItems.SalesRef, HeldItems.FunctionID, IFNULL(HeldItems.comments,0), GroupName, DepartmentName FROM HeldItems INNER JOIN PLU ON HeldItems.PLUNo = PLU.PLUNumber LEFT JOIN Departments ON Departments.DepartmentNo = PLU.Department LEFT JOIN 'Group' ON Departments.GroupNo = 'Group'.GroupNo WHERE SalesNo = $salesNo AND SplitNo = $salesNo AND PLU.$masterPrintStr =  $masterKPID  AND TransStatus <> 'N' AND CategoryID =  $ctgID AND FunctionID NOT IN (24,25) UNION SELECT HeldItems.PLUNo, HeldItems.ItemName, HeldItems.ItemName_Chinese, HeldItems.Quantity, HeldItems.ItemSeqNo, HeldItems.Preparation, HeldItems.TransStatus, HeldItems.PLUSalesRef, HeldItems.SalesRef, HeldItems.FunctionID, IFNULL(HeldItems.comments,0), GroupName, DepartmentName FROM HeldItems LEFT JOIN Departments ON Departments.DepartmentNo = HeldItems.Department LEFT JOIN 'Group' ON Departments.GroupNo = 'Group'.GroupNo WHERE PLUSalesRef IN (SELECT PLUSalesRef FROM HeldItems INNER JOIN PLU ON HeldItems.PLUNo = PLU.PLUNumber WHERE SalesNo =  $salesNo AND SplitNo $splitNo AND PLU.$masterPrintStr  =  $masterKPID AND TransStatus <> 'N' AND CategoryID = $ctgID ) AND TransStatus <> 'N' AND FunctionID = 101 AND CategoryID =  $ctgID ORDER BY PLUSalesRef, ItemSeqNo";
+        "SELECT HeldItems.PLUNo, HeldItems.ItemName, HeldItems.ItemName_Chinese, HeldItems.Quantity, HeldItems.ItemSeqNo, HeldItems.Preparation, HeldItems.TransStatus, HeldItems.PLUSalesRef, HeldItems.SalesRef, HeldItems.FunctionID, IFNULL(HeldItems.comments,0), GroupName, DepartmentName FROM HeldItems INNER JOIN PLU ON HeldItems.PLUNo = PLU.PLUNumber LEFT JOIN Departments ON Departments.DepartmentNo = PLU.Department LEFT JOIN 'Group' ON Departments.GroupNo = 'Group'.GroupNo WHERE SalesNo = $salesNo AND SplitNo = $salesNo AND PLU.$masterPrintStr = $masterKPID  AND TransStatus <> 'N' AND CategoryID = $ctgID AND FunctionID NOT IN (24,25) UNION SELECT HeldItems.PLUNo, HeldItems.ItemName, HeldItems.ItemName_Chinese, HeldItems.Quantity, HeldItems.ItemSeqNo, HeldItems.Preparation, HeldItems.TransStatus, HeldItems.PLUSalesRef, HeldItems.SalesRef, HeldItems.FunctionID, IFNULL(HeldItems.comments,0), GroupName, DepartmentName FROM HeldItems LEFT JOIN Departments ON Departments.DepartmentNo = HeldItems.Department LEFT JOIN 'Group' ON Departments.GroupNo = 'Group'.GroupNo WHERE PLUSalesRef IN (SELECT PLUSalesRef FROM HeldItems INNER JOIN PLU ON HeldItems.PLUNo = PLU.PLUNumber WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND PLU.$masterPrintStr = $masterKPID AND TransStatus <> 'N' AND CategoryID = $ctgID ) AND TransStatus <> 'N' AND FunctionID = 101 AND CategoryID = $ctgID ORDER BY PLUSalesRef, ItemSeqNo";
     final List<Map<String, dynamic>> itemArray =
         await dbHandler.rawQuery(query);
     for (int i = 0; i < itemArray.length; i++) {
-      final int funcID = dynamicToInt(itemArray[i][9]);
-      final String transStatus = itemArray[i][6].toString();
-      final bool prep = dynamicToBool(itemArray[i][5]);
-      final bool comments = dynamicToBool(itemArray[i][10]);
-      final int salesRef = dynamicToInt(itemArray[i][8]);
+      final int funcID = dynamicToInt(itemArray[i].values.elementAt(9));
+      final String transStatus = itemArray[i].values.elementAt(6).toString();
+      final bool prep = dynamicToBool(itemArray[i].values.elementAt(5));
+      final bool comments = dynamicToBool(itemArray[i].values.elementAt(10));
+      final int salesRef = dynamicToInt(itemArray[i].values.elementAt(8));
 
       if (funcID == 101 && transStatus == 'V') {
         continue;
       } else {
-        final double qty = dynamicToDouble(itemArray[i][3]);
+        final double qty = dynamicToDouble(itemArray[i].values.elementAt(3));
         final String strQty = addSpace(qty.toString(), qty.toString().length);
-        final String tempIName = itemArray[i][1].toString();
+        final String tempIName = itemArray[i].values.elementAt(1).toString();
         String iName = '', iName2 = '';
 
         if (transStatus == 'V') {
@@ -923,7 +924,7 @@ class PrintLocalRepository extends IPrintRepository
           iName = tempIName;
         }
 
-        if (iName.isNotEmpty) {
+        if (iName.length > crntPrLen) {
           iName2 = iName.substring(crntPrLen);
           iName = iName.substring(0, crntPrLen);
         }
@@ -961,7 +962,8 @@ class PrintLocalRepository extends IPrintRepository
             await dbHandler.rawQuery(query);
         if (orderKpArray.isNotEmpty) {
           if (POSDtls.PrintVoidRemarksKP) {
-            String tempInstruction = orderKpArray[0][0].toString();
+            String tempInstruction =
+                orderKpArray[0].values.elementAt(0).toString();
             String instruction = '%%- $tempInstruction';
             instruction = addSpace(instruction, 2);
 
@@ -978,7 +980,7 @@ class PrintLocalRepository extends IPrintRepository
         "SELECT IFNULL(Covers, 0) FROM HeldTables WHERE SalesNo = '$salesNo'";
     array = await dbHandler.rawQuery(query);
     if (array.isNotEmpty) {
-      String tempCover = array[0][0].toString();
+      String tempCover = array[0].values.elementAt(0).toString();
       strMasterKP += '${textPrintFormat('N', 'L', '2')}\n';
       strMasterKP += '${textPrintFormat('N', 'L', '2')}Covers : $tempCover\n';
       strMasterKP +=
@@ -990,7 +992,7 @@ class PrintLocalRepository extends IPrintRepository
         'SELECT RcptNo FROM HeldTables WHERE SalesNo = $salesNo AND SplitNo = $splitNo';
     array = await dbHandler.rawQuery(query);
     if (array.isNotEmpty) {
-      String tempRcpt = array[0][0].toString();
+      String tempRcpt = array[0].values.elementAt(0).toString();
       strMasterKP += '${textPrintFormat('N', 'L', '2')}$tempRcpt\n';
     }
 

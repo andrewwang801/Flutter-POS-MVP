@@ -97,18 +97,11 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
           Column(
             children: [
               SizedBox(
-                height: 40.h,
-                child: Center(
-                  child: Text(
-                    'Functions',
-                    style: bodyTextLightStyle.copyWith(
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
+                height: 5.h,
               ),
               Expanded(
                 child: SizedBox(
-                  width: 600.w,
+                  width: 580.w,
                   child: GridView.builder(
                     itemCount: functions.length,
                     itemBuilder: (BuildContext context, int index) {

@@ -2,17 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../common/GlobalConfig.dart';
-import '../../home/provider/order/order_provider.dart';
-import '../../home/provider/order/order_state_notifier.dart';
 import '../../home/repository/order/i_order_repository.dart';
-import '../../print/provider/print_controller.dart';
-import '../../print/provider/print_provider.dart';
-import '../../print/provider/print_state.dart';
-import '../../printer/provider/printer_state_notifier.dart';
 import '../model/media_data_model.dart';
 import '../model/payment_details_data_model.dart';
 import '../repository/i_payment_repository.dart';
-import '../repository/payment_local_repository.dart';
 import 'payment_state.dart';
 
 @Injectable()
@@ -33,7 +26,7 @@ class PaymentStateNotifer extends StateNotifier<PaymentState> {
           payType,
           payment,
           '' /*customID */);
-      state = PaymentSuccessState(paid: true, status: PaymentStatus.PAID);
+      state = PaymentSuccessState(paid: true, status: PaymentStatus.SHOW_ALERT);
     } on Exception catch (_, e) {
       state = PaymentErrorState(msg: e.toString());
     }
@@ -62,6 +55,35 @@ class PaymentStateNotifer extends StateNotifier<PaymentState> {
           tenderArray: tenderArray,
           tenderDetail: tenderDetail,
           paidValue: paidValue);
+    } catch (e) {
+      state = PaymentErrorState(msg: e.toString());
+    }
+  }
+
+  Future<void> removePayment(PaymentDetailsData data) async {
+    try {
+      if (state is PaymentSuccessState) {
+        PaymentSuccessState prevState = state as PaymentSuccessState;
+        if (GlobalConfig.VoidPayments) {
+          if (prevState.tenderDetail?.isNotEmpty ?? false) {
+            double removePay =
+                await paymentLocalRepository.getTotalRemoveAmount(
+                    GlobalConfig.salesNo,
+                    GlobalConfig.splitNo,
+                    GlobalConfig.tableNo,
+                    data.salesRef);
+            await paymentLocalRepository.doRemovePayment(
+              GlobalConfig.salesNo,
+              GlobalConfig.splitNo,
+              GlobalConfig.tableNo,
+              data.salesRef,
+            );
+          }
+          state = prevState.copyWith(status: PaymentStatus.PAYMENT_REMOVED);
+        } else {
+          state = prevState.copyWith(status: PaymentStatus.PERMISSION_ERROR);
+        }
+      }
     } catch (e) {
       state = PaymentErrorState(msg: e.toString());
     }
