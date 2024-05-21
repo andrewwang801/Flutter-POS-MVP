@@ -10,5 +10,6 @@ final StateNotifierProvider<KitchenReprintController, KitchenState>
     kitchenProvider =
     StateNotifierProvider<KitchenReprintController, KitchenState>(
         (StateNotifierProviderRef<KitchenReprintController, KitchenState> ref) {
-  return GetIt.I<KitchenReprintController>(param1: GetIt.I<PrintController>());
+  return GetIt.I<KitchenReprintController>(
+      param1: ref.read(printProvider.notifier));
 });

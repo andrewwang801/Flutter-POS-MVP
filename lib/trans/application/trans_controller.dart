@@ -6,15 +6,15 @@ import '../../common/extension/string_extension.dart';
 import '../../home/repository/order/i_order_repository.dart';
 import '../../payment/repository/i_payment_repository.dart';
 import '../../print/provider/print_controller.dart';
-import '../../printer/provider/printer_state.dart';
 import '../data/trans_sales_data_model.dart';
 import '../domain/trans_local_repository.dart';
 import 'trans_state.dart';
 
 @Injectable()
 class TransController extends StateNotifier<TransState> {
-  TransController(this.transRepository, this.orderRepository,
-      this.paymentRepository, this.printController)
+  TransController(
+      this.transRepository, this.orderRepository, this.paymentRepository,
+      {@factoryParam required this.printController})
       : super(TransState(workable: Workable.initial));
 
   final TransLocalRepository transRepository;
@@ -169,6 +169,23 @@ class TransController extends StateNotifier<TransState> {
 
       state =
           state.copyWith(workable: Workable.loading, operation: Operation.OPEN);
+    } on OperationFailedException catch (e) {
+      state = state.copyWith(failiure: Failiure(errMsg: e.errDetailMsg));
+    } catch (e) {
+      state = state.copyWith(failiure: Failiure(errMsg: e.toString()));
+    }
+  }
+
+  Future<void> reprintBill(
+      String transMode, int salesNo, String tableStatus) async {
+    try {
+      if (transMode == 'RFND') {
+        await printController.reprintBillNotify(salesNo, 'Refund');
+      } else if (transMode == 'V') {
+        await printController.reprintBillNotify(salesNo, 'Void Tables');
+      } else {
+        await printController.reprintBillNotify(salesNo, tableStatus);
+      }
     } on OperationFailedException catch (e) {
       state = state.copyWith(failiure: Failiure(errMsg: e.errDetailMsg));
     } catch (e) {

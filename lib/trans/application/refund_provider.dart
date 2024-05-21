@@ -9,5 +9,5 @@ import 'refund_state.dart';
 final StateNotifierProvider<RefundController, RefundState> refundProvider =
     StateNotifierProvider<RefundController, RefundState>(
         (StateNotifierProviderRef<RefundController, RefundState> ref) {
-  return GetIt.I<RefundController>(param1: GetIt.I<PrintController>());
+  return GetIt.I<RefundController>(param1: ref.read(printProvider.notifier));
 });
