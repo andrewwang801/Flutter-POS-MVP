@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:raptorpos/home/provider/menu_provider.dart';
+import 'package:raptorpos/home/provider/menu/menu_provider.dart';
 
 import 'menu_card.dart';
 

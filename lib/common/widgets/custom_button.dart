@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
 
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
@@ -36,18 +37,19 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
     final Color _borderColor = widget.borderColor;
     final Color _fillColor = widget.fillColor;
     final double _height = widget.height ?? 25.h;
-    final double _width = widget.width ?? 30.w;
+    final double _width = widget.width ?? 80.w;
 
-    return InkWell(
+    return Material(
+      color: _fillColor,
+      child: InkWell(
         onTap: () {
           _callback();
         },
         child: Container(
           width: _width,
           height: _height,
-          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          padding: EdgeInsets.symmetric(horizontal: 4.0),
           decoration: BoxDecoration(
-            color: _fillColor,
             border: Border.all(
               color: _borderColor,
               width: 1.0,
@@ -59,6 +61,8 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
                 textAlign: TextAlign.center,
                 style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

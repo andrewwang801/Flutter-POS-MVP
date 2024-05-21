@@ -11,6 +11,10 @@ extension StringExtension on String {
     int temp = int.tryParse(this) ?? 0;
     return temp == 1 ? true : false;
   }
+
+  String currencyString(String currency) {
+    return '$currency $this';
+  }
 }
 
 extension BoolExtension on bool {
