@@ -5,5 +5,5 @@ abstract class IMenuRepository {
   Future<List<MenuModel>> getMenuHdr();
   Future<List<MenuItemModel>> getMenuItemByHdr(int menuid);
   Future<List<MenuItemModel>> getMenuByPLU();
-  Future<List<String>> getPLUDetails();
+  Future<List<String>> getPLUDetails(String pluNo);
 }

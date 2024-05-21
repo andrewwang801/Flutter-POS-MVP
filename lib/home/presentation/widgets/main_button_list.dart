@@ -57,7 +57,6 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
                   Get.to(DiscountScreen());
                   break;
                 default:
-                  showNumPad();
                   break;
               }
             },

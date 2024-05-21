@@ -46,8 +46,16 @@ class MenuLocalRepository implements IMenuRepository {
   }
 
   @override
-  Future<List<String>> getPLUDetails() async {
+  Future<List<String>> getPLUDetails(String pluNo) async {
     final db = await database.database;
+    String query =
+        'SELECT PLUName, Sell1, Description, DisplayImage, imagename, PLUOpen, LinkMenu, LinkMenuNo FROM PLU WHERE PLUNumber = \'$pluNo + \'';
+    final List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    if (maps.length > 0) {
+      return maps[0].entries.map((e) {
+        return e.value.toString();
+      }).toList();
+    }
     return <String>[];
   }
 }

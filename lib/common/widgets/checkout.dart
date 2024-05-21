@@ -27,7 +27,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
     OrderState state = ref.watch(orderProvoder);
     return Container(
       width: 300.w,
-      height: 280.h,
+      height: 320.h,
       color: isDark ? primaryDarkColor : Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -164,6 +164,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
               ),
             ),
             child: PaginatedDataTable(
+              columnSpacing: 10.w,
               arrowHeadColor: isDark ? Colors.white : Colors.black,
               columns: <DataColumn>[
                 DataColumn(
@@ -180,9 +181,8 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                             isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
               ],
               source: orderData,
-              columnSpacing: 60,
               horizontalMargin: 10,
-              rowsPerPage: 5,
+              // rowsPerPage: 5,
               showCheckboxColumn: false,
             ),
           )),

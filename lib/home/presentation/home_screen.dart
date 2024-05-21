@@ -66,7 +66,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     SizedBox(
                       height: 0.h,
                     ),
-                    CheckOut(),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: CheckOut(),
+                    ),
                     SizedBox(
                       height: 10.h,
                     ),

@@ -19,4 +19,9 @@ final menuByPLUProvider = FutureProvider<List<MenuItemModel>>((ref) async {
   return await repository.getMenuByPLU();
 });
 
+final pluDetailsProvider = FutureProvider<List<String>>((ref) async {
+  final repository = ref.read(repositoryProvider);
+  return await repository.getPLUDetails('');
+});
+
 final menuIDProvider = StateProvider<int>((ref) => 5);
