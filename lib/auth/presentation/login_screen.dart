@@ -67,15 +67,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       appBar: PreferredSize(
+        preferredSize: Size.fromHeight(appBarHeight),
         child: AppBarWidget(false),
-        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
-      body: Center(
-        child: Row(
-          children: [
-            Expanded(child: leftLogo()),
-            Expanded(child: rightLoginForm()),
-          ],
+      body: SafeArea(
+        child: Center(
+          child: Row(
+            children: [
+              Expanded(child: leftLogo()),
+              Expanded(child: rightLoginForm()),
+            ],
+          ),
         ),
       ),
     );

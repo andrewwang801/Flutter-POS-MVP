@@ -120,8 +120,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: PreferredSize(
         child: AppBarWidget(false),
-        preferredSize:
-            Size(926.w, 53.h - MediaQuery.of(context).padding.top - 5.h),
+        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

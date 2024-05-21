@@ -17,6 +17,7 @@ import 'package:raptorpos/theme/theme_state_notifier.dart';
 import 'package:raptorpos/trans/presentation/trans.dart';
 
 import 'alert_dialog.dart';
+import 'responsive.dart';
 
 class BillButtonList extends ConsumerStatefulWidget {
   final IPaymentRepository paymentRepository;
@@ -70,7 +71,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
     final bool isDark = ref.read(themeProvider);
     return SizedBox(
       width: 300.w,
-      height: 40.h,
+      height: Responsive.isMobile(context) ? 50.h : 40.h,
       child: Row(
         children: [
           GestureDetector(

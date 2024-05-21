@@ -97,11 +97,18 @@ class PrinterStateNotifier extends StateNotifier<PrinterState> {
       } else {
         if (state is PrinterSuccessState) {
           final PrinterSuccessState prevState = state as PrinterSuccessState;
-          state = prevState.copyWith(operation: OPERATION.CONNECT_FAIL);
+          state = prevState.copyWith(
+            operation: OPERATION.CONNECT_FAIL,
+            message: 'Printer connection failed',
+          );
         }
       }
     } catch (e) {
-      state = PrinterErrorState(e.toString());
+      if (state is PrinterSuccessState) {
+        final PrinterSuccessState prevState = state as PrinterSuccessState;
+        state = prevState.copyWith(
+            operation: OPERATION.CONNECT_FAIL, message: e.toString());
+      }
     }
   }
 

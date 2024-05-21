@@ -1,0 +1,65 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "raptorpos",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "raptorpos (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "raptorpos (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "esc_pos_printer",
+            "cwd": "esc_pos_printer",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "esc_pos_printer (profile mode)",
+            "cwd": "esc_pos_printer",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "esc_pos_printer (release mode)",
+            "cwd": "esc_pos_printer",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "esc_pos_utils",
+            "cwd": "esc_pos_utils",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "esc_pos_utils (profile mode)",
+            "cwd": "esc_pos_utils",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "esc_pos_utils (release mode)",
+            "cwd": "esc_pos_utils",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

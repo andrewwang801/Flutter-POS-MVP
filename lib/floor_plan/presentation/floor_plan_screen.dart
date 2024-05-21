@@ -32,14 +32,15 @@ class _FloorPlanScreenState extends ConsumerState<FloorPlanScreen> {
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: PreferredSize(
         child: AppBarWidget(false),
-        preferredSize:
-            Size(926.w, 53.h - MediaQuery.of(context).padding.top - 5.h),
+        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
       ),
-      body: Column(
-        children: [
-          FloorToolBar(),
-          FloorLayout(),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            FloorToolBar(),
+            FloorLayout(),
+          ],
+        ),
       ),
     );
   }

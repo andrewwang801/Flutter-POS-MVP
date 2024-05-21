@@ -24,16 +24,17 @@ class XPrinterService extends IPrinterService with StringUtil, TypeUtil {
     res = await printer.connect(ipAddr, port: port);
 
     if (res == PosPrintResult.success) {
+      return res;
       // print('connection success');
     } else {
+      throw Exception(res.msg);
       // print('Print result: ${res.msg}');
     }
-    return res;
   }
 
   @override
   void disconnect() {
-    printer.disconnect();
+    printer.disconnect(delayMs: 100);
   }
 
   @override

@@ -27,10 +27,10 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
       {bool detail = false}) {
     level = (orderItem.Preparation ?? 0) == 1 ? 1 : 0;
     TextStyle textStyle =
-        bodyTextDarkStyle.copyWith(fontSize: modifierItemFontSize);
+        listItemTextDarkStyle.copyWith(fontSize: modifierItemFontSize);
     if (level != 0) {
-      textStyle = bodyTextDarkStyle.copyWith(
-          fontWeight: FontWeight.w300,
+      textStyle = listItemTextDarkStyle.copyWith(
+          fontWeight: FontWeight.w500,
           fontSize: modifierItemFontSize,
           fontStyle: FontStyle.italic,
           color: Colors.grey);

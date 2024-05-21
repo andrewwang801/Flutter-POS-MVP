@@ -16,6 +16,7 @@ import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/responsive.dart';
 import '../../constants/color_constant.dart';
+import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../model/printer_model.dart';
 import '../provider/printer_provider.dart';
@@ -91,7 +92,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                 builder: (context) {
                   return AppAlertDialog(
                     title: 'Printer',
-                    message: 'Printer connection failed',
+                    message: next.message,
                     onConfirm: () {},
                   );
                 });
@@ -125,14 +126,19 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
     ref.watch(printerProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          AppBarWidget(false),
-          if (printers.isNotEmpty) _header(),
-          Expanded(child: _printerListView()),
-          _bottomBtnGroup(),
-        ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(appBarHeight),
+        child: AppBarWidget(false),
+      ),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (printers.isNotEmpty) _header(),
+            Expanded(child: _printerListView()),
+            _bottomBtnGroup(),
+          ],
+        ),
       ),
     );
   }
@@ -144,7 +150,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CustomButton(
-              height: Responsive.isMobile(context) ? 35.h : 25.h,
+              height: Responsive.isMobile(context) ? 48.h : 30.h,
               width: 120.w,
               callback: () {
                 showDialog(
@@ -171,7 +177,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
-              height: Responsive.isMobile(context) ? 35.h : 25.h,
+              height: Responsive.isMobile(context) ? 48.h : 30.h,
               width: 120.w,
               callback: () {
                 if (selectedPrinter == null) return;
@@ -199,7 +205,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
-              height: Responsive.isMobile(context) ? 35.h : 25.h,
+              height: Responsive.isMobile(context) ? 48.h : 30.h,
               width: 120.w,
               callback: () {
                 if (selectedPrinter != null) {
@@ -215,7 +221,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
             width: 15.w,
           ),
           CustomButton(
-              height: Responsive.isMobile(context) ? 35.h : 25.h,
+              height: Responsive.isMobile(context) ? 48.h : 30.h,
               width: 120.w,
               callback: () {
                 Get.back();
