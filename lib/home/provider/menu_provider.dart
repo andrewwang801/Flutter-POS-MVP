@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:raptorpos/home/model/menu_item_model.dart';
 import 'package:raptorpos/home/model/menu_model.dart';
-import 'package:raptorpos/home/repository/menu_local_repository.dart';
+import 'package:raptorpos/home/repository/menu/menu_local_repository.dart';
 
 final menuHdrProvider = FutureProvider<List<MenuModel>>((ref) async {
   final repository = ref.read(repositoryProvider);

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:raptorpos/constants/text_style_constant.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 class CustomButton extends ConsumerStatefulWidget {
   final Function callback;
@@ -29,6 +30,7 @@ class CustomButton extends ConsumerStatefulWidget {
 class _CustomButtonState extends ConsumerState<CustomButton> {
   @override
   Widget build(BuildContext context) {
+    bool isDark = ref.watch(themeProvider);
     final String _text = widget.text;
     final Function _callback = widget.callback;
     final Color _borderColor = widget.borderColor;
@@ -43,6 +45,7 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
         child: Container(
           width: _width,
           height: _height,
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
           decoration: BoxDecoration(
             color: _fillColor,
             border: Border.all(
@@ -53,7 +56,8 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
           ),
           child: Center(
             child: Text(_text,
-                textAlign: TextAlign.center, style: bodyTextLightStyle),
+                textAlign: TextAlign.center,
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
           ),
         ));
   }

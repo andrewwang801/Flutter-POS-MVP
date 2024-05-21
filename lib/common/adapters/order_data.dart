@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:raptorpos/home/model/order_item_model.dart';
 
 import '../../constants/text_style_constant.dart';
-import '../../home/model/order_model.dart';
 
 class OrderData extends DataTableSource {
   final bool isDark;
-  OrderData(this.isDark);
+  final List<OrderItemModel> orderItems;
+  OrderData(this.isDark, this.orderItems);
 
   @override
   DataRow? getRow(int index) {
@@ -15,19 +15,19 @@ class OrderData extends DataTableSource {
       cells: <DataCell>[
         DataCell(
           Text(
-            item.qty.toString(),
+            item.Quantity.toString(),
             style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
           ),
         ),
         DataCell(
           Text(
-            item.description,
+            item.ItemName ?? '',
             style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
           ),
         ),
         DataCell(
           Text(
-            item.amount.toString(),
+            item.ItemAmount.toString(),
             style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
           ),
         ),

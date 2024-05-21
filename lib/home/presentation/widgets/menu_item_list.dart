@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:raptorpos/home/model/menu_item_model.dart';
 import 'package:raptorpos/home/provider/menu_provider.dart';
+import 'package:raptorpos/home/provider/order/order_provider.dart';
 
 import 'menu_item_card.dart';
 
@@ -23,11 +23,15 @@ class _MenuItemListState extends ConsumerState<MenuItemList> {
         itemCount: data.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 5,
-          mainAxisExtent: 50.h,
+          mainAxisExtent: 55.h,
         ),
         itemBuilder: (BuildContext context, int index) {
-          return MenuItemCard(
-            menuItem: data[index],
+          final item = data[index];
+          return GestureDetector(
+            onTap: () {},
+            child: MenuItemCard(
+              menuItem: item,
+            ),
           );
         },
       );

@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:raptorpos/cash/presentation/cash_screen.dart';
+import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/floor_plan/presentation/floor_plan_screen.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import 'package:raptorpos/trans/presentation/trans.dart';
 import 'package:raptorpos/sales_category/sales_category_screen.dart';
 import './custom_button.dart';
 
-class BillButtonList extends StatefulWidget {
+class BillButtonList extends ConsumerStatefulWidget {
   BillButtonList({Key? key}) : super(key: key);
 
   @override
-  State<BillButtonList> createState() => _BillButtonListState();
+  _BillButtonListState createState() => _BillButtonListState();
 }
 
-class _BillButtonListState extends State<BillButtonList> {
+class _BillButtonListState extends ConsumerState<BillButtonList> {
   final List<String> billBtnTexts = [
     "CASH",
     "TENDER",
@@ -28,8 +31,9 @@ class _BillButtonListState extends State<BillButtonList> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = ref.read(themeProvider);
     return SizedBox(
-      width: 246.w,
+      width: 260.w,
       height: 70.h,
       child: GridView.builder(
         scrollDirection: Axis.horizontal,
@@ -60,13 +64,17 @@ class _BillButtonListState extends State<BillButtonList> {
               }
             },
             text: billBtnTexts[index],
-            borderColor: Colors.green,
-            fillColor: Colors.green,
+            fillColor: index == 14
+                ? Colors.red
+                : isDark
+                    ? primaryDarkColor
+                    : Colors.white,
+            borderColor: isDark ? primaryDarkColor : Colors.green,
           );
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisExtent: 80.w,
+            mainAxisExtent: 84.w,
             mainAxisSpacing: 3.w,
             crossAxisSpacing: 5.h),
       ),

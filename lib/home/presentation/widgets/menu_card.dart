@@ -9,7 +9,6 @@ import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../constants/color_constant.dart';
 import '../../../constants/text_style_constant.dart';
-import '../../repository/menu_local_repository.dart';
 
 const List<MaterialColor> menuColors = [
   Colors.green,

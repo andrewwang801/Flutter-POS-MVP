@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+@singleton
 class LocalDBHelper {
   final String dbname = 'pos.db';
-  LocalDBHelper._instance();
-  static final LocalDBHelper db = LocalDBHelper._instance();
+  // @factoryMethod
+  // LocalDBHelper._instance();
+  // static final LocalDBHelper db = LocalDBHelper._instance();
 
   late Database _database;
 
@@ -42,6 +44,6 @@ class LocalDBHelper {
   }
 }
 
-final databaseProvider = Provider<Future<Database>>(((ref) async {
-  return await LocalDBHelper.db.database;
-}));
+// final databaseProvider = Provider<Future<Database>>(((ref) async {
+//   return await LocalDBHelper.db.database;
+// }));
