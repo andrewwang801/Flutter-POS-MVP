@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:raptorpos/common/keyboard/virtual_keyboard_2.dart';
 import 'package:raptorpos/common/widgets/appbar.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
 
@@ -15,6 +16,11 @@ import '../../common/widgets/alert_dialog.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
+import '../../floor_plan/presentation/floor_plan_screen.dart';
+import '../../floor_plan/presentation/widgets/cover_widget.dart';
+import '../../floor_plan/provider/table_provider.dart';
+import '../../home/provider/order/order_provider.dart';
+import '../../home/provider/order/order_state.dart';
 import '../../home/repository/order/i_order_repository.dart';
 import '../../payment/repository/i_payment_repository.dart';
 import '../../print/provider/print_controller.dart';
@@ -50,6 +56,7 @@ class FunctionsScreen extends ConsumerStatefulWidget {
 
 class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
   late bool isDark;
+  String strRemarks = '';
 
   @override
   void initState() {
@@ -72,6 +79,42 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                 message: next.failiure!.errMsg,
               );
             });
+      }
+    });
+
+    ref.listen(orderProvoder, (previous, OrderState next) {
+      if (next.failure != null) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AppAlertDialog(
+                onConfirm: () {},
+                title: 'Error',
+                message: next.failure!.errMsg,
+              );
+            });
+      } else if (next.operation == OPERATIONS.SHOW_TABLE_MANAGEMENT) {
+        Get.to(() => const FloorPlanScreen());
+      } else if (next.operation == OPERATIONS.SHOW_TABLE_NUM) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return IntrinsicHeight(
+                child: IntrinsicWidth(
+                  child: Dialog(
+                    child: CoverWidget(
+                      callback: (int tableNo) {
+                        ref
+                            .read(tableProvider.notifier)
+                            .tableNoNotify(tableNo.toString());
+                      },
+                    ),
+                  ),
+                ),
+              );
+            });
+      } else if (next.operation == OPERATIONS.SHOW_KEYBOARD) {
+        newRemarks();
       }
     });
 
@@ -245,5 +288,45 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
 
   void voidPromotion() {
     ref.read(promoProvider.notifier).voidPromotion();
+  }
+
+  void allVoid() {
+    ref.read(orderProvoder.notifier).voidAllOrder();
+  }
+
+  newRemarks() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, StateSetter setState) {
+            return Dialog(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Container(
+                height: 35.h,
+                width: double.infinity,
+                child: Center(
+                  child: Text(strRemarks),
+                ),
+              ),
+              VirtualKeyboard(
+                  height: 180.h,
+                  textColor: Colors.white,
+                  type: VirtualKeyboardType.Alphanumeric,
+                  callback: (String str) {
+                    setState(() {
+                      strRemarks = str;
+                    });
+                  },
+                  returnCallback: (String text) {
+                    ref
+                        .read(orderProvoder.notifier)
+                        .voidOrderItemRemarks(1, strRemarks);
+                    Get.back();
+                    Get.back();
+                  },
+                  textController: TextEditingController()),
+            ]));
+          });
+        });
   }
 }

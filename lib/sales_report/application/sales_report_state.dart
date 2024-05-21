@@ -1,20 +1,22 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-enum Workable { initial, loading, ready, failure }
+import '../../common/extension/workable.dart';
 
-extension WorkableX on Workable {
-  bool get isInitial => this == Workable.initial;
-  bool get isLoading => this == Workable.loading;
-  bool get isReady => this == Workable.ready;
-  bool get isFailure => this == Workable.failure;
-}
+// enum Workable { initial, loading, ready, failure }
 
-class Failure {
-  Failure({required this.errMsg});
+// extension WorkableX on Workable {
+//   bool get isInitial => this == Workable.initial;
+//   bool get isLoading => this == Workable.loading;
+//   bool get isReady => this == Workable.ready;
+//   bool get isFailure => this == Workable.failure;
+// }
 
-  final String errMsg;
-}
+// class Failure {
+//   Failure({required this.errMsg});
+
+//   final String errMsg;
+// }
 
 class Data {
   Data(

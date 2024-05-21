@@ -12,6 +12,8 @@ import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../constants/color_constant.dart';
 import '../../../constants/text_style_constant.dart';
+import '../extension/workable.dart';
+import 'alert_dialog.dart';
 
 class CheckOut extends ConsumerStatefulWidget {
   const CheckOut(this.height, {Key? key}) : super(key: key);
@@ -26,10 +28,21 @@ class _CheckOutState extends ConsumerState<CheckOut> {
   bool isDark = true;
   @override
   Widget build(BuildContext context) {
-    ref.listen(orderProvoder, (previous, next) {
-      if (next is OrderSuccessState &&
+    ref.listen(orderProvoder, (previous, OrderState next) {
+      if (next.workable == Workable.ready &&
           next.operation == OPERATIONS.SHOW_REMARKS) {
         showRemarksDialog();
+      }
+      if (next.failure != null && next.workable != Workable.failure) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                title: 'Error',
+                message: 'Order is empty!',
+                onConfirm: () {},
+              );
+            });
       }
     });
 
@@ -37,9 +50,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
     OrderState state = ref.watch(orderProvoder);
 
     double totalTax = 0.0;
-    if (state is OrderSuccessState) {
-      for (var i = 4; i < state.bills.length; i++) {
-        totalTax += state.bills[i];
+    if (state.workable == Workable.ready && state.bills != null) {
+      for (var i = 4; i < state.bills!.length; i++) {
+        totalTax += state.bills![i];
       }
     }
     return Container(
@@ -127,8 +140,8 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Text(
-                          state is OrderSuccessState && state.bills.isNotEmpty
-                              ? '\$ ${state.bills[2].toStringAsFixed(2)}'
+                          (state.bills?.isNotEmpty ?? false)
+                              ? '\$ ${state.bills![2].toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style: isDark
                               ? normalTextDarkStyle.copyWith(
@@ -140,8 +153,8 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Text(
-                          state is OrderSuccessState && state.bills.isNotEmpty
-                              ? '\$ ${state.bills[3].toStringAsFixed(2)}'
+                          (state.bills?.isNotEmpty ?? false)
+                              ? '\$ ${state.bills![3].toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style: isDark
                               ? normalTextDarkStyle.copyWith(
@@ -153,7 +166,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Text(
-                          state is OrderSuccessState && state.bills.isNotEmpty
+                          (state.bills?.isNotEmpty ?? false)
                               ? '\$ ${totalTax.toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style: isDark
@@ -166,8 +179,8 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Text(
-                            state is OrderSuccessState && state.bills.isNotEmpty
-                                ? '\$ ${state.bills[0].toStringAsFixed(2)}'
+                            (state.bills?.isNotEmpty ?? false)
+                                ? '\$ ${state.bills![0].toStringAsFixed(2)}'
                                 : "\$ 0.00",
                             style: isDark
                                 ? normalTextDarkStyle.copyWith(
@@ -190,10 +203,8 @@ class _CheckOutState extends ConsumerState<CheckOut> {
 
   Widget orderItemsTable() {
     OrderState state = ref.watch(orderProvoder);
-    final OrderData orderData = OrderData(
-        isDark,
-        state is OrderSuccessState ? state.orderItems : <OrderItemModel>[],
-        context);
+    final OrderData orderData =
+        OrderData(isDark, state.orderItems ?? <OrderItemModel>[], context);
     return Scrollbar(
       controller: _vScrollController,
       isAlwaysShown: false,
@@ -244,14 +255,15 @@ class _CheckOutState extends ConsumerState<CheckOut> {
 
   Widget _orderItemList() {
     final OrderState state = ref.watch(orderProvoder);
-    final bool isLoading =
-        state is OrderLoadingState || state is OrderInitialState;
-    final bool hasError = state is OrderErrorState;
+    final bool isLoading = state.workable == Workable.loading ||
+        state.workable == Workable.initial;
+    final bool hasError =
+        state.workable == Workable.failure && state.failure != null;
     if (isLoading) {
       return Container();
     } else if (hasError) {
       return Container();
-    } else if (state is OrderSuccessState) {
+    } else if (state.workable == Workable.ready) {
       return Column(
         children: [
           ListTileTheme(

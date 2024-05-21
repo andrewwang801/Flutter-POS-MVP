@@ -45,6 +45,54 @@ class TableController extends StateNotifier<TableState>
     }
   }
 
+  Future<void> tableNoNotify(String tableNo) async {
+    try {
+      GlobalConfig.tableNo = tableNo;
+      if (GlobalConfig.tableNo != '0' && GlobalConfig.tableNo != '') {
+        int tableOpened =
+            await tableRepository.getCountTableNo(GlobalConfig.tableNo);
+        if (tableOpened > 0) {
+          List<List<String>> tblArray =
+              await orderRepository.getIndexOrder(GlobalConfig.tableNo);
+          GlobalConfig.checkTableOpen = tblArray.length;
+
+          GlobalConfig.salesNo = dynamicToInt(tblArray[0][0]);
+          GlobalConfig.splitNo = dynamicToInt(tblArray[0][1]);
+          GlobalConfig.cover = dynamicToInt(tblArray[0][3]);
+          GlobalConfig.rcptNo = tblArray[0][4];
+          // TODO(Smith): Refresh Header Status
+        } else {
+          if (POSDtls.forceCover) {
+            if (state is TableSuccessState) {
+              TableSuccessState prevState = state as TableSuccessState;
+              state = prevState.copyWith(notify_type: NOTIFY_TYPE.SHOW_COVER);
+            }
+          } else {
+            GlobalConfig.cover = 1;
+            await openTable(POSDtls.deviceNo, GlobalConfig.operatorNo,
+                GlobalConfig.tableNo, GlobalConfig.cover);
+
+            List<List<String>> tableData = await orderRepository
+                .getIndexOrder(GlobalConfig.TableNoInt.toString());
+            GlobalConfig.checkTableOpen = tableData.length;
+
+            List<String> tempData = tableData[0];
+            GlobalConfig.salesNo = dynamicToInt(tempData[0]);
+            GlobalConfig.splitNo = dynamicToInt(tempData[1]);
+            GlobalConfig.tableNo = GlobalConfig.TableNoInt.toString();
+            GlobalConfig.cover = dynamicToInt(tempData[3]);
+            GlobalConfig.rcptNo = tempData[4];
+
+            await orderRepository.updateTableStatus(GlobalConfig.tableNo, 'O');
+            // TODO(Smith): RefreshHeaderStatus
+          }
+        }
+      }
+    } catch (e) {
+      state = TableErrorState(e.toString());
+    }
+  }
+
   Future<void> selectTable(String tableNo) async {
     try {
       GlobalConfig.tableNo = tableNo;

@@ -81,4 +81,20 @@ abstract class IOrderRepository {
       int salesNo, int splitNo, int salesRef, String tableNo);
   Future<List<OrderModData>> getOrderModData(
       int salesNo, int splitNo, int salesRef, String tableNo);
+
+  Future<void> voidAllOrder(
+      int salesNo,
+      int splitNo,
+      String tableNo,
+      String posID,
+      int operatorNo,
+      int covers,
+      String transMode,
+      int memID,
+      int pShift,
+      int catID,
+      String custID,
+      String voidRemarks);
+
+  Future<void> updateTableStatus(String tableNo, String status);
 }

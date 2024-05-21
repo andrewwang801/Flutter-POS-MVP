@@ -16,6 +16,7 @@ import 'package:raptorpos/payment/repository/i_payment_repository.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 import 'package:raptorpos/trans/presentation/trans.dart';
 
+import '../extension/workable.dart';
 import 'alert_dialog.dart';
 import 'responsive.dart';
 
@@ -138,8 +139,8 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
   }
 
   Future<void> doCashPayment(OrderState state) async {
-    if (state is OrderSuccessState) {
-      if (state.bills.isEmpty) {
+    if (state.workable == Workable.ready) {
+      if (state.bills?.isEmpty ?? false) {
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -155,8 +156,8 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
         final bool bTender = await _paymentRepository.checkTenderPayment(
             GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
 
-        final double sTotal = state.bills[2];
-        final double gTotal = state.bills[0];
+        final double sTotal = state.bills![2];
+        final double gTotal = state.bills![0];
         // update order items in HeldItems table
         await ref.read(orderProvoder.notifier).updateHeldItem(sTotal, gTotal);
         // fetch updated order items
@@ -181,8 +182,8 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
   }
 
   Future<void> doTenderPayment(OrderState state) async {
-    if (state is OrderSuccessState) {
-      if (state.bills.isEmpty) {
+    if (state.workable == Workable.ready) {
+      if (state.bills?.isEmpty ?? false) {
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -195,8 +196,8 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
         return;
       }
       if (state.paymentPermission ?? false) {
-        final double sTotal = state.bills[2];
-        final double gTotal = state.bills[0];
+        final double sTotal = state.bills![2];
+        final double gTotal = state.bills![0];
         // update order items in HeldItems table
         await ref.read(orderProvoder.notifier).updateHeldItem(sTotal, gTotal);
         // fetch updated order items
