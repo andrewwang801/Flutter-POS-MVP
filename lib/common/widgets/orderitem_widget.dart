@@ -1,5 +1,6 @@
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:raptorpos/common/widgets/orderitem_interface.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/home/model/order_mod_model.dart';
@@ -46,72 +47,61 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
           fontStyle: FontStyle.italic,
           color: Colors.grey);
     }
-    return GestureDetector(
-      onTap: () {
-        if (clickListener != null) {
-          clickListener(orderItem);
-        }
+    return Dismissible(
+      onDismissed: (DismissDirection direction) {
+        callback();
       },
-      onLongPress: () {
-        showGeneralDialog(
-          context: context,
-          barrierColor: Colors.black38,
-          barrierLabel: 'Label',
-          barrierDismissible: true,
-          pageBuilder: (_, __, ___) => MenuItemDetail(
-            orderItem.PLUNo ?? '',
-            orderItem.SalesRef ?? 0,
-            true,
-            orderItem: orderItem,
-          ),
-        );
-      },
-      child: Dismissible(
-        onDismissed: (DismissDirection direction) {
-          callback();
-        },
-        direction: DismissDirection.endToStart,
-        key: UniqueKey(),
-        background: Container(
-          color: Colors.red,
-        ),
-        secondaryBackground: Container(
-          color: Colors.red,
-          child: Center(
-            child: Text(
-              'Delete',
-              style: textStyle,
-            ),
+      direction: DismissDirection.endToStart,
+      key: UniqueKey(),
+      background: Container(
+        color: Colors.red,
+      ),
+      secondaryBackground: Container(
+        color: Colors.red,
+        child: Center(
+          child: Text(
+            'Delete',
+            style: textStyle,
           ),
         ),
-        child: Theme(
-          data: ThemeData().copyWith(
-            dividerColor: Colors.transparent,
-          ),
-          child: ListTileTheme(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            child: ExpansionTile(
-              title: OrderItemRowWidget(isDark, textStyle),
-              trailing: children.isEmpty
-                  ? const SizedBox(
-                      width: 20,
-                    )
-                  : const SizedBox(
-                      width: 20, child: Icon(Icons.arrow_drop_down_sharp)),
-              initiallyExpanded: true,
-              children: [
-                ...prepWidgets(orderPrepList ?? []),
-                ...modWidgets(orderModList ?? []),
-              ],
+      ),
+      child: Theme(
+        data: ThemeData().copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                if (clickListener != null) {
+                  clickListener(orderItem);
+                }
+              },
+              onLongPress: () {
+                showGeneralDialog(
+                  context: context,
+                  barrierColor: Colors.black38,
+                  barrierLabel: 'Label',
+                  barrierDismissible: true,
+                  pageBuilder: (_, __, ___) => MenuItemDetail(
+                    orderItem.PLUNo ?? '',
+                    orderItem.SalesRef ?? 0,
+                    true,
+                    orderItem: orderItem,
+                  ),
+                );
+              },
+              child: OrderItemRowWidget(isDark, textStyle),
             ),
-          ),
+            ...prepWidgets(orderPrepList ?? []),
+            ...modWidgets(orderModList ?? []),
+          ],
         ),
       ),
     );
   }
 
-  Container OrderItemRowWidget(bool isDark, TextStyle textStyle) {
+  Widget OrderItemRowWidget(bool isDark, TextStyle textStyle) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 14),
       child: Row(
@@ -176,13 +166,13 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
   List<Widget> prepWidgets(List<OrderPrepModel> preps) {
     return preps.map((e) {
       return Container(
-        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 14),
+        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 14),
         child: Row(
           children: [
             Expanded(
                 flex: 2,
                 child: Text(
-                  e.prepQuantity.toString(),
+                  e.prepQuantity.toInt().toString(),
                 )),
             Expanded(
                 flex: 7,
@@ -202,24 +192,20 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
   List<Widget> modWidgets(List<OrderModData> mods) {
     return mods.map((e) {
       return Container(
-        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 14),
+        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 14),
         child: Row(
           children: [
-            Expanded(flex: 2, child: Container()),
+            Expanded(
+                flex: 2,
+                child: Container(
+                  child: Text('1'),
+                )),
             Expanded(
                 flex: 7,
                 child: Text(
                   'Modifier : ${e.modName}',
                 )),
-            Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text(
-                    e.modPrice.toString(),
-                    textAlign: TextAlign.left,
-                  ),
-                )),
+            Expanded(flex: 3, child: Container()),
             Expanded(flex: 2, child: Container()),
           ],
         ),
