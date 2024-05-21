@@ -159,7 +159,7 @@ class PrintController extends StateNotifier<PrintState>
           await printerManager.print(printData);
         } else if (status == 5) {
           final String printText = await getOpenBill(printSNo);
-          await printerManager.print(printData);
+          await printerManager.print(printText);
         }
       }
     } catch (e) {
@@ -691,7 +691,7 @@ class PrintController extends StateNotifier<PrintState>
     if (sTotal > 0) {
       String strSTotal = sTotal.toString();
       strSTotal = addSpace(strSTotal, 26 - strSTotal.length);
-      preview += '     SUBTOTAL $strSTotal';
+      preview += '     SUBTOTAL $strSTotal\n';
 
       final List<double> taxArray =
           await paymentRepository.findTax(salesNo, splitNo, tableNo, 2);
@@ -729,7 +729,7 @@ class PrintController extends StateNotifier<PrintState>
     } else {
       String strSTotal = sTotal.toString();
       strSTotal = addSpace(strSTotal, 26 - strSTotal.length);
-      preview += '     SUBTOTAL $strSTotal';
+      preview += '     SUBTOTAL $strSTotal\n';
     }
 
     final double gTotal = priceArray[0];
@@ -785,7 +785,272 @@ class PrintController extends StateNotifier<PrintState>
   }
 
   Future<String> getOpenBill(int printSNo) async {
-    return '';
+    final List<List<String>> scArray =
+        await paymentRepository.getSalesCatData(printSNo);
+
+    final List<List<String>> salesArray =
+        await paymentRepository.getOrderStatusBySNo(printSNo);
+    final String pTblNo = salesArray[0][0];
+    final int pSplitNo = salesArray[0][1].toInt();
+    final int pCover = salesArray[0][2].toInt();
+    final String pRcptNo = salesArray[0][3];
+
+    final List<String> totalItemArray =
+        await paymentRepository.getTotalItem(printSNo);
+    final List<List<String>> paymentArray =
+        await paymentRepository.getPaymentData(printSNo);
+    final List<List<String>> promoArray =
+        await paymentRepository.getPromotionData(printSNo);
+    final List<double> priceArray = await paymentRepository.getAmountOrder(
+        printSNo, pSplitNo, pTblNo.toInt(), POSDefault.TaxInclusive);
+
+    double taxTotal = 0;
+    final String dateStr = currentDateTime('dd/MM/yyyy HH:mm');
+    String tempText = '';
+
+    tempText += '${POSDtls.ScreenHeader1}\n';
+    tempText += '${POSDtls.ScreenHeader2}\n';
+    tempText += '${POSDtls.ScreenHeader3}\n';
+    tempText += '\n';
+    tempText += '\n';
+    tempText += '$pTblNo\n';
+    tempText += '\n';
+
+    final String pax = 'Pax: $pCover';
+    final String oprtName = 'OP:${GlobalConfig.operatorName}';
+    final String temp = addSpace(oprtName, 38 - pax.length - oprtName.length);
+    tempText += '$pax$temp\n';
+    tempText += '\n';
+
+    final String posTitle = 'POS Title:${POSDtls.strPOSTitle}';
+    tempText += '$posTitle\n';
+    tempText += '\n';
+
+    final String rcptStr = 'Rcpt#:$pRcptNo';
+    final String datePrint =
+        addSpace(dateStr, 38 - rcptStr.length - dateStr.length);
+    tempText += '$rcptStr$datePrint\n';
+    tempText += '\n';
+
+    tempText += '${addDash(38)}\n';
+    tempText += '\n';
+
+    double stotal = priceArray[2];
+    final double itemtotal = stotal;
+
+    for (int i = 0; i < scArray.length; i++) {
+      final String ctgName = scArray[i][0];
+      final List<List<String>> itemArray =
+          await paymentRepository.getItemData(printSNo, ctgName);
+
+      final String dash = addDash((36 - ctgName.length) ~/ 2);
+      tempText += '$dash$ctgName$dash-\n';
+
+      for (int j = 0; j < itemArray.length; j++) {
+        final double qty = itemArray[j][0].toDouble();
+        final String tempIName = itemArray[j][1];
+        final double iAmount = itemArray[j][2].toDouble();
+        final bool prep = itemArray[j][3].toBool();
+        String discType = itemArray[j][4];
+        final double disc = itemArray[j][5].toDouble();
+        String promoType = itemArray[j][6];
+        final double promo = itemArray[j][7].toDouble();
+
+        String iName = '', iName2 = '', tempIName2 = '';
+
+        if (!POSDtls.printZeroPrice) {
+          if (iAmount == 0) {
+            continue;
+          }
+        }
+
+        if (prep && !POSDtls.PrintPrepWithPrice) {
+          if (iAmount == 0) {
+            continue;
+          }
+        }
+
+        if (tempIName.length > 20) {
+          tempIName2 = tempIName.substring(20);
+          iName = tempIName.substring(0, 20);
+          iName2 = addSpace(iName2, 4);
+        }
+
+        String strIAmount = iAmount.toString();
+        String strQty = qty.toString();
+        if (qty != 0 && !prep) {
+          strQty = addSpace(strQty, 3 - strQty.length);
+          iName = addSpace(tempIName, 1);
+          strIAmount =
+              addSpace(strIAmount, 35 - iName.length - strIAmount.length);
+        } else if (prep) {
+          if (POSDtls.PrintPrepWithPrice) {
+            strQty = addSpace(strQty, 3 - strQty.length);
+            iName = addSpace(tempIName, 1);
+            strIAmount =
+                addSpace(strIAmount, 29 - iName.length - strIAmount.length);
+            tempText += '     *';
+          }
+        } else {
+          strQty = '0';
+          strQty = addSpace(strQty, 3 - strQty.length);
+          iName = addSpace(tempIName, 4);
+          strIAmount =
+              addSpace(strIAmount, 37 - iName.length - strIAmount.length);
+        }
+
+        tempText += '$strQty$iName$strIAmount\n';
+        if (tempIName2.isNotEmpty) {
+          tempText += '$iName2\n';
+        }
+
+        if (discType.isNotEmpty && discType != 'FOC Item') {
+          discType = addSpace(discType, 4);
+          String strDisc = disc.toString();
+          strDisc = '( $strDisc)';
+          strDisc = addSpace(strDisc, 37 - discType.length - strDisc.length);
+
+          tempText += '$discType$strDisc\n';
+
+          stotal -= disc;
+        }
+
+        if (promo != 0) {
+          if (POSDtls.PrintPrmnDtls) {
+            promoType = addSpace(promoType, 4);
+            String strPromo = promo.toString();
+            strPromo = '( $strPromo)';
+            strPromo =
+                addSpace(strPromo, 38 - promoType.length - strPromo.length);
+
+            tempText += '$promoType$strPromo\n';
+          }
+
+          stotal -= promo;
+        }
+      }
+    }
+
+    if (promoArray.isNotEmpty) {
+      final String title = addSpace('ITEMS TOTAL', 4);
+      String strItemTotal = itemtotal.toString();
+      strItemTotal =
+          addSpace(strItemTotal, 37 - title.length - strItemTotal.length);
+
+      tempText += '${addDash(38)}\n';
+      tempText += ' $title$strItemTotal\n';
+
+      for (int i = 0; i < promoArray.length; i++) {
+        String pName = promoArray[i][0];
+        final double pValue = promoArray[i][1].toDouble();
+        String strPValue = pValue.toString();
+
+        strPValue = '( $strPValue)';
+        pName = addSpace(pName, 4);
+        strPValue = addSpace(strPValue, 37 - pName.length - strPValue.length);
+
+        tempText += ' $pName$strPValue\n';
+      }
+    }
+
+    tempText += '${addDash(38)}\n';
+    if (stotal > 0) {
+      String strSTotal = stotal.toString();
+      strSTotal = addSpace(strSTotal, 24 - strSTotal.length);
+      tempText += '     SUBTOTAL $strSTotal\n';
+    }
+
+    tempText += '${addDash(38)}\n';
+    if (stotal > 0) {
+      String strSTotal = stotal.toString();
+      strSTotal = addSpace(strSTotal, 24 - strSTotal.length);
+      tempText += '     SUBTOTAL $strSTotal';
+
+      final List<List<String>> taxArray =
+          await paymentRepository.getPrintTax(printSNo);
+      final List<Map<String, dynamic>> tTitleArray =
+          await paymentRepository.getTaxRateData();
+
+      if (POSDtls.PrintTax) {
+        for (int i = 0; i < tTitleArray.length; i++) {
+          final int taxCode = dynamicToInt(tTitleArray[i]['TaxCode']);
+          String taxName = tTitleArray[i]['Title'].toString();
+
+          final double taxValue = taxArray[0][taxCode].toDouble();
+          if (taxValue > 0) {
+            taxName = addSpace(taxName, 5);
+            String strTaxValue = taxValue.toString();
+            strTaxValue =
+                addSpace(strTaxValue, 37 - taxName.length - strTaxValue.length);
+
+            tempText += '$taxName$strTaxValue\n';
+          }
+          taxTotal += taxValue;
+        }
+      }
+
+      if (POSDtls.PrintTotalTax) {
+        final String title = addSpace(POSDtls.TotalTaxTitle, 5);
+        String strTaxTotal = taxTotal.toString();
+        strTaxTotal =
+            addSpace(strTaxTotal, 37 - title.length - strTaxTotal.length);
+
+        tempText += '$title$strTaxTotal\n';
+      }
+
+      tempText += '${addDash(38)}\n';
+    } else {
+      String strSTotal = stotal.toString();
+      strSTotal = addSpace(strSTotal, 24 - strSTotal.length);
+
+      tempText += '     SUBTOTAL $strSTotal\n';
+    }
+
+    final double gtotal = priceArray[0];
+    String strGTotal = stotal.toString();
+    strGTotal = addSpace(strGTotal, 30 - strGTotal.length);
+
+    tempText += '  TOTAL $strGTotal\n';
+
+    String totalItem = 'Total Item : ${totalItemArray[0][0]}';
+    totalItem = addSpace(totalItem, 5);
+
+    String totalQty = 'Total Qty : ${totalItemArray[0][1]}';
+    totalQty = addSpace(totalQty, 38 - totalItem.length - totalQty.length);
+
+    tempText += '$totalItem$totalQty\n';
+    double sumpaidAmt = 0;
+    for (int i = 0; i < paymentArray.length; i++) {
+      final String payName = paymentArray[i][0];
+      final double payAmt = paymentArray[i][1].toDouble();
+      String strPayAmt = payAmt.toString();
+      strPayAmt = addSpace(strPayAmt, 37 - payName.length - strPayAmt.length);
+
+      tempText += '$payName $strPayAmt\n';
+
+      sumpaidAmt += payAmt;
+    }
+
+    double changeAmt = paymentArray[paymentArray.length - 1][2].toDouble();
+    if (changeAmt == 0) {
+      changeAmt = gtotal - sumpaidAmt;
+      String strChange = changeAmt.toString();
+      strChange = addSpace(strChange, 31 - strChange.length);
+
+      tempText += 'Balance $strChange\n';
+      tempText += '\n';
+    } else {
+      String strChangeAmt = changeAmt.toString();
+      strChangeAmt = addSpace(strChangeAmt, 31 - strChangeAmt.length);
+
+      tempText += 'Change $strChangeAmt\n';
+      tempText += '\n';
+    }
+
+    tempText += '${addDash(38)}\n';
+    tempText += 'Closed Bill \n';
+    tempText += '${addDash(38)}\n';
+    return tempText;
   }
 
   Future<void> reprintKitchenNotify(int cntCopy, int transID, String tblName,
