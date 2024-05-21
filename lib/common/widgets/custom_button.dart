@@ -62,7 +62,7 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
             child: Center(
               child: Text(_text,
                   textAlign: TextAlign.center,
-                  style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                  style: isDark ? buttonTextDarkStyle : buttonTextLightStyle),
             ),
           ),
         ),

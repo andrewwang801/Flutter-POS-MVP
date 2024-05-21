@@ -115,6 +115,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     );
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
       appBar: PreferredSize(
         child: AppBarWidget(false),
@@ -335,7 +336,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                     // columnSpacing: 40,
                     // horizontalMargin: 10,
                     // rowsPerPage: 10,
-                    // showCheckboxColumn: false,
+                    showCheckboxColumn: false,
                   ),
                 )),
           ),
@@ -387,12 +388,14 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         border: Border.all(color: primaryDarkColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             rfidWidget(),
+            verticalSpaceSmall,
             operatorDropDown(),
             salesStatusDropDown(),
+            verticalSpaceSmall,
             Row(
               children: [
                 Checkbox(value: false, onChanged: (bool? value) {}),
@@ -400,6 +403,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                     style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
               ],
             ),
+            verticalSpaceSmall,
             startDateWidget(),
             endDateWidget(),
             // Row(
@@ -409,7 +413,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
             //         style: isDark ? bodyTextDarkStyle : bodyTextLightStyle),
             //   ],
             // ),
-            verticalSpaceTiny,
+            verticalSpaceMedium,
             Row(
               children: [
                 Expanded(
@@ -455,7 +459,12 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        const Expanded(flex: 4, child: Text('Operator')),
+        Expanded(
+            flex: 4,
+            child: Text(
+              'Operator',
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            )),
         Expanded(
           flex: 6,
           child: Container(
@@ -495,7 +504,12 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          const Expanded(flex: 4, child: Text('Sales Status')),
+          Expanded(
+              flex: 4,
+              child: Text(
+                'Sales Status',
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+              )),
           Expanded(
             flex: 6,
             child: Container(
@@ -571,7 +585,12 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          const Expanded(flex: 4, child: Text('From Date')),
+          Expanded(
+              flex: 4,
+              child: Text(
+                'From Date',
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+              )),
           Expanded(
             flex: 6,
             child: GestureDetector(
@@ -605,7 +624,12 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          const Expanded(flex: 4, child: Text('To Date')),
+          Expanded(
+              flex: 4,
+              child: Text(
+                'To Date',
+                style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+              )),
           Expanded(
             flex: 6,
             child: GestureDetector(

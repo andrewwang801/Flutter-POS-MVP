@@ -32,6 +32,8 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
   Map<String, Map<String, String>> prepSelect = {};
 
   late PLUState pluState;
+  late bool isDark;
+
   TextEditingController _modifierController = TextEditingController();
 
   @override
@@ -44,7 +46,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = ref.watch(themeProvider);
+    isDark = ref.watch(themeProvider);
     pluState = ref.watch(pluProvider);
 
     return Center(
@@ -136,7 +138,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                     children: [
                       Text(
                         'FOC Item',
-                        style: bodyTextDarkStyle,
+                        style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
                       ),
                       Checkbox(
                           value: foc,
@@ -150,9 +152,12 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Sub Total ', style: bodyTextDarkStyle),
+                      Text('Sub Total ',
+                          style:
+                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                       Text((foc ? '0.0' : '$subTotal').currencyString('\$'),
-                          style: bodyTextDarkStyle),
+                          style:
+                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ],
                   ),
                   SizedBox(
@@ -161,9 +166,12 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Price ', style: bodyTextDarkStyle),
+                      Text('Price ',
+                          style:
+                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                       Text((foc ? '0.0' : '$price').currencyString('\$'),
-                          style: bodyTextDarkStyle),
+                          style:
+                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ],
                   ),
                 ],
@@ -188,8 +196,8 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                   );
                 },
                 text: 'Prep Item',
-                borderColor: primaryDarkColor,
-                fillColor: primaryDarkColor,
+                borderColor: isDark ? primaryDarkColor : primaryLightColor,
+                fillColor: isDark ? primaryDarkColor : primaryLightColor,
                 width: 200.w,
                 height: 25.h,
               ),
@@ -205,8 +213,8 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                 Get.back();
               },
               text: 'ORDER',
-              borderColor: primaryDarkColor,
-              fillColor: primaryDarkColor,
+              borderColor: isDark ? primaryDarkColor : primaryLightColor,
+              fillColor: isDark ? primaryDarkColor : primaryLightColor,
               width: 200.w,
               height: 25.h,
             ),
@@ -226,8 +234,9 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
               qtyAdd--;
             });
           },
-          child: new Icon(Icons.remove, color: Colors.black),
-          backgroundColor: Colors.white),
+          child: new Icon(Icons.remove,
+              color: isDark ? Colors.black : Colors.white),
+          backgroundColor: isDark ? Colors.white : primaryLightColor),
     );
   }
 
@@ -236,8 +245,8 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
       width: 36.w,
       height: 36.w,
       child: FloatingActionButton(
-        child: Icon(Icons.add, color: Colors.black87),
-        backgroundColor: Colors.white,
+        child: Icon(Icons.add, color: isDark ? Colors.black : Colors.white),
+        backgroundColor: isDark ? Colors.white : primaryLightColor,
         onPressed: () {
           setState(() {
             qtyAdd++;

@@ -112,7 +112,7 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                       ),
                     ),
                     Expanded(
-                      flex: 1,
+                      flex: 2,
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 5.0),
                         child: Text(

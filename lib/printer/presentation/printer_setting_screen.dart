@@ -123,6 +123,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
 
     ref.watch(printerProvider);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

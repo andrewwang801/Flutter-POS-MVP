@@ -57,42 +57,45 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(4.0),
-                      child: Text("STotal:",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                      child: Text(
+                        "STotal:",
+                        style: isDark
+                            ? buttonTextDarkStyle.copyWith(
+                                fontWeight: FontWeight.bold)
+                            : buttonTextLightStyle.copyWith(
+                                fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
-                      child: Text("Disc:",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                      child: Text(
+                        "Disc:",
+                        style: isDark
+                            ? buttonTextDarkStyle.copyWith(
+                                fontWeight: FontWeight.bold)
+                            : buttonTextLightStyle.copyWith(
+                                fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
-                      child: Text("Tax:",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text("Svc+ST:",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text("PPN 10%:",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                      child: Text(
+                        "Tax:",
+                        style: isDark
+                            ? buttonTextDarkStyle.copyWith(
+                                fontWeight: FontWeight.bold)
+                            : buttonTextLightStyle.copyWith(
+                                fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text("GTotal:",
                           style: isDark
-                              ? bodyTextDarkStyle.copyWith(
+                              ? buttonTextDarkStyle.copyWith(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)
-                              : bodyTextLightStyle.copyWith(
+                              : buttonTextLightStyle.copyWith(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                     ),
@@ -107,41 +110,41 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
-                          state is OrderSuccessState && state.bills.isNotEmpty
-                              ? '\$ ${state.bills[2].toStringAsFixed(2)}'
-                              : "\$ 0.00",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                        state is OrderSuccessState && state.bills.isNotEmpty
+                            ? '\$ ${state.bills[2].toStringAsFixed(2)}'
+                            : "\$ 0.00",
+                        style: isDark
+                            ? buttonTextDarkStyle.copyWith(
+                                fontWeight: FontWeight.bold)
+                            : buttonTextLightStyle.copyWith(
+                                fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
-                          state is OrderSuccessState && state.bills.isNotEmpty
-                              ? '\$ ${state.bills[3].toStringAsFixed(2)}'
-                              : "\$ 0.00",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                        state is OrderSuccessState && state.bills.isNotEmpty
+                            ? '\$ ${state.bills[3].toStringAsFixed(2)}'
+                            : "\$ 0.00",
+                        style: isDark
+                            ? buttonTextDarkStyle.copyWith(
+                                fontWeight: FontWeight.bold)
+                            : buttonTextLightStyle.copyWith(
+                                fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
-                          state is OrderSuccessState && state.bills.isNotEmpty
-                              ? '\$ ${totalTax.toStringAsFixed(2)}'
-                              : "\$ 0.00",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text("\$ 0.00",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text("\$ 0.00",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                        state is OrderSuccessState && state.bills.isNotEmpty
+                            ? '\$ ${totalTax.toStringAsFixed(2)}'
+                            : "\$ 0.00",
+                        style: isDark
+                            ? buttonTextDarkStyle.copyWith(
+                                fontWeight: FontWeight.bold)
+                            : buttonTextLightStyle.copyWith(
+                                fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
@@ -150,10 +153,10 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                               ? '\$ ${state.bills[0].toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style: isDark
-                              ? bodyTextDarkStyle.copyWith(
+                              ? buttonTextDarkStyle.copyWith(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)
-                              : bodyTextLightStyle.copyWith(
+                              : buttonTextLightStyle.copyWith(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                     ),
@@ -231,14 +234,94 @@ class _CheckOutState extends ConsumerState<CheckOut> {
     } else if (hasError) {
       return Container();
     } else if (state is OrderSuccessState) {
-      return ListView.separated(
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-          itemCount: state.orderItemTree!.length,
-          itemBuilder: (BuildContext context, int index) {
-            return state.orderItemTree![index].render(context, 4, isDark);
-          });
+      return Column(
+        children: [
+          ListTileTheme(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            child: ExpansionTile(
+              title: Container(
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 14),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text(
+                          'QTY',
+                          textAlign: TextAlign.left,
+                          style: isDark
+                              ? bodyTextDarkStyle.copyWith(
+                                  fontWeight: FontWeight.bold)
+                              : bodyTextLightStyle.copyWith(
+                                  fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text(
+                          'Description',
+                          textAlign: TextAlign.left,
+                          style: isDark
+                              ? bodyTextDarkStyle.copyWith(
+                                  fontWeight: FontWeight.bold)
+                              : bodyTextLightStyle.copyWith(
+                                  fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text(
+                          'Price',
+                          textAlign: TextAlign.left,
+                          style: isDark
+                              ? bodyTextDarkStyle.copyWith(
+                                  fontWeight: FontWeight.bold)
+                              : bodyTextLightStyle.copyWith(
+                                  fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text(
+                          'SC',
+                          textAlign: TextAlign.left,
+                          style: isDark
+                              ? bodyTextDarkStyle.copyWith(
+                                  fontWeight: FontWeight.bold)
+                              : bodyTextLightStyle.copyWith(
+                                  fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              trailing: SizedBox(width: 20),
+            ),
+          ),
+          Expanded(
+            child: ListView.separated(
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+                itemCount: state.orderItemTree!.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return state.orderItemTree![index].render(context, 4, isDark);
+                }),
+          ),
+        ],
+      );
     } else {
       return Container();
     }

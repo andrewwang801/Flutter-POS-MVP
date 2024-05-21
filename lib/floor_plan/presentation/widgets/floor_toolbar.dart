@@ -78,19 +78,19 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _button(100.w, 30.h, 'Refresh', () {}),
+                      _button(100.w, 25.h, 'Refresh', () {}),
                       SizedBox(width: 5.w),
-                      _button(100.w, 30.h, 'Functions', () {}),
+                      _button(100.w, 25.h, 'Functions', () {}),
                       SizedBox(width: 5.w),
-                      _button(100.w, 30.h, 'View Open Table OFF', () {}),
+                      _button(100.w, 25.h, 'View Open Table OFF', () {}),
                       SizedBox(width: 5.w),
-                      _button(100.w, 30.h, 'View Details OFF', () {}),
+                      _button(100.w, 25.h, 'View Details OFF', () {}),
                       SizedBox(width: 5.w),
-                      _button(100.w, 30.h, 'OP/SIGN-OUT', () {}),
+                      _button(100.w, 25.h, 'OP/SIGN-OUT', () {}),
                       SizedBox(width: 5.w),
-                      _button(100.w, 30.h, 'Close', () {}),
+                      _button(100.w, 25.h, 'Close', () {}),
                       SizedBox(width: 5.w),
-                      _button(100.w, 30.h, 'Hide', () {})
+                      _button(100.w, 25.h, 'Hide', () {})
                     ],
                   ),
                 ),

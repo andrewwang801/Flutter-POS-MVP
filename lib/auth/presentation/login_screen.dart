@@ -10,6 +10,7 @@ import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/numpad.dart';
 import '../../constants/color_constant.dart';
+import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../home/presentation/home_screen.dart';
@@ -100,6 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             color: isDark
                 ? primaryDarkColor.withOpacity(0.8)
                 : primaryLightColor.withOpacity(0.8),
+            borderRadius: BorderRadius.circular(4.0),
           ),
           child: Center(
             child: Text(
@@ -107,6 +109,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               style: titleTextDarkStyle,
             ),
           ),
+        ),
+        SizedBox(
+          height: 5.h,
         ),
         Container(
           width: 250.w,
