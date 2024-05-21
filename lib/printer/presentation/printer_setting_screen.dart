@@ -167,7 +167,7 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
         children: [
           Expanded(
             child: CustomButton(
-                height: Responsive.isMobile(context) ? 35.h : 30.h,
+                height: Responsive.isMobile(context) ? 35.h : 25.h,
                 callback: () {
                   showDialog(
                       barrierDismissible: true,
@@ -185,18 +185,15 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                       });
                 },
                 text: 'ADD',
-                borderColor: isDark
-                    ? primaryButtonBorderDarkColor
-                    : primaryButtonBorderColor,
-                fillColor:
-                    isDark ? primaryButtonDarkColor : primaryButtonColor),
+                borderColor: isDark ? orange : orange,
+                fillColor: isDark ? orange : orange),
           ),
           SizedBox(
             width: 15.w,
           ),
           Expanded(
             child: CustomButton(
-                height: Responsive.isMobile(context) ? 35.h : 30.h,
+                height: Responsive.isMobile(context) ? 35.h : 25.h,
                 callback: () {
                   if (selectedPrinter == null) return;
                   showDialog(
@@ -215,45 +212,36 @@ class _PrinterSettingScreenState extends ConsumerState<PrinterSettingScreen> {
                       });
                 },
                 text: 'UPDATE',
-                borderColor: isDark
-                    ? primaryButtonBorderDarkColor
-                    : primaryButtonBorderColor,
-                fillColor:
-                    isDark ? primaryButtonDarkColor : primaryButtonColor),
+                borderColor: isDark ? orange : orange,
+                fillColor: isDark ? orange : orange),
           ),
           SizedBox(
             width: 15.w,
           ),
           Expanded(
             child: CustomButton(
-                height: Responsive.isMobile(context) ? 35.h : 30.h,
+                height: Responsive.isMobile(context) ? 35.h : 25.h,
                 callback: () {
                   if (selectedPrinter != null) {
                     deletePrinter(printers[selectedPrinter!].printerID);
                   }
                 },
                 text: 'DELETE',
-                borderColor: isDark
-                    ? primaryButtonBorderDarkColor
-                    : primaryButtonBorderColor,
-                fillColor:
-                    isDark ? primaryButtonDarkColor : primaryButtonColor),
+                borderColor: isDark ? orange : orange,
+                fillColor: isDark ? orange : orange),
           ),
           SizedBox(
             width: 15.w,
           ),
           Expanded(
             child: CustomButton(
-                height: Responsive.isMobile(context) ? 35.h : 30.h,
+                height: Responsive.isMobile(context) ? 35.h : 25.h,
                 callback: () {
                   Get.back();
                 },
                 text: 'CLOSE',
-                borderColor: isDark
-                    ? primaryButtonBorderDarkColor
-                    : primaryButtonBorderColor,
-                fillColor:
-                    isDark ? primaryButtonDarkColor : primaryButtonColor),
+                borderColor: isDark ? orange : orange,
+                fillColor: isDark ? orange : orange),
           ),
         ],
       ),

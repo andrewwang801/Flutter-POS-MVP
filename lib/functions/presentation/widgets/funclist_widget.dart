@@ -51,7 +51,7 @@ class _FuncGridViewState extends ConsumerState<FuncGridView> {
                   Get.to(() => ProgressHUD(child: PrinterSettingScreen()));
                   break;
                 case 73:
-                  String bill = await GetIt.I<PrintController>()
+                  List<Widget> widgets = await GetIt.I<PrintController>()
                       .getBillForPreview(
                           GlobalConfig.salesNo,
                           GlobalConfig.splitNo,
@@ -64,9 +64,12 @@ class _FuncGridViewState extends ConsumerState<FuncGridView> {
                         return Dialog(
                           child: Padding(
                             padding: const EdgeInsets.all(32.0),
-                            child: Text(
-                              bill,
-                              style: TextStyle(fontSize: bodyFontSize),
+                            child: SingleChildScrollView(
+                              // child: Text(zDayReport),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [...widgets ?? []],
+                              ),
                             ),
                           ),
                         );

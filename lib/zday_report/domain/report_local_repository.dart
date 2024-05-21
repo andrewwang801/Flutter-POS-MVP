@@ -25,9 +25,9 @@ class ReportLocalRepository with TypeUtil, DateTimeUtil {
     final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
 
     for (int i = 0; i < data.length; i++) {
-      final String mTitle = data[i].get(0).toString();
-      int mFunc = dynamicToInt(data[i].get(1));
-      int mSfunc = dynamicToInt(data[i].get(2));
+      final String mTitle = data[i].values.elementAt(0).toString();
+      int mFunc = dynamicToInt(data[i].values.elementAt(1));
+      int mSfunc = dynamicToInt(data[i].values.elementAt(2));
 
       query =
           "UPDATE Transactions SET Title = '$mTitle' WHERE SubFunctionID = $mSfunc AND FunctionID = $mFunc";
@@ -251,11 +251,11 @@ class ReportLocalRepository with TypeUtil, DateTimeUtil {
     final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
 
     for (Map<String, dynamic> item in data) {
-      final String pluNo = item.get(0).toString();
-      final String pluName = item.get(1).toString();
-      final double pluQty = dynamicToDouble(item.get(2));
-      final double pluTotal = dynamicToDouble(item.get(3));
-      final double pluVoid = dynamicToDouble(item.get(4));
+      final String pluNo = item.values.elementAt(0).toString();
+      final String pluName = item.values.elementAt(1).toString();
+      final double pluQty = dynamicToDouble(item.values.elementAt(2));
+      final double pluTotal = dynamicToDouble(item.values.elementAt(3));
+      final double pluVoid = dynamicToDouble(item.values.elementAt(4));
 
       query =
           "INSERT INTO ZDayItemSalesSummary (ReportNo, PLUNumber, PLUName, PLUQty, PLUTotal, PLUVoid) VALUES ($reportNo, '$pluNo', '$pluName', $pluQty, $pluTotal, $pluVoid)";
@@ -295,7 +295,7 @@ class ReportLocalRepository with TypeUtil, DateTimeUtil {
     final List<Map<String, dynamic>> maps = await dbHandler.rawQuery(query);
     int reportNo = 0;
     if (maps.isNotEmpty) {
-      reportNo = dynamicToInt(maps[0].get(0));
+      reportNo = dynamicToInt(maps[0].values.elementAt(0));
     }
     return reportNo;
   }

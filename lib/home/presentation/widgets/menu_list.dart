@@ -67,33 +67,36 @@ class _MenuListState extends ConsumerState<MenuList> {
         color: red,
         borderRadius: BorderRadius.circular(Spacing.sm),
       ),
-      child: DropdownButton(
-        isDense: true,
-        borderRadius: BorderRadius.circular(Spacing.sm),
-        value: selectedMenuIndex,
-        items: items,
-        icon: Icon(
-          Icons.keyboard_arrow_down,
-          color: Colors.white,
-        ),
-        underline: Container(),
-        onChanged: (int? value) {
-          ref.read(menuIDProvider.notifier).state = value ?? 0;
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: DropdownButton(
+          isDense: true,
+          borderRadius: BorderRadius.circular(Spacing.sm),
+          value: selectedMenuIndex,
+          items: items,
+          icon: Icon(
+            Icons.keyboard_arrow_down,
+            color: Colors.white,
+          ),
+          underline: Container(),
+          onChanged: (int? value) {
+            ref.read(menuIDProvider.notifier).state = value ?? 0;
 
-          setState(() {
-            selectedMenuIndex = value ?? 0;
-          });
-        },
-        selectedItemBuilder: (BuildContext context) {
-          return menus.map((e) {
-            return Center(
-              child: Text(
-                e.MenuName ?? '',
-                style: bodyTextDarkStyle,
-              ),
-            );
-          }).toList();
-        },
+            setState(() {
+              selectedMenuIndex = value ?? 0;
+            });
+          },
+          selectedItemBuilder: (BuildContext context) {
+            return menus.map((e) {
+              return Center(
+                child: Text(
+                  e.MenuName ?? '',
+                  style: bodyTextDarkStyle,
+                ),
+              );
+            }).toList();
+          },
+        ),
       ),
     );
   }

@@ -19,7 +19,7 @@ class DiscountRepository with TypeUtil {
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     bool isDiscBill = false;
 
-    if (dynamicToInt(data[0].get(0)) > 0) {
+    if (dynamicToInt(data[0].values.elementAt(0)) > 0) {
       isDiscBill = true;
     }
     return isDiscBill;
@@ -96,7 +96,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -109,7 +109,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -122,7 +122,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -135,7 +135,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -148,7 +148,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -161,7 +161,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -174,7 +174,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -187,7 +187,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -200,7 +200,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -213,7 +213,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -226,7 +226,7 @@ class DiscountRepository with TypeUtil {
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
     if (data.isNotEmpty) {
-      return dynamicToInt(data[0].get(0));
+      return dynamicToInt(data[0].values.elementAt(0));
     }
     return 0;
   }
@@ -301,7 +301,7 @@ class DiscountRepository with TypeUtil {
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return data[0].get(0).toString();
+    return data[0].values.elementAt(0).toString();
   }
 
   /// (Select Max(ItemSeqNo) From HeldItems Where SalesNo=@SalesNo And ItemSeqNo not in (101,102))
@@ -311,7 +311,7 @@ class DiscountRepository with TypeUtil {
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return dynamicToInt(data[0].get(0));
+    return dynamicToInt(data[0].values.elementAt(0));
   }
 
   /// (Select ItemSeqNo From HeldItems Where SalesNo=@SalesNo And SplitNo=@SplitNo And SalesRef=@SalesRef)
@@ -325,7 +325,7 @@ class DiscountRepository with TypeUtil {
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
-    return dynamicToInt(data[0].get(0));
+    return dynamicToInt(data[0].values.elementAt(0));
   }
 
   /// @memId = MembershipID, @LoyaltyCardNo = LoyaltyCardNo, @NCover = Covers
@@ -377,7 +377,7 @@ class DiscountRepository with TypeUtil {
       required String hpyShift2,
       required String hpyShift3}) async {
     final query =
-        "INSERT INTO HDS_HappyHourShift SELECT $posID, $salesNo, $splitNo, HpyHr1, HpyHr2, HpyHr3, IFNULL(HappyHourStart1, '00:00:00'), IFNULL(HappyHourStart2, '00:00:00'), IFNULL(HappyHourStart3, '00:00:00'), IFNULL(HappyHourStop1, '00:00:00'), IFNULL(HappyHourStop2, '00:00:00'), IFNULL(HappyHourStop3, '00:00:00'), $hpyShift1,$hpyShift2, $hpyShift3  FROM PosDtls WHERE POSID='$posID'";
+        "INSERT INTO HDS_HappyHourShift SELECT '$posID' as POSID, '$salesNo' as SalesNo, $splitNo as SplitNo, HpyHr1, HpyHr2, HpyHr3, IFNULL(HappyHourStart1, '00:00:00'), IFNULL(HappyHourStart2, '00:00:00'), IFNULL(HappyHourStart3, '00:00:00'), IFNULL(HappyHourStop1, '00:00:00'), IFNULL(HappyHourStop2, '00:00:00'), IFNULL(HappyHourStop3, '00:00:00'), $hpyShift1 as HpyPShift1,$hpyShift2 as HpyPShift2, $hpyShift3 as HpyPShift3  FROM PosDtls WHERE POSID='$posID'";
 
     final database = await dbHelper.database;
     await database.rawQuery(query);
@@ -389,7 +389,7 @@ class DiscountRepository with TypeUtil {
       required int salesNo,
       required int splitNo}) async {
     final query =
-        "SELECT HpyHr1, HpyHr2, HpyHr3, HappyHourStart1, HappyHourStart2, HappyHourStart3,@HpyEnd1 = HappyHourStop1,HappyHourStop2,HappyHourStop3,HpyPShift1,HpyPShift2,HpyPShift3 FROM HDS_HappyHourShift WHERE POSID='$posID' AND SalesNo=$salesNo AND SplitNo=$splitNo";
+        "SELECT HpyHr1, HpyHr2, HpyHr3, HappyHourStart1, HappyHourStart2, HappyHourStart3,HappyHourStop1,HappyHourStop2,HappyHourStop3,HpyPShift1,HpyPShift2,HpyPShift3 FROM HDS_HappyHourShift WHERE POSID='$posID' AND SalesNo=$salesNo AND SplitNo=$splitNo";
 
     final database = await dbHelper.database;
     final List<Map<String, dynamic>> data = await database.rawQuery(query);
@@ -435,7 +435,7 @@ class DiscountRepository with TypeUtil {
       required int nCover,
       required String discRemarks}) async {
     final query =
-        "INSERT INTO HeldItems (PLUSalesRef,SalesNo,POSID,SDate,STime,ItemName,itemname_chinese,TableNo,SplitNo,OperatorNo,Quantity,ItemAmount,AvgCost,RecipeId,PriceShift,PLUNO,PromotionId,FunctionID,SubFunctionID,DiscountType,Discount,DiscountPercent,ItemSeqNo,CategoryID,RefundID,FOCItem,FOCType,MembershipID,LoyaltyCardNo,Covers,TransMode,TransStatus,SeatNo,serverno,cc_promo2) VALUES (0, $salesNo, $posID, $sDate, $sTime, $fnTitle, $fnTitleCh, $tableNo, $splitNo, $operatorNo, $qty, $discAmnt, $avgCost,$rcpID, $pShift, '000000000000000', 0, $fnID, $sFnID,$fnTitle, $discAmnt, $discPercent, $itemSeqNo, $ctgryID, 0, 0,' ',$memId, $loyaltyCardNo, $nCover, 'REG', ' ', 0, $operatorNo, $discRemarks)";
+        "INSERT INTO HeldItems (PLUSalesRef,SalesNo,POSID,SDate,STime,ItemName,itemname_chinese,TableNo,SplitNo,OperatorNo,Quantity,ItemAmount,AvgCost,RecipeId,PriceShift,PLUNO,PromotionId,FunctionID,SubFunctionID,DiscountType,Discount,DiscountPercent,ItemSeqNo,CategoryID,RefundID,FOCItem,FOCType,MembershipID,LoyaltyCardNo,Covers,TransMode,TransStatus,SeatNo,serverno,cc_promo2, Preparation) VALUES (0, $salesNo, '$posID', '$sDate', '$sTime', '$fnTitle', '$fnTitleCh', $tableNo, $splitNo, $operatorNo, $qty, $discAmnt, $avgCost,$rcpID, $pShift, '000000000000000', 0, $fnID, $sFnID,'$fnTitle', $discAmnt, $discPercent, $itemSeqNo, $ctgryID, 0, 0,' ', $memId, '$loyaltyCardNo', $nCover, 'REG', ' ', 0, $operatorNo, '$discRemarks', 0)";
 
     final database = await dbHelper.database;
     await database.rawQuery(query);
@@ -476,7 +476,7 @@ class DiscountRepository with TypeUtil {
     required int sItemSeqNo,
   }) async {
     final query =
-        "UPDATE HeldItems SET DiscountPercent=$discPercent, Discount=$discAmnt, DiscountType=$fnTitle, cc_promo2=$discRemarks WHERE SalesNo=$salesNo AND Splitno=$splitNo AND ItemSeqNo=$sItemSeqNo";
+        "UPDATE HeldItems SET DiscountPercent=$discPercent, Discount=$discAmnt, DiscountType='$fnTitle', cc_promo2='$discRemarks' WHERE SalesNo=$salesNo AND Splitno=$splitNo AND ItemSeqNo=$sItemSeqNo";
 
     final database = await dbHelper.database;
     await database.rawQuery(query);
@@ -509,7 +509,7 @@ class DiscountRepository with TypeUtil {
       required String loyaltyCardNo,
       required String discRemarks}) async {
     final query =
-        "INSERT INTO HeldItems (PLUSalesRef,SalesNo,POSID,SDate,STime,ItemName,itemname_chinese,TableNo,SplitNo,OperatorNo,Quantity,ItemAmount,AvgCost,RecipeId,PriceShift,PLUNO,PromotionId,FunctionID,SubFunctionID,Discount,DiscountPercent,DiscountType,ItemSeqNo,CategoryID,RefundID,FOCItem,FOCType,MembershipID,LoyaltyCardNo,TransMode,TransStatus,SeatNo,serverno,cc_promo2) VALUES ($PLUSalesRef, $salesNo, $posID, $sDate,  $sTime, $fnTitle, $fnTitleCh, $tableNo, $splitNo, $operatorNo, $qty,$discAmnt, $avgCost, $rcpID, $pShift,  $PLUNo, 0, $fnID, $sFnID, $discAmnt, $discPercent, $fnTitle, $itemSeqNo, $ctgryID, 0, 0,' ', $memId, $loyaltyCardNo, 'REG', ' ', 0, $operatorNo, $discRemarks)";
+        "INSERT INTO HeldItems (PLUSalesRef,SalesNo,POSID,SDate,STime,ItemName,itemname_chinese,TableNo,SplitNo,OperatorNo,Quantity,ItemAmount,AvgCost,RecipeId,PriceShift,PLUNO,PromotionId,FunctionID,SubFunctionID,Discount,DiscountPercent,DiscountType,ItemSeqNo,CategoryID,RefundID,FOCItem,FOCType,MembershipID,LoyaltyCardNo,TransMode,TransStatus,SeatNo,serverno,cc_promo2,Preparation) VALUES ($PLUSalesRef, $salesNo, '$posID', '$sDate',  '$sTime', '$fnTitle', '$fnTitleCh', $tableNo, $splitNo, $operatorNo, $qty,$discAmnt, $avgCost, $rcpID, $pShift,  '$PLUNo', 0, $fnID, $sFnID, $discAmnt, $discPercent, '$fnTitle', $itemSeqNo, $ctgryID, 0, 0,' ', $memId, '$loyaltyCardNo', 'REG', ' ', 0, $operatorNo, '$discRemarks',0)";
 
     final database = await dbHelper.database;
     await database.rawQuery(query);

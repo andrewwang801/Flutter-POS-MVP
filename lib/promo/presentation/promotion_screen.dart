@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
+import 'package:raptorpos/common/extension/color_extension.dart';
 import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/common/widgets/alert_dialog.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
@@ -64,9 +66,29 @@ class _PromotionScreenState extends ConsumerState<PromotionScreen> {
 
     return Scaffold(
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
-      appBar: PreferredSize(
-        child: AppBarWidget(true),
-        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: false,
+        leading: Container(
+          padding: EdgeInsets.all(Spacing.sm),
+          child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: CircleBorder(),
+              ),
+              onPressed: () {
+                Get.back();
+              },
+              child: const Icon(
+                Icons.arrow_back,
+                size: smiconSize,
+              )),
+        ),
+        title: Text(
+          'Table: ${GlobalConfig.tableNo}   Cover: ${GlobalConfig.cover}   Mode: ${GlobalConfig.TransMode}   Rcp: ${GlobalConfig.rcptNo}',
+          style: isDark ? listItemTextDarkStyle : listItemTextLightStyle,
+          textAlign: TextAlign.left,
+        ),
       ),
       body: SafeArea(
         child: Responsive.isMobile(context)
@@ -137,9 +159,7 @@ class _PromotionScreenState extends ConsumerState<PromotionScreen> {
                           },
                           child: Ink(
                             decoration: BoxDecoration(
-                                color: (isDark
-                                        ? primaryDarkColor
-                                        : primaryLightColor)
+                                color: HexColor(promo.color ?? 'ffffff')
                                     .withOpacity(0.9),
                                 border: Border.all(
                                   color: isDark

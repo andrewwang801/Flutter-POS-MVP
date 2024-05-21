@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 mixin TypeUtil {
   int dynamicToInt(dynamic dyn) {
     return cast<int>(dyn) ?? 0;
@@ -14,7 +16,12 @@ mixin TypeUtil {
   }
 
   bool dynamicToBool(dynamic dyn) {
-    return cast<bool>(dyn) ?? false;
+    if (dyn is bool) {
+      return dyn;
+    } else if (dyn is int) {
+      return dyn == 0 ? false : true;
+    }
+    return false;
   }
 
   List<List<String>> mapListToString2D(List<Map<String, dynamic>> maps) {
@@ -48,7 +55,13 @@ mixin TypeUtil {
 
 extension MapX on Map<String, dynamic> {
   dynamic get(int i) {
-    return values.elementAt(i);
+    return this.values.elementAt(i);
+  }
+}
+
+extension MapBaseX on MapBase<String, dynamic> {
+  dynamic get(int i) {
+    return this.values.elementAt(i);
   }
 }
 

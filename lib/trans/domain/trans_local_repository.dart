@@ -82,12 +82,12 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
           throw OperationFailedException(
               'Refund Failed!', 'Can not refund open table.');
         } else {
-          final String transMode = maps[0].get(0).toString();
+          final String transMode = maps[0].values.elementAt(0).toString();
           if (transMode == 'RFND') {
             throw OperationFailedException(
                 'Refund Failed!', 'TransMode is already Refund');
           } else {
-            String transStatus = maps[0].get(1).toString();
+            String transStatus = maps[0].values.elementAt(1).toString();
             if (transStatus != ' ' && transStatus != 'H') {
               throw OperationFailedException(
                   'Refund Failed!', 'TransStatus can not be refunded');
@@ -96,7 +96,8 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
                   "SELECT COUNT(SalesNo) FROM SalesItemsTemp WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TransStatus = ' ' AND ItemSeqNo = 101 AND SubFunctionID <> 0 AND SubFunctionID NOT IN (SELECT SubFunctionID FROM Media WHERE FunctionID IN (1,2) OR (FunctionID = 4 AND IFNULL(Voucher,0) > 0) OR (FunctionID = 6 AND IFNULL(Verifyroom3,0) = 1))";
 
               maps = await db.rawQuery(query);
-              if (maps.isNotEmpty && dynamicToInt(maps[0].get(0)) > 0) {
+              if (maps.isNotEmpty &&
+                  dynamicToInt(maps[0].values.elementAt(0)) > 0) {
                 throw OperationFailedException('Refund Failed!',
                     'Auto Refund can only served CASH / CARD / CPR Coucher Payment / IQDynamic Room Charge Method');
               }
@@ -133,16 +134,16 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
       throw OperationFailedException(
           'Refund Error', 'Not found from SalesTblsTemp');
     }
-    int rfndSNo = dynamicToInt(maps[0].get(1));
-    int rfndSplNo = dynamicToInt(maps[0].get(2));
+    int rfndSNo = dynamicToInt(maps[0].values.elementAt(1));
+    int rfndSplNo = dynamicToInt(maps[0].values.elementAt(2));
     final String rcpt = await tableRepository.nextReceiptNumber();
-    final String rfndTblNo = maps[0].get(3).toString();
-    final int rfndCover = dynamicToInt(maps[0].get(4));
-    final double rfndSTotal = dynamicToDouble(maps[0].get(5));
-    final double rfndGTotal = dynamicToDouble(maps[0].get(6));
-    final double rfndPaid = dynamicToDouble(maps[0].get(7));
-    final double rfndBalance = dynamicToDouble(maps[0].get(8));
-    final double rfndSalesArea = dynamicToDouble(maps[0].get(9));
+    final String rfndTblNo = maps[0].values.elementAt(3).toString();
+    final int rfndCover = dynamicToInt(maps[0].values.elementAt(4));
+    final double rfndSTotal = dynamicToDouble(maps[0].values.elementAt(5));
+    final double rfndGTotal = dynamicToDouble(maps[0].values.elementAt(6));
+    final double rfndPaid = dynamicToDouble(maps[0].values.elementAt(7));
+    final double rfndBalance = dynamicToDouble(maps[0].values.elementAt(8));
+    final double rfndSalesArea = dynamicToDouble(maps[0].values.elementAt(9));
 
     query =
         "INSERT INTO SalesTblsTemp (SalesNo, SplitNo, POSID, TableNo, OperatorNo, Open_Date, Open_Time, TransMode, Covers, RcptNo, Operatornofirst, STotal, GTotal, PaidAmount, Balance, SalesAreaID, Close_Date, Close_Time, BusinessDate) VALUES ($sNo, $splitNo, '${POSDtls.deviceNo}', '$rfndTblNo', $operatorNo, '$sDate', '$sTime', 'RFND',  $rfndCover, '$rcpt', $operatorNo, $rfndSTotal, $rfndGTotal, $rfndPaid, $rfndBalance, '$rfndSalesArea', '$sDate', '$sTime', '${POSDefault.StrBusinessDate}')";
@@ -235,7 +236,7 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
     List<Map<String, dynamic>> data = await db.rawQuery(query);
     int count = 0;
     if (data.isNotEmpty) {
-      count = dynamicToInt(data[0].get(0));
+      count = dynamicToInt(data[0].values.elementAt(0));
     }
 
     query = 'SELECT MAX(Trans_ID) FROM tbl_ReprintKitchenLog';
@@ -243,7 +244,7 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
     int transID = 0;
 
     if (data.isNotEmpty) {
-      transID = dynamicToInt(data[0].get(0));
+      transID = dynamicToInt(data[0].values.elementAt(0));
     }
 
     transID += 1;
@@ -298,7 +299,7 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
     List<Map<String, dynamic>> data = await db.rawQuery(query);
 
     if (data.isNotEmpty) {
-      bool opReprintKitchen = dynamicToBool(data[0].get(0));
+      bool opReprintKitchen = dynamicToBool(data[0].values.elementAt(0));
       return opReprintKitchen;
     }
     return false;
@@ -317,9 +318,9 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
       throw OperationFailedException('Bill Adj Failed!', '');
     }
 
-    String zDayReportDt = data[0].get(0).toString();
+    String zDayReportDt = data[0].values.elementAt(0).toString();
     zDayReportDt = zDayReportDt.substring(0, 10);
-    String zDayReportTime = data[0].get(1).toString();
+    String zDayReportTime = data[0].values.elementAt(1).toString();
     zDayReportTime = zDayReportTime.substring(11);
 
     String newZDay = '$zDayReportDt $zDayReportTime';

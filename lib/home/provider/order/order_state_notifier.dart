@@ -72,6 +72,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
       bool rentalItem = tempPluDtls[11].toBool();
       bool comments = tempPluDtls[12].toBool();
       bool trackPrep = tempPluDtls[13].toBool();
+      int promotionID = tempPluDtls[16].toInt();
 
       if (!trackPrep) {
         trackPrep = tempPluDtls[14].toBool();
@@ -117,7 +118,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           Tax7: 0,
           Tax8: 0,
           Tax9: 0,
-          PromotionId: 0,
+          PromotionId: promotionID,
           TransMode: GlobalConfig.TransMode,
           RefundID: 0,
           TransStatus: ' ',
