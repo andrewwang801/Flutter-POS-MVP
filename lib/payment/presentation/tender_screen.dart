@@ -2,33 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get_it/get_it.dart';
-import 'package:raptorpos/common/keyboard/virtual_keyboard_2.dart';
-
-import 'package:raptorpos/common/widgets/appbar.dart';
-import 'package:raptorpos/common/widgets/bill_button_list.dart';
-import 'package:raptorpos/common/widgets/checkout.dart';
-import 'package:raptorpos/common/widgets/header.dart';
-import 'package:raptorpos/common/utils/type_util.dart';
-import 'package:raptorpos/common/widgets/numpad.dart';
-import 'package:raptorpos/constants/color_constant.dart';
-import 'package:raptorpos/constants/text_style_constant.dart';
-import 'package:raptorpos/home/repository/order/i_order_repository.dart';
-import 'package:raptorpos/payment/provider/payment_state.dart';
-import 'package:raptorpos/payment/repository/i_payment_repository.dart';
-import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/string_extension.dart';
+import '../../common/keyboard/virtual_keyboard_2.dart';
+import '../../common/utils/type_util.dart';
 import '../../common/widgets/alert_dialog.dart';
+import '../../common/widgets/appbar.dart';
+import '../../common/widgets/checkout.dart';
 import '../../common/widgets/custom_button.dart';
+import '../../common/widgets/header.dart';
+import '../../common/widgets/numpad.dart';
+import '../../constants/color_constant.dart';
+import '../../constants/text_style_constant.dart';
+import '../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../home/provider/order/order_provider.dart';
+import '../../print/provider/print_provider.dart';
+import '../../theme/theme_state_notifier.dart';
 import '../model/media_data_model.dart';
 import '../model/payment_details_data_model.dart';
 import '../provider/payment_provider.dart';
-import '../repository/payment_local_repository.dart';
+import '../provider/payment_state.dart';
+import '../repository/i_payment_repository.dart';
 
-List<MaterialColor> functionColors = [
+List<MaterialColor> functionColors = <MaterialColor>[
   Colors.green,
   Colors.red,
   Colors.orange,
@@ -87,6 +84,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
   int payTag = 1;
 
   String customID = '';
+  int funcID = 0;
 
   List<MediaData> tenderArray = <MediaData>[];
   List<PaymentDetailsData> tenderDetail = <PaymentDetailsData>[];
@@ -121,6 +119,46 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
     PaymentState state = ref.watch(paymentProvider);
+
+    ref.listen<PaymentState>(paymentProvider, (prev, next) async {
+      if (next is PaymentSuccessState && next.paid) {
+        switch (next.status) {
+          case PaymentStatus.PAID:
+            await ref
+                .read(printProvider.notifier)
+                .doPrint(3, GlobalConfig.salesNo, '');
+            Get.back();
+            Get.to(FloorPlanScreen());
+            break;
+          case PaymentStatus.SEND_RECEIPT:
+            break;
+          case PaymentStatus.REPRINT:
+            break;
+          case PaymentStatus.CLOSE_RECIPT:
+            break;
+          case PaymentStatus.SHOW_ALERT:
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AppAlertDialog(
+                    insetPadding: EdgeInsets.all(20),
+                    title: 'Cash Payment',
+                    message:
+                        'Payment: $payValue, Total Bill: $gtAmount, Change: ${change.toStringAsFixed(2)}',
+                    onCancel: () {},
+                    onConfirm: () {
+                      ref
+                          .read(paymentProvider.notifier)
+                          .updatePaymentStatus(PaymentStatus.PAID);
+                    },
+                  );
+                });
+            break;
+          case PaymentStatus.NONE:
+            break;
+        }
+      }
+    });
 
     if (state is PaymentSuccessState)
       gtAmount = widget.gTotal - (state.paidValue ?? 0);
@@ -350,7 +388,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
 
 // Do partial Payment when tap Media
   Future<void> mediaSelect(MediaData list) async {
-    int funcID = list.funcID;
+    funcID = list.funcID;
     if (payTag == 1) {
       // var _tenderArray = await _paymentRepository.getMediaByType(
       //     funcID, GlobalConfig.operatorNo);
@@ -413,7 +451,6 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               payValue = tenderValue;
             }
           }
-
           if (promptCustID) {
             GlobalConfig.CustomKeyboard = 3;
             // show custom keyboard
@@ -441,6 +478,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                               height: 180.h,
                               textColor: Colors.white,
                               type: VirtualKeyboardType.Alphanumeric,
+                              callback: keyboardCallback,
                               textController: _alphaNumericController),
                         ],
                       ),
@@ -465,6 +503,10 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
 
               if (payValue >= gtAmount) {
                 // payment notify
+                ref
+                    .read(paymentProvider.notifier)
+                    .updatePaymentStatus(PaymentStatus.PAID);
+
                 Map<String, dynamic> paidDetails = await _paymentRepository
                     .getPopUpAmount(GlobalConfig.salesNo);
                 double totalPaidAmount =
@@ -510,5 +552,44 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
         }
       }
     }
+  }
+
+  Future<void> keyboardCallback(String custID) async {
+    await _paymentRepository.paymentItem(
+        POSDtls.deviceNo,
+        GlobalConfig.operatorNo,
+        GlobalConfig.tableNo,
+        GlobalConfig.salesNo,
+        GlobalConfig.splitNo,
+        payType ?? 0,
+        payValue,
+        custID);
+    if (GlobalConfig.ErrMsg.isEmpty) {
+      ref.read(paymentProvider.notifier).fetchPaymentData(payTag, funcID);
+
+      if (payValue >= gtAmount) {
+        ref
+            .read(paymentProvider.notifier)
+            .updatePaymentStatus(PaymentStatus.PAID);
+      } else {
+        setState(() {
+          gtAmount = gtAmount - payValue;
+        });
+      }
+    } else {
+      GlobalConfig.ErrMsg = '';
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AppAlertDialog(
+              title: 'Error',
+              message: 'Transaction Failed!',
+              onConfirm: () {},
+            );
+          });
+    }
+    setState(() {
+      payValue = 0;
+    });
   }
 }

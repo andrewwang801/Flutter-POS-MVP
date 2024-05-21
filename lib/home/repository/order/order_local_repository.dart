@@ -796,6 +796,16 @@ class OrderLocalRepository with TypeUtil implements IOrderRepository {
         'UPDATE HeldItems SET TblHold = 1 WHERE SalesNo = $salesNo AND SplitNo = $splitNo';
     dbHandler.rawQuery(query);
   }
+
+  @override
+  Future<List<List<String>>> getIndexOrder(String tableNo) async {
+    String query =
+        "SELECT SalesNo, SplitNo, TableNo, Covers, RcptNo FROM HeldTables WHERE TableNo = '$tableNo'";
+
+    Database db = await database.database;
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    return mapListToString2D(maps);
+  }
 }
 
 final Provider<IOrderRepository> orderLocalRepoProvider =

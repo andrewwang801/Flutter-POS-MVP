@@ -172,7 +172,8 @@ class POSDtls {
   static late int firstTable;
   static late int lastTable;
   static late bool tblAutoOnly;
-  static late bool forceTable;
+  static late bool forceTable = false;
+  static late bool forceCover = true;
   static late bool blnForceCovertracking;
   static late bool xzSms;
   static late String zxSmsDevice;
