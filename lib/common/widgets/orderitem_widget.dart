@@ -35,7 +35,7 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
   @override
   Widget render(
       BuildContext context, int padding, bool isDark, void Function() callback,
-      {bool detail = false}) {
+      {void Function(OrderItemModel)? clickListener, bool detail = false}) {
     level = (orderItem.Preparation ?? 0) == 1 ? 1 : 0;
     TextStyle textStyle =
         listItemTextDarkStyle.copyWith(fontSize: modifierItemFontSize);
@@ -47,6 +47,11 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
           color: Colors.grey);
     }
     return GestureDetector(
+      onTap: () {
+        if (clickListener != null) {
+          clickListener(orderItem);
+        }
+      },
       onLongPress: () {
         showGeneralDialog(
           context: context,
@@ -170,13 +175,24 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
 
   List<Widget> prepWidgets(List<OrderPrepModel> preps) {
     return preps.map((e) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 14),
         child: Row(
           children: [
-            Expanded(child: Text('Prep Item : ')),
-            Expanded(child: Text(e.prepName)),
-            Expanded(child: Text(e.prepQuantity.toString())),
+            Expanded(
+                flex: 2,
+                child: Text(
+                  e.prepQuantity.toString(),
+                )),
+            Expanded(
+                flex: 7,
+                child: Text(
+                  '${e.prepName}',
+                )),
+            Expanded(
+              flex: 5,
+              child: Container(),
+            ),
           ],
         ),
       );
@@ -185,13 +201,26 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
 
   List<Widget> modWidgets(List<OrderModData> mods) {
     return mods.map((e) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 14),
         child: Row(
           children: [
-            Expanded(child: Text('Modifier : ')),
-            Expanded(child: Text(e.modName)),
-            Expanded(child: Text(e.modPrice.toString())),
+            Expanded(flex: 2, child: Container()),
+            Expanded(
+                flex: 7,
+                child: Text(
+                  'Modifier : ${e.modName}',
+                )),
+            Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Text(
+                    e.modPrice.toString(),
+                    textAlign: TextAlign.left,
+                  ),
+                )),
+            Expanded(flex: 2, child: Container()),
           ],
         ),
       );

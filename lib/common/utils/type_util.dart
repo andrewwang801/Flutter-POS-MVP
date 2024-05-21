@@ -24,6 +24,24 @@ mixin TypeUtil {
       return e.values.map((dynamic v) => v.toString()).toList();
     }).toList();
   }
+
+  List<List<double>> mapListToDouble2D(List<Map<String, dynamic>> maps) {
+    return maps.map((Map<String, dynamic> e) {
+      return e.values.map((dynamic v) => dynamicToDouble(v)).toList();
+    }).toList();
+  }
+
+  List<List<int>> mapListToInt2D(List<Map<String, dynamic>> maps) {
+    return maps.map((Map<String, dynamic> e) {
+      return e.values.map((dynamic v) => dynamicToInt(v)).toList();
+    }).toList();
+  }
+
+  List<List<dynamic>> mapListToDynamic2D(List<Map<String, dynamic>> maps) {
+    return maps.map((Map<String, dynamic> e) {
+      return e.values.toList();
+    }).toList();
+  }
 }
 
 extension MapX on Map<String, dynamic> {

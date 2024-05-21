@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:raptorpos/common/adapters/order_data.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
@@ -16,8 +15,9 @@ import '../../../constants/text_style_constant.dart';
 import 'alert_dialog.dart';
 
 class CheckOut extends ConsumerStatefulWidget {
-  const CheckOut(this.height, {Key? key}) : super(key: key);
+  const CheckOut(this.height, {this.Callback, Key? key}) : super(key: key);
   final double height;
+  final Function(OrderItemModel)? Callback;
 
   @override
   _CheckOutState createState() => _CheckOutState();
@@ -347,15 +347,19 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                 },
                 itemCount: state.orderItemTree!.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return state.orderItemTree![index].render(context, 4, isDark,
-                      () {
-                    setState(() {
-                      ref
-                          .read(orderProvoder.notifier)
-                          .voidOrderItem(state.orderItemTree![index].orderItem);
-                      // state.orderItemTree!.removeAt(index);
-                    });
-                  });
+                  return state.orderItemTree![index].render(
+                    context,
+                    4,
+                    isDark,
+                    () {
+                      setState(() {
+                        ref.read(orderProvoder.notifier).voidOrderItem(
+                            state.orderItemTree![index].orderItem);
+                        // state.orderItemTree!.removeAt(index);
+                      });
+                    },
+                    clickListener: widget.Callback,
+                  );
                 }),
           ),
         ],
