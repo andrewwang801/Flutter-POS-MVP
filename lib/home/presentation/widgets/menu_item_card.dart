@@ -76,26 +76,26 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
     }
 
     return InkWell(
-      onTap: () {
-        // create order item && modifier
-        // ref
-        //     .read(orderProvoder.notifier)
-        //     .createOrderItem(widget.menuItem.pluNumber ?? '', '', 1, false, {});
-        // foc item
-      },
-      onLongPress: () {
-        // showGeneralDialog(
-        //   context: context,
-        //   barrierColor: Colors.black38,
-        //   barrierLabel: 'Label',
-        //   barrierDismissible: true,
-        //   pageBuilder: (_, __, ___) => MenuItemDetail(
-        //     widget.menuItem.pluNumber ?? '',
-        //     0,
-        //     false,
-        //   ),
-        // );
-      },
+      // onTap: () {
+      // create order item && modifier
+      // ref
+      //     .read(orderProvoder.notifier)
+      //     .createOrderItem(widget.menuItem.pluNumber ?? '', '', 1, false, {});
+      // foc item
+      // },
+      // onLongPress: () {
+      // showGeneralDialog(
+      //   context: context,
+      //   barrierColor: Colors.black38,
+      //   barrierLabel: 'Label',
+      //   barrierDismissible: true,
+      //   pageBuilder: (_, __, ___) => MenuItemDetail(
+      //     widget.menuItem.pluNumber ?? '',
+      //     0,
+      //     false,
+      //   ),
+      // );
+      // },
       child: Responsive(
         mobile: _moibleItemCard(),
         tablet: _tabletItemCard(),
@@ -106,24 +106,33 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
 
   Widget menuItemImage(MenuItemModel menu) {
     if ((menu.pluImage ?? 0) == 0) {
-      return Image.asset(
-        "assets/images/placeholder.png",
-        fit: BoxFit.cover,
+      return Opacity(
+        opacity: isDark ? 0.1 : 1.0,
+        child: Image.asset(
+          "assets/images/placeholder.png",
+          fit: BoxFit.cover,
+        ),
       );
     } else {
       return CachedNetworkImage(
         imageUrl: menu.imageName ?? '',
         errorWidget: (_, __, ___) {
-          return Image.asset(
-            "assets/images/placeholder.png",
-            fit: BoxFit.cover,
+          return Opacity(
+            opacity: isDark ? 0.1 : 1.0,
+            child: Image.asset(
+              "assets/images/placeholder.png",
+              fit: BoxFit.cover,
+            ),
           );
         },
         fit: BoxFit.cover,
         placeholder: (_, __) {
-          return Image.asset(
-            "assets/images/placeholder.png",
-            fit: BoxFit.cover,
+          return Opacity(
+            opacity: isDark ? 0.1 : 1.0,
+            child: Image.asset(
+              "assets/images/placeholder.png",
+              fit: BoxFit.cover,
+            ),
           );
         },
       );
@@ -174,8 +183,19 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
               ),
               GestureDetector(
                 onTap: () {
-                  ref.read(orderProvoder.notifier).createOrderItem(
-                      widget.menuItem.pluNumber ?? '', '', 1, false, {});
+                  showGeneralDialog(
+                    context: context,
+                    barrierColor: Colors.black38,
+                    barrierLabel: 'Label',
+                    barrierDismissible: true,
+                    pageBuilder: (_, __, ___) => MenuItemDetail(
+                      widget.menuItem.pluNumber ?? '',
+                      0,
+                      false,
+                    ),
+                  );
+                  // ref.read(orderProvoder.notifier).createOrderItem(
+                  // widget.menuItem.pluNumber ?? '', '', 1, false, {});
                 },
                 child: Container(
                   padding: EdgeInsets.all(Spacing.xs),
@@ -183,9 +203,11 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
                     borderRadius: BorderRadius.circular(Spacing.sm),
                     color: orange,
                   ),
-                  child: Text(
-                    'Add to cart',
-                    style: bodyTextDarkStyle,
+                  child: FittedBox(
+                    child: Text(
+                      'Add to cart',
+                      style: bodyTextDarkStyle,
+                    ),
                   ),
                 ),
               ),

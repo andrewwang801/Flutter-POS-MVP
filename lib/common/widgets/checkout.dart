@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:raptorpos/common/widgets/checkout_summary.dart';
 import 'package:raptorpos/common/widgets/order_header.dart';
@@ -97,6 +98,10 @@ class _CheckOutState extends ConsumerState<CheckOut> {
 
   Widget CheckOutButtons() {
     final OrderState state = ref.watch(orderProvoder);
+    List<OrderItemModel> orderItems = <OrderItemModel>[];
+    if (state.workable == Workable.ready) {
+      orderItems.addAll(state.orderItems ?? []);
+    }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -105,7 +110,8 @@ class _CheckOutState extends ConsumerState<CheckOut> {
           flex: 1,
           child: ElevatedButton(
             onPressed: () {
-              ref.read(functionProvider.notifier).voidAllOrder();
+              ref.read(orderProvoder.notifier).voidOrderItem(orderItems.last);
+              orderItems.removeLast();
             },
             child: Text('Void'),
             style: ButtonStyle(
@@ -119,7 +125,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
           width: Spacing.sm,
         ),
         Expanded(
-          flex: 2,
+          flex: ScreenUtil().orientation == Orientation.landscape ? 2 : 1,
           child: ElevatedButton(
             onPressed: () {
               ref.read(tableProvider.notifier).holdTable();
@@ -136,7 +142,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
           width: Spacing.sm,
         ),
         Expanded(
-          flex: 3,
+          flex: ScreenUtil().orientation == Orientation.landscape ? 3 : 2,
           child: ElevatedButton(
             onPressed: () {
               doTenderPayment(state);

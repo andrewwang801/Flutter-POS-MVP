@@ -55,9 +55,12 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
   @override
   Widget build(BuildContext context) {
     OrderState state = ref.watch(orderProvoder);
+    List<OrderItemModel> orderItems = <OrderItemModel>[];
+
     if (state.workable == Workable.ready) {
       if (state.bills?.isNotEmpty ?? false) {
         billTotal = state.bills![0];
+        orderItems.addAll(state.orderItems ?? []);
       }
     }
 
@@ -229,7 +232,9 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
         actions: [
           GestureDetector(
             onTap: () {
-              ref.read(functionProvider.notifier).voidAllOrder();
+              // ref.read(functionProvider.notifier).voidAllOrder();
+              ref.read(orderProvoder.notifier).voidOrderItem(orderItems.last);
+              orderItems.removeLast();
             },
             child: Container(
               padding: EdgeInsets.all(16),
@@ -248,89 +253,199 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
               ),
             ),
           ),
-          IconButton(
-              icon: Icon(
-                isDark ? Icons.wb_sunny : Icons.nightlight_round,
-              ),
-              color: isDark ? backgroundColor : primaryDarkColor,
-              onPressed: () {
-                isDark ? isDark = false : isDark = true;
-                ref.read(themeProvider.notifier).setTheme(isDark);
-              }),
+          // IconButton(
+          //     icon: Icon(
+          //       isDark ? Icons.wb_sunny : Icons.nightlight_round,
+          //     ),
+          //     color: isDark ? backgroundColor : primaryDarkColor,
+          //     onPressed: () {
+          //       isDark ? isDark = false : isDark = true;
+          //       ref.read(themeProvider.notifier).setTheme(isDark);
+          //     }),
         ],
       ),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(Spacing.sm),
-              child: Row(
-                children: [
-                  horizontalSpaceSmall,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: ScreenUtil().orientation == Orientation.landscape
+          ? landscape(state, totalTax)
+          : portait(state, totalTax),
+    );
+  }
+
+  Widget landscape(OrderState state, double totalTax) {
+    return SafeArea(
+      bottom: false,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(Spacing.sm),
+                  child: Row(
                     children: [
-                      Text(
-                        '${GlobalConfig.TransMode}',
-                        style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-                        textAlign: TextAlign.left,
+                      horizontalSpaceSmall,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${GlobalConfig.TransMode}',
+                            style:
+                                isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                          verticalSpaceTiny,
+                          Text(
+                            'Table ${GlobalConfig.tableNo}',
+                            style: isDark
+                                ? normalTextDarkStyle.copyWith(
+                                    fontWeight: FontWeight.bold)
+                                : normalTextLightStyle.copyWith(
+                                    fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
                       ),
-                      verticalSpaceTiny,
-                      Text(
-                        'Table ${GlobalConfig.tableNo}',
-                        style: isDark
-                            ? normalTextDarkStyle.copyWith(
-                                fontWeight: FontWeight.bold)
-                            : normalTextLightStyle.copyWith(
-                                fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.left,
+                      Expanded(
+                        child: Text(
+                          '${GlobalConfig.rcptNo}',
+                          style:
+                              isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                          textAlign: TextAlign.right,
+                        ),
                       ),
                     ],
                   ),
-                  Expanded(
-                    child: Text(
-                      '${GlobalConfig.rcptNo}',
-                      style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-                      textAlign: TextAlign.right,
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(Spacing.xs),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Order(),
+                        OrderHeader(),
+                        Expanded(
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? backgroundDarkColor
+                                      : backgroundColor,
+                                ),
+                                child: CheckoutList(
+                                  callback: widget.Callback,
+                                ))),
+                        Container(
+                          color: isDark ? backgroundDarkColor : backgroundColor,
+                          height: MediaQuery.of(context).padding.bottom,
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.all(Spacing.xs),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Order(),
-                    OrderHeader(),
-                    Expanded(
-                        child: Container(
-                            decoration: BoxDecoration(
-                              color:
-                                  isDark ? backgroundDarkColor : Colors.white,
-                            ),
-                            child: CheckoutList(
-                              callback: widget.Callback,
-                            ))),
-                    verticalSpaceSmall,
-                    checkout_summary(
-                        isDark: isDark, state: state, totalTax: totalTax),
-                  ],
                 ),
-              ),
+              ],
             ),
-            CheckOutButtons(),
-            Container(
-              color: isDark ? primaryDarkColor : backgroundColorVariant,
-              height: MediaQuery.of(context).padding.bottom,
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                verticalSpaceSmall,
+                checkout_summary(
+                    isDark: isDark, state: state, totalTax: totalTax),
+                CheckOutButtons(),
+                Container(
+                  color: isDark ? backgroundDarkColor : backgroundColor,
+                  height: MediaQuery.of(context).padding.bottom,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget portait(OrderState state, double totalTax) {
+    return SafeArea(
+      bottom: false,
+      child: Column(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(Spacing.sm),
+                  child: Row(
+                    children: [
+                      horizontalSpaceSmall,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${GlobalConfig.TransMode}',
+                            style:
+                                isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                          verticalSpaceTiny,
+                          Text(
+                            'Table ${GlobalConfig.tableNo}',
+                            style: isDark
+                                ? normalTextDarkStyle.copyWith(
+                                    fontWeight: FontWeight.bold)
+                                : normalTextLightStyle.copyWith(
+                                    fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: Text(
+                          '${GlobalConfig.rcptNo}',
+                          style:
+                              isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(Spacing.xs),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Order(),
+                        OrderHeader(),
+                        Expanded(
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? backgroundDarkColor
+                                      : Colors.white,
+                                ),
+                                child: CheckoutList(
+                                  callback: widget.Callback,
+                                ))),
+                        verticalSpaceSmall,
+                        checkout_summary(
+                            isDark: isDark, state: state, totalTax: totalTax),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          CheckOutButtons(),
+          Container(
+            color: isDark ? primaryDarkColor : backgroundColorVariant,
+            height: MediaQuery.of(context).padding.bottom,
+          ),
+        ],
       ),
     );
   }
@@ -345,7 +460,13 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
     final OrderState state = ref.watch(orderProvoder);
 
     return Container(
-      color: isDark ? primaryDarkColor : backgroundColorVariant,
+      color: isDark
+          ? ScreenUtil().orientation == Orientation.landscape
+              ? backgroundDarkColor
+              : primaryDarkColor
+          : ScreenUtil().orientation == Orientation.landscape
+              ? backgroundColor
+              : backgroundColorVariant,
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [

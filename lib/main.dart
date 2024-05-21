@@ -26,26 +26,22 @@ void main() async {
   await POSDefault.initPOSDefaults();
 
   final data = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-  if (data.size.shortestSide < 600) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]).then((value) {
-      runApp(ProviderScope(child: const MyApp()));
-    });
-  } else {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]).then((value) {
-      runApp(ProviderScope(child: const MyApp()));
-    });
-  }
-  // SystemChrome.setPreferredOrientations(
-  //         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
-  //     .then((value) {
-  //   runApp(ProviderScope(child: const MyApp()));
-  // });
+  // if (data.size.shortestSide < 600) {
+  //   SystemChrome.setPreferredOrientations([
+  //     DeviceOrientation.portraitUp,
+  //     DeviceOrientation.portraitDown,
+  //   ]).then((value) {
+  //     runApp(ProviderScope(child: const MyApp()));
+  //   });
+  // } else {
+  //   SystemChrome.setPreferredOrientations([
+  //     DeviceOrientation.landscapeLeft,
+  //     DeviceOrientation.landscapeRight,
+  //   ]).then((value) {
+  //     runApp(ProviderScope(child: const MyApp()));
+  //   });
+  // }
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

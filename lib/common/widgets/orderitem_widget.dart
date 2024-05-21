@@ -39,7 +39,8 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
     BuildContext context,
     int padding,
     bool isDark,
-    void Function() callback, {
+    void Function() callback,
+    void Function() editCallback, {
     bool detail = false,
     bool selected = false,
   }) {
@@ -74,7 +75,8 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
       ),
       child: Column(
         children: [
-          OrderItemRowWidget(isDark, textStyle, selected, callback, context),
+          OrderItemRowWidget(
+              isDark, textStyle, selected, callback, editCallback, context),
           ...prepWidgets(orderPrepList ?? []),
           ...modWidgets(orderModList ?? []),
         ],
@@ -82,8 +84,13 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
     );
   }
 
-  Widget OrderItemRowWidget(bool isDark, TextStyle textStyle, bool selected,
-      void Function() callback, BuildContext context) {
+  Widget OrderItemRowWidget(
+      bool isDark,
+      TextStyle textStyle,
+      bool selected,
+      void Function() callback,
+      void Function() editCallback,
+      BuildContext context) {
     double iconSize = Responsive.isMobile(context) ? 24.h : 12.h;
     return Stack(
       alignment: Alignment.centerLeft,
@@ -162,7 +169,9 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                   ),
                 ),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    editCallback();
+                  },
                   icon: Icon(
                     Icons.edit_outlined,
                     color: purple,

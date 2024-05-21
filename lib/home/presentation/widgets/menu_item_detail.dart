@@ -63,8 +63,8 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
 
     return Center(
       child: Container(
-        width: Responsive.isMobile(context) ? 400.w : 320.w,
-        height: Responsive.isMobile(context) ? 700.h : 350.h,
+        width: Responsive.isMobile(context) ? 400.w : 0.5.sw,
+        height: Responsive.isMobile(context) ? 700.h : 0.6.sh,
         child: pluState is PLUSuccessState ? _shoppingItem(1) : Container(),
       ),
     );
@@ -181,8 +181,18 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
               ),
               SizedBox(
                 width: 320.w,
+                height: ScreenUtil().orientation == Orientation.landscape
+                    ? Responsive.isMobile(context)
+                        ? 0.4.sh
+                        : 0.3.sh
+                    : Responsive.isMobile(context)
+                        ? 0.25.sh
+                        : 0.2.sh,
                 child: NumPad(
+                  isDark: isDark,
                   buttonColor: isDark ? primaryButtonDarkColor : Colors.white,
+                  backgroundColor:
+                      isDark ? Colors.transparent : backgroundColorVariant,
                   delete: () {},
                   onSubmit: () {},
                   controller: _qtyController,

@@ -88,13 +88,27 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
     if (state is TableSuccessState) {
       return Expanded(
         child: Container(
+            padding: EdgeInsets.only(
+                top: Spacing.sm,
+                right: ScreenUtil().orientation == Orientation.landscape
+                    ? MediaQuery.of(context).padding.right + Spacing.sm
+                    : Spacing.sm,
+                left: ScreenUtil().orientation == Orientation.landscape
+                    ? MediaQuery.of(context).padding.left + Spacing.sm
+                    : Spacing.sm,
+                bottom: ScreenUtil().bottomBarHeight),
             color: isDark ? backgroundDarkColor : backgroundColorVariant,
             child: GridView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: Responsive.isMobile(context) ? 4 : 8,
-                  crossAxisSpacing: Responsive.isMobile(context) ? 5 : 40,
-                  mainAxisExtent: Responsive.isMobile(context) ? 80.w : 60.w,
-                  mainAxisSpacing: Responsive.isMobile(context) ? 5 : 40,
+                  crossAxisCount: Responsive.isMobile(context)
+                      ? ScreenUtil().orientation == Orientation.landscape
+                          ? 8
+                          : 5
+                      : 8,
+                  crossAxisSpacing: Responsive.isMobile(context) ? 20 : 40,
+                  mainAxisSpacing: Responsive.isMobile(context) ? 20 : 40,
                 ),
                 itemCount: state.tableList.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -129,26 +143,23 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
         onTap: () {
           ref.read(tableProvider.notifier).selectTable(table.tableNo);
         },
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: greenVariant2,
-              shape: BoxShape.circle,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  table.tableNo,
-                  style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
-                ),
-                Text(
-                  table.tableStatus,
-                  style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
-                ),
-              ],
-            ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: greenVariant2,
+            shape: BoxShape.circle,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                table.tableNo,
+                style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
+              ),
+              Text(
+                table.tableStatus,
+                style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
+              ),
+            ],
           ),
         ),
       ),

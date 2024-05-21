@@ -31,14 +31,14 @@ const List<String> btns = <String>[
   'Close',
 ];
 
-class ViewTransScreen extends ConsumerStatefulWidget {
-  const ViewTransScreen({Key? key}) : super(key: key);
+class TabletViewTransScreen extends ConsumerStatefulWidget {
+  const TabletViewTransScreen({Key? key}) : super(key: key);
 
   @override
-  _ViewTransScreenState createState() => _ViewTransScreenState();
+  _TabletViewTransScreenState createState() => _TabletViewTransScreenState();
 }
 
-class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
+class _TabletViewTransScreenState extends ConsumerState<TabletViewTransScreen> {
   final ScrollController _vScrollController = ScrollController();
 
   final TextEditingController _searchController = TextEditingController();
@@ -127,8 +127,10 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           onPressed: () {
             Get.back();
           },
-          icon: Icon(Icons.arrow_back),
-          color: isDark ? primaryDarkColor : primaryDarkColor,
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? backgroundColor : primaryDarkColor,
+          ),
         ),
         title: Text(
           'All Transaction',
@@ -518,6 +520,10 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               borderRadius: BorderRadius.circular(Spacing.sm),
               isDense: true,
               underline: const SizedBox(),
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: orange,
+              ),
               iconSize: Responsive.isTablet(context) ? lgiconSize : smiconSize,
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
               value: operator,
@@ -641,7 +647,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
             ),
             style: ElevatedButton.styleFrom(
-              primary: backgroundColor,
+              primary: isDark ? primaryDarkColor : backgroundColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(Spacing.xs),
                 side: BorderSide(width: 1.0, color: red),
@@ -673,7 +679,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
             ),
             style: ElevatedButton.styleFrom(
-              primary: backgroundColor,
+              primary: isDark ? primaryDarkColor : backgroundColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(Spacing.xs),
                 side: BorderSide(width: 1.0, color: red),

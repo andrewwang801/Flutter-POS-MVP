@@ -82,7 +82,10 @@ class _MenuExpandableSectionState extends ConsumerState<MenuExpandableSection> {
                       physics: ClampingScrollPhysics(),
                       itemCount: _menuItems.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 5,
+                        crossAxisCount:
+                            ScreenUtil().orientation == Orientation.landscape
+                                ? 5
+                                : 3,
                         mainAxisExtent:
                             Responsive.isMobile(context) ? 80.h : 90.h,
                         crossAxisSpacing: Spacing.sm,

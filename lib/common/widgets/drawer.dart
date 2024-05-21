@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/common/keyboard/virtual_keyboard_2.dart';
 import 'package:raptorpos/common/widgets/alert_dialog.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/floor_plan/presentation/floor_plan_screen.dart';
@@ -25,6 +26,7 @@ import 'package:raptorpos/promo/application/promo_state.dart';
 import 'package:raptorpos/sales_report/presentation/sales_report_screen.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 import 'package:raptorpos/trans/presentation/viewtrans_screen.dart';
+import 'package:raptorpos/trans/presentation/viewtrans_screen_tablet.dart';
 import 'package:raptorpos/zday_report/presentation/zday_report_screen.dart';
 
 import '../../constants/dimension_constant.dart';
@@ -103,7 +105,7 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
         newRemarks();
       }
     });
-
+    // GlobalConfig.functions.add(FunctionModel(66, 'View Trans', 26));
     return Drawer(
       child: Column(
         children: [
@@ -194,6 +196,13 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
                         case 65:
                           voidPromotion();
                           break;
+
+                        // case 66:
+                        //   Responsive.isMobile(context)
+                        //       ? Get.to(ViewTransScreen())
+                        //       : Get.to(TabletViewTransScreen());
+                        //   break;
+
                         default:
                       }
                     },

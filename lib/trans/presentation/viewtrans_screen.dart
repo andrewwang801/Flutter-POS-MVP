@@ -126,8 +126,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           onPressed: () {
             Get.back();
           },
-          icon: Icon(Icons.arrow_back),
-          color: isDark ? primaryDarkColor : primaryDarkColor,
+          icon: Icon(Icons.arrow_back,
+              color: isDark ? backgroundColor : primaryDarkColor),
         ),
         title: Text(
           'All Transaction',
@@ -147,7 +147,18 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
         ],
       ),
       body: Container(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.only(
+          top: 8.0,
+          left: ScreenUtil().orientation == Orientation.landscape
+              ? MediaQuery.of(context).padding.left
+              : 8.0,
+          right: ScreenUtil().orientation == Orientation.landscape
+              ? MediaQuery.of(context).padding.right
+              : 8.0,
+          bottom: ScreenUtil().orientation == Orientation.landscape
+              ? MediaQuery.of(context).padding.bottom
+              : 8.0,
+        ),
         child: Column(
           children: <Widget>[
             _searchBar(),
@@ -283,6 +294,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
 
   void showFilterBottomSheet() {
     showModalBottomSheet(
+        isScrollControlled: true,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Spacing.sm)),
         context: context,
@@ -290,7 +302,19 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           return Wrap(
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.only(
+                    top: ScreenUtil().orientation == Orientation.landscape
+                        ? 16
+                        : 32,
+                    left: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.left
+                        : 32,
+                    right: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.right
+                        : 32,
+                    bottom: ScreenUtil().orientation == Orientation.landscape
+                        ? MediaQuery.of(context).padding.bottom
+                        : 32),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -468,6 +492,10 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               isDense: true,
               isExpanded: true,
               underline: const SizedBox(),
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: orange,
+              ),
               iconSize: Responsive.isTablet(context) ? lgiconSize : smiconSize,
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
               value: operator,
@@ -589,7 +617,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
             ),
             style: ElevatedButton.styleFrom(
-              primary: backgroundColor,
+              primary: isDark ? primaryDarkColor : backgroundColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(Spacing.xs),
                 side: BorderSide(width: 1.0, color: red),
@@ -621,7 +649,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
             ),
             style: ElevatedButton.styleFrom(
-              primary: backgroundColor,
+              primary: isDark ? primaryDarkColor : backgroundColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(Spacing.xs),
                 side: BorderSide(width: 1.0, color: red),
