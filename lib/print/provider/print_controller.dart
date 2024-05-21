@@ -141,6 +141,16 @@ class PrintController extends StateNotifier<PrintState>
     }
   }
 
+  Future<void> printBill(int printSNo, String status) async {
+    if (status == 'Close Tables') {
+      await doPrint(3, printSNo, 'Close');
+    } else if (status == 'Refund') {
+      await doPrint(3, printSNo, 'Refund');
+    } else if (status == 'Void Tables') {
+      await doPrint(3, printSNo, 'AllVoid');
+    }
+  }
+
   Future<void> kpPrint() async {
     try {
       List<List<String>> kpscArray = await printRepository.getKPSalesCategory(
@@ -464,5 +474,30 @@ class PrintController extends StateNotifier<PrintState>
 
   Future<String> getOpenBill(int printSNo) async {
     return '';
+  }
+
+  Future<void> reprintKitchenNotify(int cntCopy, int transID, String tblName,
+      String kpTbl, int salesNo, int splitNo, String tableNo) async {
+    List<List<String>> scList = await printRepository.getKPSalesCategory(
+        salesNo, splitNo, tblName, kpTbl, transID);
+    await kpPrinting(
+        salesNo, splitNo, tableNo, tblName, kpTbl, transID, cntCopy);
+    if (POSDtls.blnKPPrintMaster) {
+      await masterKPPrint(
+          salesNo, splitNo, tableNo, tblName, kpTbl, transID, cntCopy);
+    }
+    for (String printData in printArr) {
+      await doPrint(2, 0, printData);
+    }
+    printArr.clear();
+    await printRepository.updateKPPrintItem(salesNo, splitNo);
+  }
+
+  Future<void> reprintBillNotify(int tempSNo, String status) async {
+    if (status == 'Open Tables') {
+      await doPrint(5, tempSNo, '');
+    } else {
+      await printBill(tempSNo, status);
+    }
   }
 }

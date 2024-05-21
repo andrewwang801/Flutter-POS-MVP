@@ -44,7 +44,7 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
               builder: (context) {
                 return AppAlertDialog(
                   title: 'Error',
-                  message: 'Error',
+                  message: next.errMsg,
                   onConfirm: () {},
                 );
               });

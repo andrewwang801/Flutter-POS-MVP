@@ -54,7 +54,7 @@ class TransLocalRepository with TypeUtil, DateTimeUtil {
     String zDayReportDt = maps[0].values.elementAt(0).toString();
     zDayReportDt = zDayReportDt.substring(0, 10);
     String zDayReportTime = maps[0].values.elementAt(1).toString();
-    zDayReportTime = zDayReportDt.substring(11);
+    zDayReportTime = zDayReportTime.substring(11);
 
     String newZDay = '$zDayReportDt $zDayReportTime';
     DateTime zDay = DateTime.parse(newZDay);

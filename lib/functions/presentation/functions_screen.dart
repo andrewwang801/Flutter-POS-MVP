@@ -101,7 +101,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               ),
               Expanded(
                 child: SizedBox(
-                  width: 580.w,
+                  width: 550.w,
                   child: GridView.builder(
                     itemCount: functions.length,
                     itemBuilder: (BuildContext context, int index) {

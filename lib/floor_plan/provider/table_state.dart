@@ -14,15 +14,20 @@ class TableInitialState extends TableState {}
 class TableLoadingState extends TableState {}
 
 class TableSuccessState extends TableState {
-  TableSuccessState({required this.tableList, required this.notify_type});
+  TableSuccessState(
+      {required this.tableList, required this.notify_type, this.errMsg});
   final List<TableDataModel> tableList;
   final NOTIFY_TYPE notify_type;
+  final String? errMsg;
 
   TableSuccessState copyWith(
-      {List<TableDataModel>? tableList, NOTIFY_TYPE? notify_type}) {
+      {List<TableDataModel>? tableList,
+      NOTIFY_TYPE? notify_type,
+      String? errMsg}) {
     return TableSuccessState(
         tableList: tableList ?? this.tableList,
-        notify_type: notify_type ?? this.notify_type);
+        notify_type: notify_type ?? this.notify_type,
+        errMsg: errMsg ?? this.errMsg);
   }
 }
 
