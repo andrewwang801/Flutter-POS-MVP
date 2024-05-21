@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:raptorpos/common/GlobalConfig.dart';
 
 import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
@@ -41,6 +42,7 @@ class _CheckoutListState extends ConsumerState<CheckoutList> {
     } else if (hasError) {
       return Container();
     } else if (state.workable == Workable.ready) {
+      GlobalConfig.checkItemOrder = state.orderItemTree?.length ?? 0;
       return Column(
         children: [
           ListTileTheme(
@@ -54,7 +56,7 @@ class _CheckoutListState extends ConsumerState<CheckoutList> {
                     Expanded(
                       flex: 3,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                        padding: const EdgeInsets.symmetric(),
                         child: Text(
                           kQty,
                           textAlign: TextAlign.left,
@@ -69,7 +71,7 @@ class _CheckoutListState extends ConsumerState<CheckoutList> {
                     Expanded(
                       flex: 7,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                        padding: const EdgeInsets.symmetric(),
                         child: Text(
                           kDescription,
                           textAlign: TextAlign.left,
