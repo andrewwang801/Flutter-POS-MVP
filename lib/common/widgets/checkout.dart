@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:raptorpos/common/adapters/order_data.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
+import 'package:raptorpos/home/model/order_item_model.dart';
+import '../../home/provider/order/order_provider.dart';
+import 'package:raptorpos/home/provider/order/order_state.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../constants/color_constant.dart';
 import '../../../constants/text_style_constant.dart';
-import 'package:raptorpos/home/model/order_item_model.dart';
-import 'package:raptorpos/home/provider/order/order_provider.dart';
-import 'package:raptorpos/home/provider/order/order_state.dart';
-import 'package:raptorpos/theme/theme_state_notifier.dart';
-import 'package:raptorpos/common/adapters/order_data.dart';
 
 class CheckOut extends ConsumerStatefulWidget {
   const CheckOut(this.height, {Key? key}) : super(key: key);
