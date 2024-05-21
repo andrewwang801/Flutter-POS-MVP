@@ -1,25 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
-import 'package:raptorpos/common/GlobalConfig.dart';
-import 'package:raptorpos/common/adapters/order_data.dart';
-import 'package:raptorpos/common/extension/string_extension.dart';
-import 'package:raptorpos/home/model/modifier.dart';
-import 'package:raptorpos/home/model/order_item_model.dart';
 
-import 'package:raptorpos/home/provider/order/order_state.dart';
-import 'package:raptorpos/home/repository/order/i_order_repository.dart';
-import 'package:sqflite/sqlite_api.dart';
-
+import '../../../common/GlobalConfig.dart';
+import '../../../common/extension/string_extension.dart';
+import '../../../common/widgets/orderitem_widget.dart';
 import '../../../payment/repository/i_payment_repository.dart';
+import '../../../printer/provider/printer_state.dart';
+import '../../model/modifier.dart';
+import '../../model/order_item_model.dart';
+import '../../repository/order/i_order_repository.dart';
+import 'order_state.dart';
 
 @Injectable()
 class OrderStateNotifier extends StateNotifier<OrderState> {
-  final IOrderRepository orderRepository;
-  final IPaymentRepository paymentRepository;
-
   OrderStateNotifier(this.orderRepository, this.paymentRepository)
       : super(OrderInitialState());
+  final IOrderRepository orderRepository;
+  final IPaymentRepository paymentRepository;
 
   late int? _salesRef;
   // create order item
@@ -69,7 +67,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
       String taxTag = tempPluDtls[15];
       int soldPluCnt = await orderRepository.countSoldPLU(pluNo);
       if (soldPluCnt > 0) {
-        //orderRepository.updateSoldPLU(1, pluNo);
+        orderRepository.updateSoldPLU(1, pluNo);
       }
       // insert order item
       else {
@@ -210,16 +208,8 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
             }
           }
         }
-
-        // end of insert order item
-        // state = OrderSuccessState(
-        //     await orderRepository.fetchOrderItems(), await calcBill());
       }
     }
-    // } catch (e) {
-    //   print('Error: ${e.toString()}');
-    //   state = OrderErrorState(errMsg: e.toString());
-    // }
   }
 
   void updateOrderItem() {}
@@ -613,7 +603,11 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
   // calc bill
   Future<List<double>> calcBill() async {
     if (true /* checkItemOrder */) {
-      var paymentData = await orderRepository.fetchAmountOrder(1, 1, 3, false);
+      var paymentData = await orderRepository.fetchAmountOrder(
+          GlobalConfig.salesNo,
+          GlobalConfig.splitNo,
+          GlobalConfig.tableNo,
+          POSDefault.taxInclusive);
       var taxTitleData = await orderRepository.getTaxRateData();
       int cntTaxTitle = taxTitleData.length;
 
@@ -632,8 +626,17 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
   Future<void> createOrderItem(String pluNumber, String modifier, int qty,
       bool focItem, Map<String, Map<String, String>> prepSelect) async {
     try {
-      state = OrderInitialState();
-      await addOrderItem('1', 1, '3', 1, 1, pluNumber, 2, qty.toDouble(), 1);
+      // state = OrderInitialState();
+      await addOrderItem(
+          POSDtls.deviceNo,
+          GlobalConfig.operatorNo,
+          GlobalConfig.tableNo,
+          GlobalConfig.salesNo,
+          GlobalConfig.splitNo,
+          pluNumber,
+          GlobalConfig.cover,
+          qty.toDouble(),
+          POSDtls.categoryID);
 
       OrderItemModel? lastOrderItem = await orderRepository.getLastOrderData(
           GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
@@ -680,13 +683,15 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
               tempSalesRef);
         }
       }
-
+      List<OrderItemModel> orderItems = await orderRepository.fetchOrderItems(
+          GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
       state = OrderSuccessState(
-          await orderRepository.fetchOrderItems(
-              GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo),
-          await calcBill(),
-          await paymentRepository.checkPaymentPermission(
-              GlobalConfig.operatorNo, 5));
+        orderItems,
+        await calcBill(),
+        await paymentRepository.checkPaymentPermission(
+            GlobalConfig.operatorNo, 5),
+        configureTree(orderItems),
+      );
     } catch (e) {
       state = OrderErrorState(errMsg: e.toString());
     }
@@ -705,15 +710,48 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
 
   Future<void> fetchOrderItems() async {
     try {
+      List<OrderItemModel> orderItems = await orderRepository.fetchOrderItems(
+          GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
       state = OrderSuccessState(
-          await orderRepository.fetchOrderItems(
-              GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo),
-          await calcBill(),
-          await paymentRepository.checkPaymentPermission(
-              GlobalConfig.operatorNo, 5));
+        orderItems,
+        orderItems.isNotEmpty ? await calcBill() : [],
+        await paymentRepository.checkPaymentPermission(
+            GlobalConfig.operatorNo, 5),
+        configureTree(orderItems),
+      );
     } catch (e) {
       print('Error: ${e.toString()}');
       state = OrderErrorState(errMsg: e.toString());
     }
+  }
+
+  List<ParentOrderItemWidget> configureTree(List<OrderItemModel> orderItems) {
+    List<OrderItemModel> parentItems = orderItems.where((element) {
+      return element.Preparation == 0;
+    }).toList();
+    final List<ParentOrderItemWidget> parentItemWidgets = parentItems.map((e) {
+      final ParentOrderItemWidget parentOrderItemWidget =
+          ParentOrderItemWidget(orderItem: e);
+      orderItems.removeWhere(
+          (OrderItemModel element) => element.SalesRef == e.SalesRef);
+
+      List<OrderItemModel> subOrderItems = <OrderItemModel>[];
+      for (int i = 0; i < orderItems.length; i++) {
+        final OrderItemModel orderitem = orderItems[i];
+        if (orderitem.Preparation == 0) {
+          break;
+        }
+        parentOrderItemWidget
+            .addChild(ParentOrderItemWidget(orderItem: orderitem));
+        subOrderItems.add(orderitem);
+      }
+      subOrderItems.forEach((element) {
+        orderItems
+            .removeWhere((orderItem) => orderItem.SalesRef == element.SalesRef);
+      });
+      subOrderItems.clear();
+      return parentOrderItemWidget;
+    }).toList();
+    return parentItemWidgets;
   }
 }

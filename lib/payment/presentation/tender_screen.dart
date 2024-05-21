@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:raptorpos/common/keyboard/virtual_keyboard_2.dart';
 
 import 'package:raptorpos/common/widgets/appbar.dart';
 import 'package:raptorpos/common/widgets/bill_button_list.dart';
 import 'package:raptorpos/common/widgets/checkout.dart';
 import 'package:raptorpos/common/widgets/header.dart';
+import 'package:raptorpos/common/utils/type_util.dart';
 import 'package:raptorpos/common/widgets/numpad.dart';
 import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
@@ -24,6 +26,7 @@ import '../../home/provider/order/order_provider.dart';
 import '../model/media_data_model.dart';
 import '../model/payment_details_data_model.dart';
 import '../provider/payment_provider.dart';
+import '../repository/payment_local_repository.dart';
 
 List<MaterialColor> functionColors = [
   Colors.green,
@@ -70,19 +73,26 @@ class TenderScreen extends ConsumerStatefulWidget {
   _CashScreenState createState() => _CashScreenState();
 }
 
-class _CashScreenState extends ConsumerState<TenderScreen> {
+class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
   bool isDark = true;
-  double gtAmount = 0, payValue = 0;
+  // Total Remaining
+  double gtAmount = 0;
+  // Partial Payment Value
+  double payValue = 0;
+  // Change Amount
   double change = 0;
 
   int? payType;
   int salesRef = 0;
   int payTag = 1;
 
+  String customID = '';
+
   List<MediaData> tenderArray = <MediaData>[];
   List<PaymentDetailsData> tenderDetail = <PaymentDetailsData>[];
 
   TextEditingController _controller = TextEditingController();
+  TextEditingController _alphaNumericController = TextEditingController();
 
   late IPaymentRepository _paymentRepository;
 
@@ -98,16 +108,22 @@ class _CashScreenState extends ConsumerState<TenderScreen> {
           change = 0;
       });
     });
+
+    _alphaNumericController.addListener(() {
+      setState(() {
+        customID = _alphaNumericController.text;
+      });
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     isDark = ref.watch(themeProvider);
-
     PaymentState state = ref.watch(paymentProvider);
+
     if (state is PaymentSuccessState)
-      gtAmount = widget.gTotal - state.paidValue!;
+      gtAmount = widget.gTotal - (state.paidValue ?? 0);
 
     return Scaffold(
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
@@ -128,18 +144,14 @@ class _CashScreenState extends ConsumerState<TenderScreen> {
   }
 
   Widget _leftSide() {
-    return Column(
-      children: [
-        CheckOut(320.h),
-        SizedBox(
-          height: 10.h,
-        ),
-        BillButtonList(
-          paymentRepository: GetIt.I<IPaymentRepository>(),
-          orderRepository: GetIt.I<IOrderRepository>(),
-        ),
-      ],
-    );
+    return CheckOut(428.h - AppBar().preferredSize.height);
+    // SizedBox(
+    //   height: 10.h,
+    // ),
+    // BillButtonList(
+    //   paymentRepository: GetIt.I<IPaymentRepository>(),
+    //   orderRepository: GetIt.I<IOrderRepository>(),
+    // ),
   }
 
   Widget _rightSide(PaymentState state) {
@@ -150,82 +162,6 @@ class _CashScreenState extends ConsumerState<TenderScreen> {
       tenderDetail = state.tenderDetail!;
       return Column(
         children: [
-          Container(
-            height: 30.h,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  'Amount Due: ${gtAmount.toStringAsFixed(2)}',
-                  style: titleTextDarkStyle,
-                ),
-                // Text(
-                //   'Change: ${change.toStringAsFixed(2)}',
-                //   style: titleTextDarkStyle,
-                // ),
-              ],
-            ),
-          ),
-          Row(
-            children: [
-              Column(
-                children: [
-                  Container(
-                    color: Colors.green[900],
-                    width: 300.w,
-                    height: 25.h,
-                    child: ListTile(
-                      leading: Text('Media Type'),
-                      trailing: Text('Amount'),
-                    ),
-                  ),
-                  Container(
-                      color: Colors.green,
-                      width: 270.w,
-                      height: 130.h,
-                      child: ListView.builder(
-                          itemCount: tenderDetail.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return _payentDetailListItem(index);
-                          })),
-                ],
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Column(
-                children: [
-                  Container(
-                    width: 250.w,
-                    height: 30.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white38,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '$payValue',
-                        style: titleTextDarkStyle,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 250.w,
-                    height: 125.h,
-                    color: Colors.white,
-                    child: NumPad(
-                        buttonWidth: 250.w / 4,
-                        buttonHeight: 125.h / 4,
-                        delete: () {},
-                        onSubmit: () {},
-                        controller: _controller),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
           SizedBox(
             height: 25.h,
             child: Center(
@@ -273,6 +209,84 @@ class _CashScreenState extends ConsumerState<TenderScreen> {
           SizedBox(
             height: 10.h,
           ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    color: primaryDarkColor.withOpacity(0.8),
+                    width: 300.w,
+                    height: 25.h,
+                    child: ListTile(
+                      leading: Text('Media Type'),
+                      trailing: Text('Amount'),
+                    ),
+                  ),
+                  Container(
+                      color: primaryDarkColor.withOpacity(0.6),
+                      width: 300.w,
+                      height: 130.h,
+                      child: ListView.builder(
+                          itemCount: tenderDetail.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return _payentDetailListItem(index);
+                          })),
+                  Container(
+                    height: 30.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(
+                          'Amount Due: ${gtAmount.toStringAsFixed(2)}',
+                          style: titleTextDarkStyle.copyWith(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        ),
+                        // Text(
+                        //   'Change: ${change.toStringAsFixed(2)}',
+                        //   style: titleTextDarkStyle,
+                        // ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width: 10.w,
+              ),
+              Column(
+                children: [
+                  Container(
+                    width: 250.w,
+                    height: 25.h,
+                    decoration: BoxDecoration(
+                      color: primaryDarkColor.withOpacity(0.8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$payValue',
+                        style: titleTextDarkStyle,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 250.w,
+                    height: 130.h,
+                    color: Colors.transparent,
+                    child: NumPad(
+                        buttonWidth: 250.w / 4,
+                        buttonHeight: 130.h / 4,
+                        delete: () {},
+                        onSubmit: () {},
+                        controller: _controller),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
           _rightBottomBtnGroup(),
         ],
       );
@@ -281,7 +295,8 @@ class _CashScreenState extends ConsumerState<TenderScreen> {
 
   Widget _payentDetailListItem(int index) {
     return Container(
-      color: index.isEven ? Colors.green : Colors.green[800],
+      color:
+          index.isEven ? primaryDarkColor : primaryDarkColor.withOpacity(0.6),
       child: ListTile(
         leading: Text('${tenderDetail[index].name}'),
         trailing: Text('${tenderDetail[index].amount}'),
@@ -333,6 +348,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> {
         rcp: 'A2200000082');
   }
 
+// Do partial Payment when tap Media
   Future<void> mediaSelect(MediaData list) async {
     int funcID = list.funcID;
     if (payTag == 1) {
@@ -404,10 +420,31 @@ class _CashScreenState extends ConsumerState<TenderScreen> {
             showDialog(
                 context: context,
                 builder: (context) {
-                  return AppAlertDialog(
-                    title: 'Warning',
-                    message: 'Input custom ID',
-                    onConfirm: () {},
+                  return Dialog(
+                    child: Container(
+                      height: 210.h,
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 30.h,
+                            decoration: BoxDecoration(
+                              color: primaryDarkColor,
+                            ),
+                            child: Center(
+                              child: Text(
+                                customID,
+                                style: titleTextDarkStyle,
+                              ),
+                            ),
+                          ),
+                          VirtualKeyboard(
+                              height: 180.h,
+                              textColor: Colors.white,
+                              type: VirtualKeyboardType.Alphanumeric,
+                              textController: _alphaNumericController),
+                        ],
+                      ),
+                    ),
                   );
                 });
           } else {
@@ -421,12 +458,6 @@ class _CashScreenState extends ConsumerState<TenderScreen> {
                 payValue,
                 '');
             if (GlobalConfig.ErrMsg.isEmpty) {
-              // tenderDetail = await _paymentRepository.getPaymentDetails(
-              //     GlobalConfig.salesNo,
-              //     GlobalConfig.splitNo,
-              //     GlobalConfig.tableNo);
-              // setState(() {});
-
               ref
                   .read(paymentProvider.notifier)
                   .fetchPaymentData(payTag, funcID);
@@ -434,6 +465,28 @@ class _CashScreenState extends ConsumerState<TenderScreen> {
 
               if (payValue >= gtAmount) {
                 // payment notify
+                Map<String, dynamic> paidDetails = await _paymentRepository
+                    .getPopUpAmount(GlobalConfig.salesNo);
+                double totalPaidAmount =
+                    dynamicToDouble(paidDetails.values.first);
+                double changesAmount =
+                    dynamicToDouble(paidDetails.values.elementAt(1));
+                double billTotalAmount =
+                    dynamicToDouble(paidDetails.values.elementAt(2));
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AppAlertDialog(
+                        message:
+                            'Amount Due: $billTotalAmount,  Paid: $totalPaidAmount,  Change: $changesAmount',
+                        title: 'Payment',
+                        onConfirm: () {
+                          Get.back();
+                        },
+                      );
+                    });
+
+                gtAmount = 0;
               } else {
                 setState(() {
                   gtAmount = gtAmount - payValue;

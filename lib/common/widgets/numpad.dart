@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 
 // KeyPad widget
@@ -17,7 +18,7 @@ class NumPad extends StatelessWidget {
     Key? key,
     required this.buttonWidth,
     required this.buttonHeight,
-    this.buttonColor = Colors.green,
+    this.buttonColor = primaryDarkColor,
     this.iconColor = Colors.amber,
     required this.delete,
     required this.onSubmit,
@@ -202,14 +203,15 @@ class NumberButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      padding: EdgeInsets.all(8.0),
       width: width,
       height: height,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           primary: color,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0),
+            borderRadius: BorderRadius.circular(8.0),
           ),
         ),
         onPressed: () {

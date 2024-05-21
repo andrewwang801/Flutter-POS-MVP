@@ -7,9 +7,9 @@ import 'package:raptorpos/home/model/prep/prep_model.dart';
 typedef Callback = Function(PrepModel prep);
 
 class PrepItemCard extends ConsumerStatefulWidget {
+  const PrepItemCard(this.prep, this.callback, {Key? key}) : super(key: key);
   final PrepModel prep;
   final Callback callback;
-  PrepItemCard(this.prep, this.callback, {Key? key}) : super(key: key);
 
   @override
   _PrepItemCardState createState() => _PrepItemCardState();
@@ -17,13 +17,15 @@ class PrepItemCard extends ConsumerStatefulWidget {
 
 class _PrepItemCardState extends ConsumerState<PrepItemCard> {
   late bool _isChecked;
-  late PrepModel _prepModel = widget.prep;
+  late PrepModel _prepModel;
   @override
   void initState() {
-    if (_prepModel.quantity == null) {
-      _prepModel.quantity = 0;
+    _prepModel = widget.prep;
+    if (_prepModel.quantity! > 0) {
+      _isChecked = true;
+    } else {
+      _isChecked = false;
     }
-    _isChecked = _prepModel.quantity! > 0 ? true : false;
 
     super.initState();
   }

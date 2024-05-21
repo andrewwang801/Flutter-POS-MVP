@@ -304,7 +304,7 @@ class OrderLocalRepository with TypeUtil implements IOrderRepository {
   // Move to Payment Repository
   @override
   Future<List<double>> fetchAmountOrder(
-      int salesNo, int splitNo, int tableNo, bool taxIncl) async {
+      int salesNo, int splitNo, String tableNo, bool taxIncl) async {
     double tTax0 = 0.0;
     double tTax1 = 0.0;
     double tTax2 = 0.0;

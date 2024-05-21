@@ -28,7 +28,7 @@ abstract class IOrderRepository {
   Future<void> updateOrderStatus(List<String> data, int status);
 
   Future<List<double>> fetchAmountOrder(
-      int salesNo, int splitNo, int tableNo, bool taxIncl);
+      int salesNo, int splitNo, String tableNo, bool taxIncl);
   Future<List<List<String>>> getTaxRateData();
 
   /// Get order items from HeldItems table

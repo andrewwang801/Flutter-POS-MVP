@@ -41,7 +41,9 @@ class _MenuItemListState extends ConsumerState<MenuItemList> {
         child: Text(e.toString()),
       );
     }, loading: () {
-      return CircularProgressIndicator();
+      return const Center(
+          child: SizedBox(
+              width: 30, height: 30, child: CircularProgressIndicator()));
     });
   }
 }

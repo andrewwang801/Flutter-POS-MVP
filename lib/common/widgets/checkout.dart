@@ -41,9 +41,15 @@ class _CheckOutState extends ConsumerState<CheckOut> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(child: orderItemsTable()),
+          // Expanded(child: orderItemsTable()),
+          Expanded(
+              child: Container(
+                  decoration: BoxDecoration(
+                    color: primaryDarkColor,
+                  ),
+                  child: _orderItemList())),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 10.0),
+            padding: EdgeInsets.symmetric(vertical: 15.0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -51,40 +57,45 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text("STotal:",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text("Disc:",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text("Tax:",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text("Svc+ST:",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text("PPN 10%:",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text("GTotal:",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                          style: isDark
+                              ? bodyTextDarkStyle.copyWith(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)
+                              : bodyTextLightStyle.copyWith(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
@@ -95,52 +106,57 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(3.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text(
-                          state is OrderSuccessState
+                          state is OrderSuccessState && state.bills.isNotEmpty
                               ? '\$ ${state.bills[2].toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text(
-                          state is OrderSuccessState
+                          state is OrderSuccessState && state.bills.isNotEmpty
                               ? '\$ ${state.bills[3].toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text(
-                          state is OrderSuccessState
+                          state is OrderSuccessState && state.bills.isNotEmpty
                               ? '\$ ${totalTax.toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text("\$ 0.00",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text("\$ 0.00",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Text(
-                          state is OrderSuccessState
+                          state is OrderSuccessState && state.bills.isNotEmpty
                               ? '\$ ${state.bills[0].toStringAsFixed(2)}'
                               : "\$ 0.00",
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle),
+                          style: isDark
+                              ? bodyTextDarkStyle.copyWith(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)
+                              : bodyTextLightStyle.copyWith(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
@@ -161,7 +177,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
         context);
     return Scrollbar(
       controller: _vScrollController,
-      isAlwaysShown: true,
+      isAlwaysShown: false,
       child: SingleChildScrollView(
           controller: _vScrollController,
           physics: const ClampingScrollPhysics(),
@@ -200,10 +216,37 @@ class _CheckOutState extends ConsumerState<CheckOut> {
               ],
               source: orderData,
               horizontalMargin: 6,
-              rowsPerPage: 6,
+              rowsPerPage: 8,
               showCheckboxColumn: false,
             ),
           )),
     );
+  }
+
+  Widget _orderItemList() {
+    final OrderState state = ref.watch(orderProvoder);
+    final bool isLoading =
+        state is OrderLoadingState || state is OrderInitialState;
+    final bool hasError = state is OrderErrorState;
+    if (isLoading) {
+      return Container();
+    } else if (hasError) {
+      return Container();
+    } else if (state is OrderSuccessState) {
+      if (state.orderItems == null) {
+        return Container();
+      } else {
+        return ListView.separated(
+            separatorBuilder: (context, index) {
+              return Divider();
+            },
+            itemCount: state.orderItemTree!.length,
+            itemBuilder: (BuildContext context, int index) {
+              return state.orderItemTree![index].render(context, 4);
+            });
+      }
+    } else {
+      return Container();
+    }
   }
 }

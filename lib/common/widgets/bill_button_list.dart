@@ -19,7 +19,7 @@ import 'package:raptorpos/payment/repository/i_payment_repository.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/payment/repository/payment_local_repository.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
-import 'package:raptorpos/printer/provider/printer_provider.dart';
+import 'package:raptorpos/print/provider/print_provider.dart';
 import 'package:raptorpos/payment/provider/payment_provider.dart';
 import './custom_button.dart';
 import 'alert_dialog.dart';
@@ -155,7 +155,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
         ref.read(orderProvoder.notifier).fetchOrderItems();
 
         // Print
-        //await ref.read(printerProvider.notifier).doPrint();
+        await ref.read(printProvider.notifier).kpPrint();
         // End of Print
 
         if (bTender) {
@@ -185,7 +185,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
         ref.read(orderProvoder.notifier).fetchOrderItems();
 
         // Print
-        //await ref.read(printerProvider.notifier).doPrint();
+        await ref.read(printProvider.notifier).kpPrint();
         // End of Print
         ref.read(paymentProvider.notifier).fetchPaymentData(0, 0);
         Get.to(TenderScreen(
