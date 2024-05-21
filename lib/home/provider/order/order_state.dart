@@ -16,8 +16,9 @@ class OrderLoadingState extends OrderState {
 class OrderSuccessState extends OrderState {
   final List<OrderItemModel> orderItems;
   final List<double> bills;
+  final bool? paymentPermission;
 
-  OrderSuccessState(this.orderItems, this.bills);
+  OrderSuccessState(this.orderItems, this.bills, [this.paymentPermission]);
   @override
   List<Object?> get props => [orderItems];
 }

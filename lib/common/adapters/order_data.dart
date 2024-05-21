@@ -15,7 +15,7 @@ class OrderData extends DataTableSource {
   @override
   DataRow? getRow(int index) {
     OrderItemModel item = orderItems[index];
-    late int subTotal =
+    late double subTotal =
         item.FOCItem == 1 ? 0 : (item.ItemAmount ?? 0) * (item.Quantity ?? 1);
     return DataRow(
       onSelectChanged: (_value) {
@@ -31,7 +31,7 @@ class OrderData extends DataTableSource {
       cells: <DataCell>[
         DataCell(
           Container(
-            width: 30.w,
+            width: 50.w,
             child: Text(
               ((item.Preparation ?? 0) == 0) ? item.Quantity.toString() : '',
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
@@ -40,7 +40,7 @@ class OrderData extends DataTableSource {
         ),
         DataCell(
           Container(
-            width: 180.w,
+            width: 150.w,
             child: Text(
               item.ItemName ?? '',
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
@@ -52,6 +52,24 @@ class OrderData extends DataTableSource {
             width: 70.w,
             child: Text(
               ((item.Preparation ?? 0) == 0) ? subTotal.toString() : '',
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            ),
+          ),
+        ),
+        DataCell(
+          Container(
+            width: 70.w,
+            child: Text(
+              ((item.Preparation ?? 0) == 0) ? item.CategoryId.toString() : '',
+              style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+            ),
+          ),
+        ),
+        DataCell(
+          Container(
+            width: 70.w,
+            child: Text(
+              ((item.Preparation ?? 0) == 0) ? item.PaidAmount.toString() : '',
               style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
             ),
           ),

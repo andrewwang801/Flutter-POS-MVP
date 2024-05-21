@@ -12,7 +12,8 @@ import '../../../constants/text_style_constant.dart';
 import 'package:raptorpos/common/adapters/order_data.dart';
 
 class CheckOut extends ConsumerStatefulWidget {
-  CheckOut({Key? key}) : super(key: key);
+  final double height;
+  CheckOut(this.height, {Key? key}) : super(key: key);
 
   @override
   _CheckOutState createState() => _CheckOutState();
@@ -34,7 +35,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
     }
     return Container(
       width: 320.w,
-      height: 320.h,
+      height: widget.height,
       color: isDark ? primaryDarkColor : Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,7 +116,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                       padding: const EdgeInsets.all(2.0),
                       child: Text(
                           state is OrderSuccessState
-                              ? '\$ $totalTax'
+                              ? '\$ ${totalTax.toStringAsFixed(2)}'
                               : "\$ 0.00",
                           style:
                               isDark ? bodyTextDarkStyle : bodyTextLightStyle),
@@ -188,10 +189,18 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                     label: Text('Amount',
                         style:
                             isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('Category',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
+                DataColumn(
+                    label: Text('Payment',
+                        style:
+                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
               ],
               source: orderData,
               horizontalMargin: 6,
-              rowsPerPage: 7,
+              rowsPerPage: 6,
               showCheckboxColumn: false,
             ),
           )),

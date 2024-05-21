@@ -5,7 +5,8 @@ import '../../constants/text_style_constant.dart';
 // KeyPad widget
 // This widget is reusable and its buttons are customizable (color, size)
 class NumPad extends StatelessWidget {
-  final double buttonSize;
+  final double buttonWidth;
+  final double buttonHeight;
   final Color buttonColor;
   final Color iconColor;
   final TextEditingController controller;
@@ -14,7 +15,8 @@ class NumPad extends StatelessWidget {
 
   const NumPad({
     Key? key,
-    this.buttonSize = 50,
+    required this.buttonWidth,
+    required this.buttonHeight,
     this.buttonColor = Colors.green,
     this.iconColor = Colors.amber,
     required this.delete,
@@ -35,34 +37,32 @@ class NumPad extends StatelessWidget {
             children: [
               NumberButton(
                 number: 1,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
               NumberButton(
                 number: 2,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
               NumberButton(
                 number: 3,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
-              Container(
-                width: buttonSize * 3,
-                height: buttonSize,
-                color: Colors.green,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.cancel,
-                    color: iconColor,
-                  ),
-                  // iconSize: buttonSize,
-                ),
+              NumberButton(
+                icon: const Icon(Icons.cancel),
+                type: ButtonType.RESET,
+                width: buttonWidth,
+                height: buttonHeight,
+                color: buttonColor,
+                controller: controller,
               ),
             ],
           ),
@@ -72,46 +72,32 @@ class NumPad extends StatelessWidget {
             children: [
               NumberButton(
                 number: 4,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
               NumberButton(
                 number: 5,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
               NumberButton(
                 number: 6,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
-              Container(
-                width: buttonSize * 3,
-                height: buttonSize,
-                color: Colors.green,
-                child: TextFormField(
-                  cursorColor: Colors.white,
-                  decoration: const InputDecoration(
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(1.0)),
-                      borderSide: BorderSide(
-                        color: Colors.grey,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(1.0)),
-                      borderSide: BorderSide(
-                        color: Colors.grey,
-                      ),
-                    ),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                  ),
-                ),
+              NumberButton(
+                icon: const Icon(Icons.restart_alt),
+                type: ButtonType.RESET,
+                width: buttonWidth,
+                height: buttonHeight,
+                color: buttonColor,
+                controller: controller,
               ),
             ],
           ),
@@ -121,34 +107,33 @@ class NumPad extends StatelessWidget {
             children: [
               NumberButton(
                 number: 7,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
               NumberButton(
                 number: 8,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
               NumberButton(
                 number: 9,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
-              Container(
-                width: buttonSize * 3,
-                height: buttonSize,
-                color: Colors.green,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.restart_alt,
-                    color: iconColor,
-                  ),
-                  // iconSize: buttonSize,
-                ),
+              NumberButton(
+                icon: const Icon(Icons.done_rounded),
+                type: ButtonType.CONFIRM,
+                submit: onSubmit,
+                width: buttonWidth,
+                height: buttonHeight,
+                color: buttonColor,
+                controller: controller,
               ),
             ],
           ),
@@ -157,48 +142,28 @@ class NumPad extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // this button is used to delete the last number
-              Container(
-                width: buttonSize,
-                height: buttonSize,
-                color: Colors.green,
-                child: IconButton(
-                  onPressed: () => delete(),
-                  icon: Icon(
-                    Icons.backspace,
-                    color: iconColor,
-                  ),
-                  // iconSize: buttonSize,
-                ),
-              ),
               NumberButton(
                 number: 0,
-                size: buttonSize,
+                width: buttonWidth,
+                height: buttonHeight,
                 color: buttonColor,
                 controller: controller,
               ),
               // this button is used to submit the entered value
-              Container(
-                width: buttonSize,
-                height: buttonSize,
-                color: Colors.green,
-                child: Center(
-                    child: Text(
-                  '.',
-                  style: bodyTextDarkStyle,
-                )),
+              NumberButton(
+                text: '.',
+                width: buttonWidth,
+                height: buttonHeight,
+                color: buttonColor,
+                controller: controller,
               ),
-              Container(
-                width: buttonSize * 3,
-                height: buttonSize,
-                color: Colors.green,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.done_rounded,
-                    color: iconColor,
-                  ),
-                  // iconSize: buttonSize,
-                ),
+              NumberButton(
+                icon: const Icon(Icons.backspace),
+                type: ButtonType.DEL,
+                width: buttonWidth * 2,
+                height: buttonHeight,
+                color: buttonColor,
+                controller: controller,
               ),
             ],
           ),
@@ -209,17 +174,28 @@ class NumPad extends StatelessWidget {
 }
 
 // define NumberButton widget
-// its shape is round
+enum ButtonType { DEL, RESET, CONFIRM }
+
 class NumberButton extends StatelessWidget {
-  final int number;
-  final double size;
+  final int? number;
+  final Icon? icon;
+  final ButtonType? type;
+  final Function? submit;
+  final String? text;
+  final double width;
+  final double height;
   final Color color;
   final TextEditingController controller;
 
   const NumberButton({
     Key? key,
-    required this.number,
-    required this.size,
+    this.number,
+    this.icon,
+    this.type,
+    this.submit,
+    this.text,
+    required this.width,
+    required this.height,
     required this.color,
     required this.controller,
   }) : super(key: key);
@@ -227,8 +203,8 @@ class NumberButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: size,
-      height: size,
+      width: width,
+      height: height,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           primary: color,
@@ -237,15 +213,48 @@ class NumberButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          controller.text += number.toString();
+          if (number != null) {
+            controller.text += number.toString();
+          } else if (icon != null) {
+            switch (type) {
+              case ButtonType.DEL:
+                final String text = controller.text;
+                controller.text = text.substring(0, text.length - 1);
+                break;
+              case ButtonType.RESET:
+                controller.text = '';
+                break;
+              case ButtonType.CONFIRM:
+                submit!();
+                break;
+              default:
+                controller.text = '';
+                break;
+            }
+          } else if (text != null) {
+            controller.text += text!;
+          }
         },
         child: Center(
-          child: Text(
-            number.toString(),
-            style: numPadTextStyle.copyWith(fontWeight: FontWeight.bold),
-          ),
+          child: _buttonWidget(),
         ),
       ),
     );
+  }
+
+  Widget _buttonWidget() {
+    if (number != null) {
+      return Text(
+        number.toString(),
+        style: numPadTextStyle.copyWith(fontWeight: FontWeight.bold),
+      );
+    } else if (icon != null) {
+      return icon!;
+    } else {
+      return Text(
+        text!,
+        style: numPadTextStyle.copyWith(fontWeight: FontWeight.bold),
+      );
+    }
   }
 }
