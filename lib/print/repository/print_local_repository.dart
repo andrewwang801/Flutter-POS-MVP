@@ -98,8 +98,9 @@ class PrintLocalRepository extends IPrintRepository
         salesNo, splitNo, kpID, tableNo, ctgName, tblName, kpTblName, transID);
     String qty = '', itemname = '';
     for (int i = 0; i < KPItemArray.length; i++) {
-      if (i.isOdd /* % 2 == 0 */) {
+      if (i.isEven /* % 2 == 0 */) {
         qty = KPItemArray[i][3];
+        qty = qty.remoteFloat();
         if (qty != '0') {
           qty = addSpace(qty, 3 - qty.length);
           PrintKPContent += '${textPrintFormat("N", "L", "2")}$qty';
@@ -222,8 +223,9 @@ class PrintLocalRepository extends IPrintRepository
         salesNo, splitNo, kpID, tableNo, ctgName, tblName, kpTblName, transID);
     String qty = '', itemname = '';
     for (int i = 0; i < KPItemArray.length; i++) {
-      if (i.isOdd /* % 2 == 0 */) {
+      if (i.isEven /* % 2 == 0 */) {
         qty = KPItemArray[i];
+        qty = qty.remoteFloat();
         if (qty != '0') {
           qty = addSpace(qty, 3 - qty.length);
           PrintKPContent += '${textPrintFormat("N", "L", "2")}$qty';

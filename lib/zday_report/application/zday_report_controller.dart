@@ -413,8 +413,8 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       zDayPrint += '${textPrintFormat('N', 'L', '1')}$Title $strQty $strAmt\n';
       zDayWidgets.add(Row(
         children: <Widget>[
-          Expanded(child: Text('$TransArr[i][1]')),
-          Expanded(child: Text('$TransArr[i][2]')),
+          Expanded(child: Text('${TransArr[i][1]}')),
+          Expanded(child: Text('${TransArr[i][2]}')),
           Expanded(child: Text('$TransAmt'))
         ],
       ));
@@ -446,8 +446,8 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       zDayWidgets.add(Row(
         children: <Widget>[
           Expanded(child: Text('TOTAL')),
-          Expanded(child: Text('$TotMediaArr[i][0]')),
-          Expanded(child: Text('$TotMediaQty')),
+          Expanded(child: Text('${TotMediaArr[i][0]}')),
+          Expanded(child: Text('${TotMediaQty}')),
           Expanded(child: Text('$TotMediaAmt'))
         ],
       ));
@@ -562,7 +562,8 @@ class ZDayReportController extends StateNotifier<ZDayReportState>
       ZDayStr += '------------------TAX-------------------\n';
       zDayPrint +=
           '${textPrintFormat('N', 'L', '1')}------------------TAX-------------------\n';
-      zDayWidgets.add(Text('------------------TAX-------------------'));
+      zDayWidgets
+          .add(Center(child: Text('------------------TAX-------------------')));
 
       if (Tax0 > 0) {
         List<List<String>> TaxArray = await reportRepository.getTaxApplied('0');

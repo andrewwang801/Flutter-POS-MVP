@@ -99,26 +99,4 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
       ),
     );
   }
-
-  showNumPad() {
-    final TextEditingController _myController = TextEditingController();
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Dialog(
-            child: IntrinsicHeight(
-              child: IntrinsicWidth(
-                child: NumPad(
-                    buttonWidth: 60,
-                    buttonHeight: 60,
-                    buttonColor:
-                        isDark ? primaryButtonDarkColor : primaryButtonColor,
-                    delete: () {},
-                    onSubmit: () {},
-                    controller: _myController),
-              ),
-            ),
-          );
-        });
-  }
 }

@@ -19,17 +19,17 @@ class Failure {
 class Data {
   Data(
       {required this.widgets,
-      this.date1,
-      this.time1,
-      this.date2,
-      this.time2,
+      required this.date1,
+      required this.time1,
+      required this.date2,
+      required this.time2,
       required this.salesReport});
 
   final String? salesReport;
-  final String? date1;
-  final String? time1;
-  final String? date2;
-  final String? time2;
+  final String date1;
+  final String time1;
+  final String date2;
+  final String time2;
   final List<Widget> widgets;
 }
 
