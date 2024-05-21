@@ -19,7 +19,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
   final IOrderRepository orderRepository;
   final IPaymentRepository paymentRepository;
 
-  late int? _salesRef;
+  int? _salesRef = 0;
   // create order item
   Future<void> addOrderItem(
       String posID,

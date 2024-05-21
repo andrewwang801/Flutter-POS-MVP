@@ -6,10 +6,12 @@ import 'package:intl/intl.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
+import '../../common/GlobalConfig.dart';
 import '../../common/widgets/alert_dialog.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
+import '../../home/presentation/home_screen.dart';
 import '../application/trans_provider.dart';
 import '../application/trans_state.dart';
 import '../data/trans_sales_data_model.dart';
@@ -88,6 +90,8 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           showKitchenReprint();
         } else if (next.operation == Operation.REFUND) {
           showRefundWidget();
+        } else if (next.operation == Operation.OPEN) {
+          Get.to(HomeScreen());
         }
       },
     );
@@ -190,9 +194,10 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                     return DataRow(
                         onSelectChanged: (bool? value) {
                           selectedTrans = transArray[index];
-                          rcptNo = selectedTrans!.rcptNo;
+                          rcptNo = selectedTrans!.rcptNo ?? '';
                           salesNo = selectedTrans!.salesNo;
                           splitNo = selectedTrans!.splitNo;
+                          covers = selectedTrans!.covers;
                           tableNo = selectedTrans!.tableNo;
                           setState(() {
                             selectedTransId = index;
@@ -208,7 +213,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                           }
                         }),
                         cells: <DataCell>[
-                          DataCell(Text(transArray[index].rcptNo)),
+                          DataCell(Text(transArray[index].rcptNo ?? '')),
                           DataCell(Text(transArray[index].posID)),
                           DataCell(Text(transArray[index].tableNo)),
                           DataCell(Text(transArray[index].firstOp)),
@@ -587,8 +592,75 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
             return CustomButton(
                 callback: () {
                   switch (index) {
+                    case 0:
+                      if (transArray.isEmpty) {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AppAlertDialog(
+                                onConfirm: () {},
+                                title: 'Error',
+                                message:
+                                    'Open transaction failed. There is no data to open transaction',
+                              );
+                            });
+                      } else {
+                        if (salesStatue == 'Closed Tables') {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AppAlertDialog(
+                                  onConfirm: () {},
+                                  title: 'Error',
+                                  message:
+                                      'Cannot open closed table. Click view to open closed table',
+                                );
+                              });
+                        } else if (tableNo == GlobalConfig.tableNo) {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AppAlertDialog(
+                                  onConfirm: () {},
+                                  title: 'Error',
+                                  message:
+                                      'Open Transaction failed. Table is already opened',
+                                );
+                              });
+                        } else {
+                          if (salesNo == 0) {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AppAlertDialog(
+                                    onConfirm: () {},
+                                    title: 'Error',
+                                    message: 'No table found to open',
+                                  );
+                                });
+                          } else {
+                            ref.read(transProvider.notifier).openTrans(
+                                salesNo, splitNo, covers, tableNo, rcptNo);
+                          }
+                        }
+                      }
+                      break;
                     case 1:
-                      Get.to(TransDetailScreen());
+                      if (transArray.isEmpty) {
+                        // show error
+                      } else {
+                        if (selectedTrans != null) {
+                          Get.to(TransDetailScreen(
+                            salesNo: salesNo,
+                            splitNo: splitNo,
+                            tableNo: tableNo,
+                            rcptNo: rcptNo,
+                            tableStatus: salesStatue,
+                          ));
+                        } else {
+                          // show error
+                        }
+                      }
                       break;
                     case 2:
                       if (selectedTrans != null) {
@@ -618,12 +690,14 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
   int splitNo = 0;
   String rcptNo = '';
   String tableNo = '';
+  int covers = 0;
 
   showKitchenReprint() {
     if (salesNo == 0 && selectedTrans != null) {
-      rcptNo = selectedTrans!.rcptNo;
+      rcptNo = selectedTrans!.rcptNo ?? '';
       salesNo = selectedTrans!.salesNo;
       splitNo = selectedTrans!.splitNo;
+      covers = selectedTrans!.covers;
       tableNo = selectedTrans!.tableNo;
     }
 

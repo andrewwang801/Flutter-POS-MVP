@@ -819,6 +819,15 @@ class OrderLocalRepository with TypeUtil implements IOrderRepository {
         "UPDATE HeldItems SET Covers = $cover WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo'";
     await db.rawQuery(query);
   }
+
+  @override
+  Future<void> updateOpenHoldTrans(
+      int salesNo, int splitNo, String tableNo) async {
+    final Database db = await database.database;
+    String query =
+        "UPDATE HeldTables SET TransStatus = ' ' WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo'";
+    await db.rawQuery(query);
+  }
 }
 
 final Provider<IOrderRepository> orderLocalRepoProvider =

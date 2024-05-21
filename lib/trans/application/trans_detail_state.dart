@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../data/trans_sales_data_model.dart';
 
-enum Operation { NONE, KITCHEN_REPRINT, REFUND, OPEN }
+enum Operation { NONE, BILL_ADJUST, CHECK_BILL }
 // common part
 enum Workable { initial, loading, ready, failure }
 
@@ -21,22 +21,22 @@ class Failiure {
 //end of common part
 
 // data class
-class TransData {
-  TransData({required this.transArrayClosed, required this.transArrayOpened});
+class TransDetailData {
+  TransDetailData({required this.transDetail, required this.billAdjArray});
 
-  final List<TransSalesData> transArrayClosed;
-  final List<TransSalesData> transArrayOpened;
+  final List<List<String>> transDetail;
+  final List<List<String>> billAdjArray;
 }
 
 // state
-class TransState extends Equatable {
-  TransState(
+class TransDetailState extends Equatable {
+  TransDetailState(
       {this.failiure,
       this.workable,
       this.operation = Operation.NONE,
       this.transData});
 
-  final TransData? transData;
+  final TransDetailData? transData;
   final Failiure? failiure;
   final Workable? workable;
   final Operation? operation;
@@ -44,12 +44,12 @@ class TransState extends Equatable {
   @override
   List<Object?> get props => [workable, failiure];
 
-  TransState copyWith(
+  TransDetailState copyWith(
       {Failiure? failiure,
       Workable? workable,
       Operation? operation,
-      TransData? data}) {
-    return TransState(
+      TransDetailData? data}) {
+    return TransDetailState(
         failiure: failiure ?? this.failiure,
         workable: workable ?? this.workable,
         operation: operation ?? this.operation,
