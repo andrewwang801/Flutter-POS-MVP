@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 
 import '../../common/GlobalConfig.dart';
+import '../../common/constants/strings.dart';
 import '../../common/extension/string_extension.dart';
 import '../../common/services/printer_manager.dart';
 import '../../common/utils/strings_util.dart';
@@ -144,7 +145,7 @@ class PrintController extends StateNotifier<PrintState>
   Future<void> doPrint(int status, int printSNo, String printData) async {
     try {
       if (printerManager.getPrinters().isEmpty) {
-        throw Exception('There is no printer connected');
+        throw Exception(message_no_printer);
       } else {
         if (status == 1) {
           await printerManager.print(printData);
@@ -167,12 +168,12 @@ class PrintController extends StateNotifier<PrintState>
 
   Future<void> printBill(int printSNo, String status) async {
     try {
-      if (status == 'Close Tables') {
-        await doPrint(3, printSNo, 'Close');
-      } else if (status == 'Refund') {
-        await doPrint(3, printSNo, 'Refund');
-      } else if (status == 'Void Tables') {
-        await doPrint(3, printSNo, 'AllVoid');
+      if (status == PrintStatus.k_close_tables) {
+        await doPrint(3, printSNo, PrintStatus.k_close);
+      } else if (status == PrintStatus.k_refund) {
+        await doPrint(3, printSNo, PrintStatus.k_refund);
+      } else if (status == PrintStatus.k_void_table) {
+        await doPrint(3, printSNo, PrintStatus.k_all_void);
       }
       state = PrintSuccessState();
     } catch (e) {
@@ -185,21 +186,33 @@ class PrintController extends StateNotifier<PrintState>
       List<List<String>> kpscArray = await printRepository.getKPSalesCategory(
           GlobalConfig.salesNo,
           GlobalConfig.splitNo,
-          'HeldItems',
-          'KPStatus',
+          TableName.table_held_items,
+          TableName.table_kp_status,
           0);
       if (kpscArray.isNotEmpty) {
-        await kpPrinting(GlobalConfig.salesNo, GlobalConfig.splitNo,
-            GlobalConfig.tableNo, 'HeldItems', 'KPStatus', 0, 0);
+        await kpPrinting(
+            GlobalConfig.salesNo,
+            GlobalConfig.splitNo,
+            GlobalConfig.tableNo,
+            TableName.table_held_items,
+            TableName.table_kp_status,
+            0,
+            0);
 
         if (POSDtls.blnKPPrintMaster) {
-          await masterKPPrint(GlobalConfig.salesNo, GlobalConfig.splitNo,
-              GlobalConfig.tableNo, 'HeldItems', 'KPStatus', 0, 0);
+          await masterKPPrint(
+              GlobalConfig.salesNo,
+              GlobalConfig.splitNo,
+              GlobalConfig.tableNo,
+              TableName.table_held_items,
+              TableName.table_kp_status,
+              0,
+              0);
         }
 
         if (printerManager.getPrinters().isEmpty) {
           printArr.clear();
-          state = PrintErrorState(errMsg: 'There is no printer connected');
+          state = PrintErrorState(errMsg: message_no_printer);
         } else {
           for (String printData in printArr) {
             // Print Action
@@ -220,7 +233,7 @@ class PrintController extends StateNotifier<PrintState>
   Future<String> getBill(int printSNo, String printStatus) async {
     List<List<String>> refundArray = <List<String>>[];
 
-    if (printStatus == 'Refund') {
+    if (printStatus == PrintStatus.k_refund) {
       refundArray = await paymentRepository.getPrintRefund(printSNo);
       printSNo = refundArray[0][4].toInt();
     }
@@ -367,7 +380,7 @@ class PrintController extends StateNotifier<PrintState>
         }
       }
     }
-    if (printStatus == 'AllVoid') {
+    if (printStatus == PrintStatus.k_all_void) {
       tempText += '${textPrintFormat('N', 'C', '1')}${addDash(38)}\n';
       tempText +=
           '${textPrintFormat('N', 'C', '1')} ********* ALL VOID *********n';

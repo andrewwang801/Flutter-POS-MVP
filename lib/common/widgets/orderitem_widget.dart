@@ -6,6 +6,7 @@ import 'package:raptorpos/home/presentation/widgets/menu_item_detail.dart';
 
 import '../../constants/text_style_constant.dart';
 import '../../home/model/order_item_model.dart';
+import '../GlobalConfig.dart';
 
 @immutable
 class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
@@ -127,7 +128,7 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 5.0),
                         child: Text(
-                          '${orderItem.CategoryId}',
+                          categoryType(orderItem.CategoryId!),
                           textAlign: TextAlign.left,
                           style: isDark
                               ? textStyle
@@ -159,6 +160,16 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
   @override
   Widget build(BuildContext context) {
     return Container();
+  }
+
+  String categoryType(int id) {
+    if (id == 1) {
+      return 'Take Away';
+    } else if (id == 3) {
+      return 'DINE IN';
+    } else {
+      return 'Delivery';
+    }
   }
 
   @override
