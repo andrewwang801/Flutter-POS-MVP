@@ -21,12 +21,12 @@ import '../floor_plan/repository/local_tablemanagement_repository.dart' as _i24;
 import '../functions/application/function_controller.dart' as _i29;
 import '../functions/domain/function_local_repository.dart' as _i11;
 import '../home/model/prep/prep_model.dart' as _i4;
-import '../home/provider/order/order_state_notifier.dart' as _i33;
+import '../home/provider/order/order_state_notifier.dart' as _i30;
 import '../home/provider/plu_details/plu_state_notifier.dart' as _i34;
 import '../home/repository/menu/i_menu_repository.dart' as _i13;
 import '../home/repository/menu/menu_local_repository.dart' as _i14;
-import '../home/repository/order/i_order_repository.dart' as _i30;
-import '../home/repository/order/order_local_repository.dart' as _i31;
+import '../home/repository/order/i_order_repository.dart' as _i31;
+import '../home/repository/order/order_local_repository.dart' as _i32;
 import '../payment/provider/payment_state_notifier.dart' as _i35;
 import '../payment/repository/i_payment_repository.dart' as _i17;
 import '../payment/repository/payment_local_repository.dart' as _i18;
@@ -39,7 +39,7 @@ import '../printer/repository/printer_local_repository.dart' as _i22;
 import '../promo/application/promo_controller.dart' as _i41;
 import '../promo/domain/promotion_local_repository.dart' as _i36;
 import '../sales_report/application/sales_report_controller.dart' as _i7;
-import '../trans/application/kitchen_reprint_controller.dart' as _i32;
+import '../trans/application/kitchen_reprint_controller.dart' as _i33;
 import '../trans/application/refund_controller.dart' as _i37;
 import '../trans/application/trans_controller.dart' as _i39;
 import '../trans/application/trans_detail_controller.dart' as _i40;
@@ -96,38 +96,40 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       _i27.XPrinterService(paymentRepository: get<_i17.IPaymentRepository>()));
   gh.factory<_i28.AuthController>(
       () => _i28.AuthController(get<_i15.IOperatorRepository>()));
-  gh.factory<_i29.FunctionController>(
-      () => _i29.FunctionController(get<_i11.FunctionLocalRepository>()));
-  gh.factory<_i30.IOrderRepository>(() => _i31.OrderLocalRepository(
+  gh.factoryParam<_i29.FunctionController, _i30.OrderStateNotifier, dynamic>(
+      (orderController, _) => _i29.FunctionController(
+          get<_i11.FunctionLocalRepository>(),
+          orderController: orderController));
+  gh.factory<_i31.IOrderRepository>(() => _i32.OrderLocalRepository(
       get<_i17.IPaymentRepository>(),
       database: get<_i3.LocalDBHelper>()));
-  gh.factoryParam<_i32.KitchenReprintController, _i8.PrintController, dynamic>(
-      (printController, _) => _i32.KitchenReprintController(
+  gh.factoryParam<_i33.KitchenReprintController, _i8.PrintController, dynamic>(
+      (printController, _) => _i33.KitchenReprintController(
           get<_i26.TransLocalRepository>(),
           printController: printController));
-  gh.factoryParam<_i33.OrderStateNotifier, _i8.PrintController, dynamic>(
-      (printController, _) => _i33.OrderStateNotifier(
-          get<_i30.IOrderRepository>(),
+  gh.factoryParam<_i30.OrderStateNotifier, _i8.PrintController, dynamic>(
+      (printController, _) => _i30.OrderStateNotifier(
+          get<_i31.IOrderRepository>(),
           get<_i17.IPaymentRepository>(),
           get<_i10.DiscountRepository>(),
           get<_i19.IPrintRepository>(),
           printController: printController));
   gh.factory<_i34.PLUStateNotifier>(() => _i34.PLUStateNotifier(
-      get<_i13.IMenuRepository>(), get<_i30.IOrderRepository>()));
+      get<_i13.IMenuRepository>(), get<_i31.IOrderRepository>()));
   gh.factory<_i35.PaymentStateNotifer>(() => _i35.PaymentStateNotifer(
-      get<_i17.IPaymentRepository>(), get<_i30.IOrderRepository>()));
+      get<_i17.IPaymentRepository>(), get<_i31.IOrderRepository>()));
   gh.factory<_i36.PromotionLocalRepository>(() => _i36.PromotionLocalRepository(
-      get<_i3.LocalDBHelper>(), get<_i30.IOrderRepository>()));
+      get<_i3.LocalDBHelper>(), get<_i31.IOrderRepository>()));
   gh.factoryParam<_i37.RefundController, _i8.PrintController, dynamic>(
       (printController, _) => _i37.RefundController(
           get<_i26.TransLocalRepository>(),
           printController: printController));
   gh.factory<_i38.TableController>(() => _i38.TableController(
-      get<_i23.ITableMangementRepository>(), get<_i30.IOrderRepository>()));
+      get<_i23.ITableMangementRepository>(), get<_i31.IOrderRepository>()));
   gh.factoryParam<_i39.TransController, _i8.PrintController, dynamic>(
       (printController, _) => _i39.TransController(
           get<_i26.TransLocalRepository>(),
-          get<_i30.IOrderRepository>(),
+          get<_i31.IOrderRepository>(),
           get<_i17.IPaymentRepository>(),
           printController: printController));
   gh.factory<_i40.TransDetailController>(

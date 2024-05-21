@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
+import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/common/widgets/custom_button.dart';
 import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
@@ -16,7 +17,6 @@ import 'package:raptorpos/payment/repository/i_payment_repository.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 import 'package:raptorpos/trans/presentation/trans.dart';
 
-import '../extension/workable.dart';
 import 'alert_dialog.dart';
 import 'responsive.dart';
 

@@ -35,6 +35,6 @@ class FunctionState extends Equatable {
     return FunctionState(
         failiure: failiure ?? this.failiure,
         workable: workable ?? this.workable,
-        data: data ?? data);
+        data: data ?? this.data);
   }
 }

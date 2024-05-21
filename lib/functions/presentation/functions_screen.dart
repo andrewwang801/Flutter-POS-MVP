@@ -82,18 +82,22 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
       }
     });
 
-    ref.listen(orderProvoder, (previous, OrderState next) {
-      if (next.failure != null) {
+    ref.listen(functionProvider, (previous, FunctionState next) {
+      if (next.failiure != null) {
         showDialog(
             context: context,
             builder: (context) {
               return AppAlertDialog(
                 onConfirm: () {},
                 title: 'Error',
-                message: next.failure!.errMsg,
+                message: next.failiure!.errMsg,
               );
             });
-      } else if (next.operation == OPERATIONS.SHOW_TABLE_MANAGEMENT) {
+      }
+    });
+
+    ref.listen(orderProvoder, (previous, OrderState next) {
+      if (next.operation == OPERATIONS.SHOW_TABLE_MANAGEMENT) {
         Get.to(() => const FloorPlanScreen());
       } else if (next.operation == OPERATIONS.SHOW_TABLE_NUM) {
         showDialog(
@@ -221,6 +225,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                   break;
                 // All Void
                 case 32:
+                  allVoid();
                   break;
 
                 // Sales Report
@@ -291,7 +296,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
   }
 
   void allVoid() {
-    ref.read(orderProvoder.notifier).voidAllOrder();
+    ref.read(functionProvider.notifier).voidAllOrder();
   }
 
   newRemarks() {

@@ -1061,63 +1061,102 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
   bool showBFOC = false, showDisc = false, showFunc = false, showPromo = false;
 
   Future<void> voidAllOrder() async {
-    try {
-      if (GlobalConfig.checkTableOpen > 0) {
-        if (GlobalConfig.AllVoid) {
-          if (GlobalConfig.checkItemOrder > 0) {
-            List<List<String>> scArray =
-                await printRepository.getKPSalesCategory(GlobalConfig.salesNo,
-                    GlobalConfig.splitNo, 'HeldItems', 'KPStatus', 0);
-            if (scArray.isNotEmpty) {
-              await orderRepository.updateHoldItem(GlobalConfig.salesNo,
-                  GlobalConfig.splitNo, GlobalConfig.tableNo, 0, 0, 0);
-            }
+    if (GlobalConfig.checkTableOpen > 0) {
+      if (GlobalConfig.AllVoid) {
+        if (GlobalConfig.checkItemOrder > 0) {
+          List<List<String>> scArray = await printRepository.getKPSalesCategory(
+              GlobalConfig.salesNo,
+              GlobalConfig.splitNo,
+              'HeldItems',
+              'KPStatus',
+              0);
+          if (scArray.isNotEmpty) {
+            await orderRepository.updateHoldItem(GlobalConfig.salesNo,
+                GlobalConfig.splitNo, GlobalConfig.tableNo, 0, 0, 0);
+          }
 
-            final int voidRemark =
-                await orderRepository.getPostVoidData(0, GlobalConfig.salesNo);
-            if (voidRemark > 0) {
-              // TODO(Smith): show custom keyboard
-              GlobalConfig.CustomKeyboard = 1;
-              oprtNo = GlobalConfig.operatorNo;
-              state = state.copyWith(operation: OPERATIONS.SHOW_KEYBOARD);
+          final int voidRemark =
+              await orderRepository.getPostVoidData(0, GlobalConfig.salesNo);
+          if (voidRemark > 0) {
+            // TODO(Smith): show custom keyboard
+            GlobalConfig.CustomKeyboard = 1;
+            oprtNo = GlobalConfig.operatorNo;
+            state = state.copyWith(operation: OPERATIONS.SHOW_KEYBOARD);
+          } else {
+            await orderRepository.voidAllOrder(
+                GlobalConfig.salesNo,
+                GlobalConfig.splitNo,
+                GlobalConfig.tableNo,
+                POSDtls.deviceNo,
+                GlobalConfig.operatorNo,
+                GlobalConfig.cover,
+                GlobalConfig.TransMode,
+                InitSalesVar.memId,
+                POSDtls.PShift.toInt(),
+                POSDtls.categoryID,
+                '',
+                '');
+            await printController.printBill(
+                GlobalConfig.salesNo, 'Void Tables');
+            showBFOC = false;
+            showDisc = false;
+            showFunc = false;
+            showPromo = false;
+
+            if (POSDtls.TBLManagement) {
+              // TODO(Smith): Show table management screen
+              state =
+                  state.copyWith(operation: OPERATIONS.SHOW_TABLE_MANAGEMENT);
             } else {
-              await orderRepository.voidAllOrder(
-                  GlobalConfig.salesNo,
-                  GlobalConfig.splitNo,
-                  GlobalConfig.tableNo,
-                  POSDtls.deviceNo,
-                  GlobalConfig.operatorNo,
-                  GlobalConfig.cover,
-                  GlobalConfig.TransMode,
-                  InitSalesVar.memId,
-                  POSDtls.PShift.toInt(),
-                  POSDtls.categoryID,
-                  '',
-                  '');
-              await printController.printBill(
-                  GlobalConfig.salesNo, 'Void Tables');
-              showBFOC = false;
-              showDisc = false;
-              showFunc = false;
-              showPromo = false;
-
-              if (POSDtls.TBLManagement) {
-                // TODO(Smith): Show table management screen
-                state =
-                    state.copyWith(operation: OPERATIONS.SHOW_TABLE_MANAGEMENT);
-              } else {
-                // TODO(Smith): reset status
-                if (POSDtls.forceTable) {
-                  // TODO(Smith): Show table number screen
-                  state = state.copyWith(operation: OPERATIONS.SHOW_TABLE_NUM);
-                }
+              // TODO(Smith): reset status
+              if (POSDtls.forceTable) {
+                // TODO(Smith): Show table number screen
+                state = state.copyWith(operation: OPERATIONS.SHOW_TABLE_NUM);
               }
             }
           }
         } else {
-          // TODO(Smith): Send Sales to Online Controller
+          await orderRepository.voidAllOrder(
+              GlobalConfig.salesNo,
+              GlobalConfig.splitNo,
+              GlobalConfig.tableNo,
+              POSDtls.deviceNo,
+              GlobalConfig.operatorNo,
+              GlobalConfig.cover,
+              GlobalConfig.TransMode,
+              InitSalesVar.memId,
+              POSDtls.PShift.toInt(),
+              POSDtls.categoryID,
+              '',
+              '');
+          await printController.printBill(GlobalConfig.salesNo, 'Void Tables');
+          showBFOC = false;
+          showDisc = false;
+          showFunc = false;
+          showPromo = false;
+
+          if (POSDtls.TBLManagement) {
+            // TODO(Smith): Show table management screen
+            state = state.copyWith(operation: OPERATIONS.SHOW_TABLE_MANAGEMENT);
+          } else {
+            // TODO(Smith): reset status
+            if (POSDtls.forceTable) {
+              // TODO(Smith): Show table number screen
+              state = state.copyWith(operation: OPERATIONS.SHOW_TABLE_NUM);
+            }
+          }
         }
-      } else {}
-    } catch (e) {}
+      } else {
+        // TODO(Smith): Send Sales to Online Controller
+        throw Exception(
+            'All Void Failed! No Transaction - Not enough permission to All Void');
+      }
+    } else {
+      throw Exception(
+          'All Void Failed! No Transaction - Please open table first');
+      // state = state.copyWith(
+      //     failure: Failure(
+      //         errMsg: 'All Void Failed! Not enough permission to All Void'));
+    }
   }
 }
