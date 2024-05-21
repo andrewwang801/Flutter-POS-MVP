@@ -23,7 +23,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
     bool focbillOPAccess = false;
     final String query =
         'SELECT COUNT(PLUNo) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (FOCItem = 0 OR FunctionID IN (24, 25))';
-    List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+    final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
     if (data.isNotEmpty) {
       final Map<String, dynamic> tempData = data[0];
 
@@ -117,7 +117,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
       int pShift,
       String custID,
       String transMode) async {
-    Database dbHandler = await dbHelper.database;
+    final Database dbHandler = await dbHelper.database;
 
     final String sDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final String sTime = DateFormat('HH:mm:ss.0').format(DateTime.now());
@@ -160,17 +160,17 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
       itemTaxInc = true;
     }
 
-    List<double> taxArray = await findTax(salesNo, splitNo, tableNo, 2);
-    double TTax0 = taxArray[0];
-    double TTax1 = taxArray[1];
-    double TTax2 = taxArray[2];
-    double TTax3 = taxArray[3];
-    double TTax4 = taxArray[4];
-    double TTax5 = taxArray[5];
-    double TTax6 = taxArray[6];
-    double TTax7 = taxArray[7];
-    double TTax8 = taxArray[8];
-    double TTax9 = taxArray[9];
+    final List<double> taxArray = await findTax(salesNo, splitNo, tableNo, 2);
+    final double TTax0 = taxArray[0];
+    final double TTax1 = taxArray[1];
+    final double TTax2 = taxArray[2];
+    final double TTax3 = taxArray[3];
+    final double TTax4 = taxArray[4];
+    final double TTax5 = taxArray[5];
+    final double TTax6 = taxArray[6];
+    final double TTax7 = taxArray[7];
+    final double TTax8 = taxArray[8];
+    final double TTax9 = taxArray[9];
     double GTotal = amount;
 
     if (!itemTaxInc) {
@@ -202,7 +202,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
         'SELECT COUNT(OperatorNo) FROM OperatorFOC WHERE OperatorNo = $operatorNo AND FOCID = $focType';
     data = await dbHandler.rawQuery(query);
     tempData = data[0];
-    int opCount = dynamicToInt(tempData.values.first);
+    final int opCount = dynamicToInt(tempData.values.first);
 
     if (opCount <= 0) {
       GlobalConfig.ErrMsg =
@@ -309,7 +309,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
 
     String query =
         "SELECT IFNULL(SUM(VoidCount),0) FROM OpHistory WHERE (DateIn || ' ' || TimeIn) = '$tempDateTime' AND OperatorNo = ${GlobalConfig.operatorNo}";
-    List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+    final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
     int sVoidCount = 0;
     if (data.isNotEmpty) {
       sVoidCount = dynamicToInt(data[0].values.first);
@@ -327,8 +327,8 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
         "UPDATE HeldItems SET TransStatus = 'V', PostSendVoid = 1 WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TblHold = 1 AND SalesRef = $salesRef AND TableNo = '$tableNo'";
     await dbHandler.rawQuery(query);
 
-    String sDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    String sTime = DateFormat('HH:mm:ss.0').format(DateTime.now());
+    final String sDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final String sTime = DateFormat('HH:mm:ss.0').format(DateTime.now());
 
     query =
         "INSERT INTO HeldItems (POSID, Covers, TableNo, SalesNo, SplitNo, PLUSalesRef, PLUNo, Department, Quantity, ItemName, ItemAmount, PaidAmount, ChangeAmount, Gratuity, Tax0, Tax1, Tax2, Tax3, Tax4, Tax5, Tax6, Tax7, Tax8, Tax9, Adjustment, DiscountType, DiscountPercent, Discount, PromotionId, PromotionType, PromotionSaving, TransMode, RefundID, MembershipID, LoyaltyCardNo, CustomerID, CardScheme, CreditCardNo, AvgCost, RecipeId, PriceShift, CategoryId, TransferredTable, TransferredOp, KitchenPrint1, KitchenPrint2, KitchenPrint3, RedemptionItem, PointsRedeemed, ShiftID, PrintFreePrep, PrintPrepWithPrice, Preparation, FOCItem, FOCType, ApplyTax0, ApplyTax1, ApplyTax2, ApplyTax3, ApplyTax4, ApplyTax5, ApplyTax6, ApplyTax7, ApplyTax8, ApplyTax9, LnkTo, BuyXfreeYapplied, RndingAdjustments, PostSendVoid, TblHold, DepositID, SeatNo, OperatorNo, ItemSeqNo, SDate, STime, TransStatus, FunctionID, SubFunctionID, serverno) SELECT HeldItems.POSID, HeldItems.Covers, HeldItems.TableNo, HeldItems.SalesNo, HeldItems.SplitNo, HeldItems.SalesRef, HeldItems.PLUNo, HeldItems.Department, HeldItems.Quantity, HeldItems.ItemName, HeldItems.ItemAmount, HeldItems.PaidAmount, HeldItems.ChangeAmount, HeldItems.Gratuity, HeldItems.Tax0, HeldItems.Tax1, HeldItems.Tax2, HeldItems.Tax3,  HeldItems.Tax4, HeldItems.Tax5, HeldItems.Tax6, HeldItems.Tax7, HeldItems.Tax8, HeldItems.Tax9, HeldItems.Adjustment, HeldItems.DiscountType, HeldItems.DiscountPercent, HeldItems.Discount, HeldItems.PromotionId, HeldItems.PromotionType, HeldItems.PromotionSaving, HeldItems.TransMode, HeldItems.RefundID, HeldItems.MembershipID, HeldItems.LoyaltyCardNo, HeldItems.CustomerID, HeldItems.CardScheme, HeldItems.CreditCardNo, HeldItems.AvgCost, HeldItems.RecipeId, HeldItems.PriceShift, HeldItems.CategoryId, HeldItems.TransferredTable, HeldItems.TransferredOp, HeldItems.KitchenPrint1, HeldItems.KitchenPrint2, HeldItems.KitchenPrint3, HeldItems.RedemptionItem, HeldItems.PointsRedeemed, HeldItems.ShiftID, HeldItems.PrintFreePrep, HeldItems.PrintPrepWithPrice, HeldItems.Preparation, HeldItems.FOCItem, HeldItems.FOCType, HeldItems.ApplyTax0, HeldItems.ApplyTax1, HeldItems.ApplyTax2, HeldItems.ApplyTax3, HeldItems.ApplyTax4, HeldItems.ApplyTax5, HeldItems.ApplyTax6, HeldItems.ApplyTax7, HeldItems.ApplyTax8, HeldItems.ApplyTax9, HeldItems.LnkTo, HeldItems.BuyXfreeYapplied, HeldItems.RndingAdjustments, HeldItems.PostSendVoid, HeldItems.TblHold, HeldItems.DepositID, HeldItems.SeatNo, ${GlobalConfig.operatorNo}, HeldItems.ItemSeqNo, '$sDate', '$sTime', 'N', HeldItems.FunctionID, HeldItems.SubFunctionID, ${GlobalConfig.operatorNo} FROM HeldItems WHERE HeldItems.SalesRef = $salesRef";
@@ -532,10 +532,10 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
     if (!PLUBillDisc) {
       query =
           "SELECT IFNULL(SUM(Quantity * ItemAmount * CASE WHEN FunctionID = 26 THEN 1 ELSE 0 END), 0), IFNULL(SUM((IFNULL(PromotionSaving, 0) + IFNULL(Discount, 0)) * (CASE WHEN FunctionID = 26 THEN 1 ELSE 0 END)), 0) FROM $TableName WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (TransStatus = ' ' OR TransStatus = 'D')";
-      List<Map<String, dynamic>> data1 = await db.rawQuery(query);
-      Map<String, dynamic> tempdata1 = data1[0];
-      double amount = dynamicToDouble(tempdata1.values.first);
-      double disc = dynamicToDouble(tempdata1.values.elementAt(1));
+      final List<Map<String, dynamic>> data1 = await db.rawQuery(query);
+      final Map<String, dynamic> tempdata1 = data1[0];
+      final double amount = dynamicToDouble(tempdata1.values.first);
+      final double disc = dynamicToDouble(tempdata1.values.elementAt(1));
       AllItemTotal = amount - disc;
     } else {
       query =
@@ -1076,7 +1076,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
       int paymentType,
       double paidAmount,
       String customerID) async {
-    Database db = await dbHelper.database;
+    final Database db = await dbHelper.database;
     double TTax0 = 0.0;
     double TTax1 = 0.0;
     double TTax2 = 0.0;
@@ -1092,8 +1092,8 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
     double ChangeAmount = 0.0;
     double PdTotal = 0.0;
 
-    String sDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    String sTime = DateFormat('HH:mm:ss.000').format(DateTime.now());
+    final String sDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final String sTime = DateFormat('HH:mm:ss.000').format(DateTime.now());
     String msgPayment = '';
     double msgAmount = 0.00;
 
@@ -1101,9 +1101,9 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
         'SELECT FunctionID, SubFunctionID, Title FROM Media WHERE SubFunctionID = $paymentType';
     var data = await db.rawQuery(query);
     var tempdata = data[0];
-    int FunctionID = dynamicToInt(tempdata.values.elementAt(0));
-    int SubFunctionID = dynamicToInt(tempdata.values.elementAt(1));
-    String nmMedia = tempdata.values.elementAt(2).toString();
+    final int FunctionID = dynamicToInt(tempdata.values.elementAt(0));
+    final int SubFunctionID = dynamicToInt(tempdata.values.elementAt(1));
+    final String nmMedia = tempdata.values.elementAt(2).toString();
 
     query =
         'SELECT IFNULL(MembershipId, 0), RcptNo, Covers FROM HeldTables WHERE SalesNo = $salesNo AND SplitNo = $splitNo';
@@ -1112,24 +1112,24 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
       throw Exception('No Table Selected');
     }
     tempdata = data[0];
-    int MembershipId = dynamicToInt(tempdata.values.elementAt(0));
+    final int MembershipId = dynamicToInt(tempdata.values.elementAt(0));
     String RcptNo = tempdata.values.elementAt(1).toString();
-    int Covers = dynamicToInt(tempdata.values.elementAt(2));
+    final int Covers = dynamicToInt(tempdata.values.elementAt(2));
 
     query = 'SELECT inclusive FROM TaxRates WHERE SalesTax = 1';
     data = await db.rawQuery(query);
     tempdata = data[0];
-    bool ItemTaxInc = dynamicToBool(tempdata.values.elementAt(0));
+    final bool ItemTaxInc = dynamicToBool(tempdata.values.elementAt(0));
 
     query =
         "SELECT TAmnt, Disc, Surcharge FROM (SELECT SUM(Quantity * ItemAmount * CASE WHEN (FunctionID = 26) AND FOCItem = 0 THEN 1 ELSE 0 END) AS TAmnt, SUM((IFNULL(Discount,0) + IFNULL(PromotionSaving,0)) * CASE WHEN FunctionID = 25 OR FunctionID = 26 AND FOCItem = 0 THEN 1 ELSE 0 END) AS Disc, SUM((IFNULL(Discount,0)) * CASE WHEN FunctionID = 55 THEN 1 ELSE 0 END) AS Surcharge FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND (TransStatus = ' ' Or TransStatus = 'D')) AS a";
     data = await db.rawQuery(query);
     tempdata = data[0];
-    double TAmnt = dynamicToDouble(tempdata.values.elementAt(0));
-    double Disc = dynamicToDouble(tempdata.values.elementAt(1));
-    double Surcharge = dynamicToDouble(tempdata.values.elementAt(2));
+    final double TAmnt = dynamicToDouble(tempdata.values.elementAt(0));
+    final double Disc = dynamicToDouble(tempdata.values.elementAt(1));
+    final double Surcharge = dynamicToDouble(tempdata.values.elementAt(2));
 
-    double STotal = TAmnt;
+    final double STotal = TAmnt;
     double GTotal = TAmnt - Disc + Surcharge;
 
     if (!POSDefault.TaxInclusive) {
@@ -1170,7 +1170,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
             TTax9;
       }
     } else {
-      List<double> TaxArr =
+      final List<double> TaxArr =
           await findExTax(salesNo, splitNo, tableNo, 2, false);
 
       TTax0 = TaxArr[0];
@@ -1187,7 +1187,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
 
     query =
         'SELECT COUNT(OperatorNo) FROM OperatorMedia WHERE OperatorNo = $operatorNo AND MediaID = $SubFunctionID';
-    int CountOperator = await countData(query);
+    final int CountOperator = await countData(query);
 
     if (CountOperator <= 0) {
       GlobalConfig.ErrMsg =
@@ -1362,7 +1362,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
           '0',
           '$operatorNo'
         ];
-        Map<String, dynamic> rows = <String, dynamic>{};
+        final Map<String, dynamic> rows = <String, dynamic>{};
         for (var i = 0; i < fields.length; i++) {
           rows[fields[i]] = values[i];
         }
@@ -1373,7 +1373,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
             "SELECT MAX(SalesRef) FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TransStatus = ' ' AND ItemSeqNo = 101";
         data = await db.rawQuery(query);
         tempdata = data[0];
-        int SalesRef = dynamicToInt(tempdata.values.elementAt(0));
+        final int SalesRef = dynamicToInt(tempdata.values.elementAt(0));
 
         if ((GTotal - PdTotal) <= paidAmount) {
           fields = <String>[
@@ -1417,7 +1417,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
           tempdata = data[0];
           PdAmnt = dynamicToDouble(tempdata.values.elementAt(0));
 
-          double Balance = GTotal - PdAmnt;
+          final double Balance = GTotal - PdAmnt;
 
           fields = <String>[
             'STotal',
@@ -1429,7 +1429,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
           ];
           values = <dynamic>[STotal, GTotal, PdAmnt, Balance, sDate, sTime];
 
-          Map<String, dynamic> heldTableRows = <String, dynamic>{};
+          final Map<String, dynamic> heldTableRows = <String, dynamic>{};
           for (int i = 0; i < fields.length; i++) {
             heldTableRows[fields[i]] = values[i];
           }
@@ -1626,7 +1626,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
                 '0',
                 '0'
               ];
-              Map<String, String> maps = <String, String>{
+              final Map<String, String> maps = <String, String>{
                 'ReceiptNo': "$RcptNo",
                 'OperatorNo': operatorNo.toString(),
                 'TableNo': "$tableNo",
@@ -1658,7 +1658,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
               sDate,
               sTime
             ];
-            Map<String, String> maps = <String, String>{
+            final Map<String, String> maps = <String, String>{
               'OperatorNo': operatorNo.toString(),
               'TableNo': tableNo,
               'Finalized': '1',
@@ -1735,10 +1735,10 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
 
     final String query =
         'SELECT VerifyFOC, Remarks, PromptForCustomerId, AllowPromotion FROM Media WHERE SubFunctionID = $subFuncID';
-    List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+    final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
     if (data.isNotEmpty) {
-      Map<String, dynamic> tempData = data[0];
-      List<bool> boolData = <bool>[];
+      final Map<String, dynamic> tempData = data[0];
+      final List<bool> boolData = <bool>[];
       boolData.add(dynamicToBool(tempData.values.first));
       boolData.add(dynamicToBool(tempData.values.elementAt(1)));
       boolData.add(dynamicToBool(tempData.values.elementAt(2)));
@@ -1755,7 +1755,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
     final List<FocBillData> focBillList = <FocBillData>[];
     const String query =
         'SELECT Title, SubFunctionID FROM Media WHERE FunctionID = 7 AND MActive = 1 ORDER BY Title';
-    List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+    final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
 
     focBillList.add(FocBillData(title: 'Back', subFuncID: 0));
     Map<String, dynamic> tempData;
@@ -1816,7 +1816,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
     final List<MediaData> mediaList = <MediaData>[];
     const String query =
         'SELECT FunctionId, Type, Type_Chinese FROM Functions WHERE Class = 1 AND FunctionID IN (1, 2, 4)';
-    List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+    final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
 
     Map<String, dynamic> tempData;
     for (tempData in data) {
@@ -2009,7 +2009,7 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
     double totalRemove = 0;
 
     if (data.isNotEmpty) {
-      Map<String, dynamic> tempData = data[0];
+      final Map<String, dynamic> tempData = data[0];
       totalRemove = cast<double>(tempData.values.first) ?? 0;
     }
     return totalRemove;
@@ -2073,5 +2073,82 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
     query =
         'DELETE FROM KPStatus WHERE SalesNo = $salesNo AND SplitNo = $splitNo';
     db.rawQuery(query);
+  }
+
+  // Bill Preview
+
+  @override
+  Future<bool> previewBillPermission(int operatorNo) async {
+    final String query =
+        'SELECT PreviewBill FROM Operator WHERE OperatorNo = $operatorNo';
+
+    final Database database = await dbHelper.database;
+    final List<Map<String, dynamic>> data = await database.rawQuery(query);
+    final bool getPermission = dynamicToBool(data[0].get(0));
+
+    return getPermission;
+  }
+
+  @override
+  Future<List<List<String>>> getSalesCatData(int salesNo) async {
+    final String query =
+        'SELECT DISTINCT SC.CategoryName, SC.CategoryID FROM HeldItems H INNER JOIN SalesCategory SC ON (H.CategoryID = SC.CategoryID) WHERE H.SalesNo = $salesNo ORDER BY SC.CategoryName';
+    final Database database = await dbHelper.database;
+    final List<Map<String, dynamic>> data = await database.rawQuery(query);
+
+    return mapListToString2D(data);
+  }
+
+  @override
+  Future<List<List<String>>> getPaymentData(int salesNo) async {
+    final String query =
+        'SELECT ItemName, PaidAmount, ChangeAmount, Tax0, Tax1, Tax2, Tax3, Tax4, Tax5, Tax6, Tax7, Tax8, Tax9 FROM HeldItems WHERE SalesNo = $salesNo AND ItemSeqNo = 101 AND FunctionID NOT IN (25, 33)';
+    final Database database = await dbHelper.database;
+    final List<Map<String, dynamic>> data = await database.rawQuery(query);
+
+    return mapListToString2D(data);
+  }
+
+  @override
+  Future<List<String>> getTotalItem(int salesNo) async {
+    final String query =
+        "SELECT COUNT(ItemName), IFNULL(SUM(Qty),0) FROM (SELECT ItemName, SUM(Quantity) AS Qty FROM HeldItems WHERE SalesNo = $salesNo AND ItemSeqNo NOT IN (101,102) AND ItemName <> 'FOC Item' AND (TransStatus = ' ' OR TransStatus = 'D') AND Preparation = 0 GROUP BY ItemName)";
+    final Database database = await dbHelper.database;
+    final List<Map<String, dynamic>> data = await database.rawQuery(query);
+    final Map<String, dynamic> tempData = data[0];
+
+    return mapToStringList(tempData);
+  }
+
+  @override
+  Future<List<List<String>>> getItemData(
+      int salesNo, String categoryName) async {
+    final String query =
+        "SELECT Quantity, ItemName, ((ItemAmount * Quantity) - (CASE WHEN FOCItem = 1 THEN IFNULL(Discount,0) ELSE 0 END)), Preparation, IFNULL(DiscountType,''), IFNULL(Discount,0), IFNULL(PromotionType,''), IFNULL(PromotionSaving,0) FROM HeldItems HI INNER JOIN SalesCategory SC ON (HI.CategoryId = SC.CategoryID) WHERE SalesNo = $salesNo AND ItemSeqNo NOT IN (101, 102) AND FunctionID NOT IN (24, 25, 33) AND SC.CategoryName = '$categoryName' AND (TransStatus = ' ' OR TransStatus = 'D') AND FOCItem = 0 ORDER BY PLUSalesRef, SalesRef";
+    final Database database = await dbHelper.database;
+    final List<Map<String, dynamic>> data = await database.rawQuery(query);
+
+    return mapListToString2D(data);
+  }
+
+  @override
+  Future<List<List<String>>> getPromotionData(int salesNo) async {
+    final String query =
+        "SELECT PromotionType, SUM(PromotionSaving) FROM HeldItems WHERE SalesNo = $salesNo AND (TransStatus = ' ' OR TransStatus = 'D') AND FOCType <> 'FOC Item' GROUP BY PromotionType HAVING SUM(PromotionSaving) <> 0";
+    final Database database = await dbHelper.database;
+    final List<Map<String, dynamic>> data = await database.rawQuery(query);
+
+    return mapListToString2D(data);
+  }
+
+  @override
+  Future<List<String>> getTaxTitle() async {
+    const String query =
+        'SELECT TaxCode, Title, PrintTax, TaxRate FROM TaxRates WHERE (TaxRate > 0) AND (PrintTax = 1) ORDER BY appliestonett DESC, TaxCode';
+    final Database database = await dbHelper.database;
+    final List<Map<String, dynamic>> data = await database.rawQuery(query);
+    final Map<String, dynamic> tempData = data[0];
+
+    return mapToStringList(tempData);
   }
 }

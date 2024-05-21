@@ -16,6 +16,15 @@ mixin StringUtil {
     return result;
   }
 
+  String addChar(String varToAdd, int length) {
+    String temp = '';
+    for (int i = 0; i < length; i++) {
+      temp += varToAdd;
+    }
+
+    return temp;
+  }
+
   String textPrintFormat(String attritube, String align, String size) {
     return '';
     // return '$attritube]$align]$size]';

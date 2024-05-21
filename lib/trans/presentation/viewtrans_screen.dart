@@ -200,17 +200,7 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('POSID',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
                           label: Text('Table',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle)),
-                      DataColumn(
-                          label: Text('Remarks',
                               style: isDark
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
@@ -225,32 +215,37 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('OpenDate',
+                          label: Text('Open Date',
                               style: isDark
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('Time',
+                          label: Text('Open Time',
                               style: isDark
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('Split',
+                          label: Text('Close Date',
                               style: isDark
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('OP No',
+                          label: Text('Close Time',
                               style: isDark
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('Table Status',
+                          label: Text('Trans Mode',
                               style: isDark
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
                       DataColumn(
-                          label: Text('Mode',
+                          label: Text('POS ID',
+                              style: isDark
+                                  ? bodyTextDarkStyle
+                                  : bodyTextLightStyle)),
+                      DataColumn(
+                          label: Text('Sales No',
                               style: isDark
                                   ? bodyTextDarkStyle
                                   : bodyTextLightStyle)),
@@ -286,10 +281,6 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                                 style: isDark
                                     ? bodyTextDarkStyle
                                     : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].posID,
-                                style: isDark
-                                    ? bodyTextDarkStyle
-                                    : bodyTextLightStyle)),
                             DataCell(Text(transArray[index].tableNo,
                                 style: isDark
                                     ? bodyTextDarkStyle
@@ -318,11 +309,11 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
                                 style: isDark
                                     ? bodyTextDarkStyle
                                     : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].splitNo.toString(),
+                            DataCell(Text(transArray[index].transMode,
                                 style: isDark
                                     ? bodyTextDarkStyle
                                     : bodyTextLightStyle)),
-                            DataCell(Text(transArray[index].transMode,
+                            DataCell(Text(transArray[index].posID,
                                 style: isDark
                                     ? bodyTextDarkStyle
                                     : bodyTextLightStyle)),
