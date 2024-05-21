@@ -10,24 +10,26 @@ MenuItemModel _$MenuItemModelFromJson(Map<String, dynamic> json) =>
     MenuItemModel(
       json['MenuID'] as int?,
       json['PLUNumber'] as String?,
-      json['SMenuID'] as int?,
       json['ItemName'] as String?,
       json['ItemName_Chinese'] as String?,
-      json['RGBColour'] as String?,
       json['KPosition'] as int?,
-      json['ItemType'] as String?,
-      (json['SetMenuQty'] as num?)?.toDouble(),
+      json['RGBColour'] as String?,
+      (json['Sell1'] as num?)?.toDouble(),
+      json['PLUsoldout'] as int?,
+      json['DisplayImage'] as int?,
+      json['imagename'] as String?,
     );
 
 Map<String, dynamic> _$MenuItemModelToJson(MenuItemModel instance) =>
     <String, dynamic>{
       'MenuID': instance.menuID,
       'PLUNumber': instance.pluNumber,
-      'SMenuID': instance.sMenuID,
       'ItemName': instance.itemName,
-      'ItemName_Chinese': instance.itemNameCn,
-      'RGBColour': instance.color,
+      'ItemName_Chinese': instance.itemNameCh,
       'KPosition': instance.kPosition,
-      'ItemType': instance.itemType,
-      'SetMenuQty': instance.setMenuQty,
+      'RGBColour': instance.rgbColour,
+      'Sell1': instance.price,
+      'PLUsoldout': instance.pluSoldOut,
+      'DisplayImage': instance.pluImage,
+      'imagename': instance.imageName,
     };

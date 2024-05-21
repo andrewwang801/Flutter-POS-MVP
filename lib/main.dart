@@ -3,6 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/common/widgets/alert_dialog.dart';
+// ignore: unused_import
+import 'package:raptorpos/common/widgets/responsive.dart';
+import 'package:raptorpos/functions/application/function_provider.dart';
+import 'package:raptorpos/functions/application/function_state.dart';
 
 import 'auth/presentation/login_screen.dart';
 import 'common/GlobalConfig.dart';
@@ -19,11 +24,27 @@ void main() async {
   await POSDtls.initPOSDtls();
   await POSDefault.initPOSDefaults();
 
-  SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
-      .then((value) {
-    runApp(ProviderScope(child: const MyApp()));
-  });
+  final data = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+  if (data.size.shortestSide < 600) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]).then((value) {
+      runApp(ProviderScope(child: const MyApp()));
+    });
+  } else {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]).then((value) {
+      runApp(ProviderScope(child: const MyApp()));
+    });
+  }
+  // SystemChrome.setPreferredOrientations(
+  //         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
+  //     .then((value) {
+  //   runApp(ProviderScope(child: const MyApp()));
+  // });
 }
 
 class MyApp extends ConsumerWidget {
@@ -33,36 +54,41 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool isDark = ref.watch(themeProvider);
-    return ScreenUtilInit(
-        designSize: const Size(926, 428),
-        minTextAdapt: true,
-        builder: (BuildContext context, Widget? child) {
-          return GetMaterialApp(
-            title: 'Raptor POS',
-            theme: isDark
-                ? ThemeData(
-                    brightness: Brightness.dark,
-                    appBarTheme:
-                        const AppBarTheme(backgroundColor: primaryDarkColor),
-                    scaffoldBackgroundColor: backgroundDarkColor,
-                    floatingActionButtonTheme:
-                        const FloatingActionButtonThemeData(
-                            backgroundColor: primaryLightColor),
-                    primaryColor: primaryDarkColor,
-                    backgroundColor: backgroundDarkColor)
-                : ThemeData(
-                    brightness: Brightness.light,
-                    appBarTheme:
-                        const AppBarTheme(backgroundColor: primaryLightColor),
-                    scaffoldBackgroundColor: backgroundColor,
-                    floatingActionButtonTheme:
-                        const FloatingActionButtonThemeData(
-                            backgroundColor: primaryLightColor),
-                    primaryColor: primaryLightColor,
-                    backgroundColor: backgroundColor),
-            debugShowCheckedModeBanner: false,
-            home: LoginScreen(),
-          );
-        });
+    return OrientationBuilder(builder: (_, orientation) {
+      return ScreenUtilInit(
+          designSize: orientation == Orientation.landscape
+              ? Size(926, 428)
+              : Size(428, 926),
+          // designSize: Size(428, 926),
+          minTextAdapt: true,
+          builder: (BuildContext context, Widget? child) {
+            return GetMaterialApp(
+              title: 'Raptor POS',
+              theme: isDark
+                  ? ThemeData(
+                      brightness: Brightness.dark,
+                      appBarTheme:
+                          const AppBarTheme(backgroundColor: primaryDarkColor),
+                      scaffoldBackgroundColor: backgroundDarkColor,
+                      floatingActionButtonTheme:
+                          const FloatingActionButtonThemeData(
+                              backgroundColor: primaryLightColor),
+                      primaryColor: primaryDarkColor,
+                      backgroundColor: backgroundDarkColor)
+                  : ThemeData(
+                      brightness: Brightness.light,
+                      appBarTheme:
+                          const AppBarTheme(backgroundColor: Colors.white),
+                      scaffoldBackgroundColor: Colors.white,
+                      floatingActionButtonTheme:
+                          const FloatingActionButtonThemeData(
+                              backgroundColor: primaryLightColor),
+                      primaryColor: Colors.white,
+                      backgroundColor: Colors.white),
+              debugShowCheckedModeBanner: false,
+              home: LoginScreen(),
+            );
+          });
+    });
   }
 }

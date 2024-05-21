@@ -2,7 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
+import 'package:raptorpos/constants/color_constant.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
@@ -37,6 +41,10 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
                 return IntrinsicHeight(
                   child: IntrinsicWidth(
                     child: Dialog(
+                      backgroundColor:
+                          isDark ? primaryDarkColor : backgroundColorVariant,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Spacing.sm)),
                       child: CoverWidget(
                         callback: (int cover) {
                           ref.read(tableProvider.notifier).selectCover(cover);
@@ -53,6 +61,7 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
               builder: (context) {
                 return AppAlertDialog(
                   title: 'Error',
+                  isDark: isDark,
                   message: next.errMsg,
                   onConfirm: () {},
                 );
@@ -68,6 +77,7 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
             builder: (context) {
               return AppAlertDialog(
                 title: 'Error',
+                isDark: isDark,
                 message: next.errMsg,
                 onConfirm: () {},
               );
@@ -78,10 +88,13 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
     if (state is TableSuccessState) {
       return Expanded(
         child: Container(
-            color: Colors.white,
+            color: isDark ? backgroundDarkColor : backgroundColorVariant,
             child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 8,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: Responsive.isMobile(context) ? 4 : 8,
+                  crossAxisSpacing: Responsive.isMobile(context) ? 5 : 40,
+                  mainAxisExtent: Responsive.isMobile(context) ? 80.w : 60.w,
+                  mainAxisSpacing: Responsive.isMobile(context) ? 5 : 40,
                 ),
                 itemCount: state.tableList.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -111,26 +124,31 @@ class _FloorLayoutState extends ConsumerState<FloorLayout> {
   }
 
   Widget _tableWidget(TableDataModel table) {
-    return GestureDetector(
-      onTap: () {
-        ref.read(tableProvider.notifier).selectTable(table.tableNo);
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Container(
-          color: Colors.blue,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                table.tableNo,
-                style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
-              ),
-              Text(
-                table.tableStatus,
-                style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
-              ),
-            ],
+    return SizedBox(
+      child: GestureDetector(
+        onTap: () {
+          ref.read(tableProvider.notifier).selectTable(table.tableNo);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              shape: BoxShape.circle,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  table.tableNo,
+                  style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
+                ),
+                Text(
+                  table.tableStatus,
+                  style: isDark ? buttonTextDarkStyle : buttonTextLightStyle,
+                ),
+              ],
+            ),
           ),
         ),
       ),

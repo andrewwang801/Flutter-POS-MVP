@@ -12,6 +12,7 @@ class AppAlertDialog extends StatelessWidget {
   final VoidCallback? onCancel;
   final Widget? content;
   final EdgeInsets insetPadding;
+  final bool isDark;
 
   const AppAlertDialog({
     Key? key,
@@ -20,6 +21,7 @@ class AppAlertDialog extends StatelessWidget {
     this.onConfirm,
     this.onCancel,
     this.content,
+    required this.isDark,
     this.insetPadding =
         const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
   })  : assert(content == null ? title != null && onConfirm != null : true),
@@ -34,7 +36,7 @@ class AppAlertDialog extends StatelessWidget {
       insetPadding: insetPadding,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: const BorderSide(color: Colors.white, width: 2),
+        side: const BorderSide(color: red, width: 2),
       ),
       content: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -48,8 +50,8 @@ class AppAlertDialog extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: Spacing.screenHPadding, vertical: Spacing.md),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  color: primaryDarkColor,
+                  borderRadius: BorderRadius.circular(8),
+                  color: isDark ? primaryDarkColor : backgroundColorVariant,
                 ),
                 child: content ??
                     Column(
@@ -58,13 +60,17 @@ class AppAlertDialog extends StatelessWidget {
                         if (title != null)
                           Text(
                             title!,
-                            style: titleTextDarkStyle.copyWith(height: 1.5),
+                            style: isDark
+                                ? titleTextDarkStyle.copyWith(height: 1.5)
+                                : titleTextLightStyle.copyWith(height: 1.5),
                           ),
                         const SizedBox(height: 40),
                         if (message != null)
                           Text(
                             message!,
-                            style: modalTextDarkStyle.copyWith(height: 1.5),
+                            style: isDark
+                                ? modalTextDarkStyle.copyWith(height: 1.5)
+                                : modalTextLightStyle.copyWith(height: 1.5),
                           ),
                         const SizedBox(height: 40),
                         Row(
@@ -77,6 +83,9 @@ class AppAlertDialog extends StatelessWidget {
                                     onConfirm!();
                                   }
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  primary: orange,
+                                ),
                                 child: const Text('Ok'),
                               ),
                             ),
@@ -85,6 +94,9 @@ class AppAlertDialog extends StatelessWidget {
                               child: ElevatedButton(
                                 onPressed: onCancel ??
                                     () => Navigator.of(context).pop(),
+                                style: ElevatedButton.styleFrom(
+                                  primary: orange,
+                                ),
                                 child: const Text('Cancel'),
                               ),
                             ),

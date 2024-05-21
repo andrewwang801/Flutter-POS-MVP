@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../common/widgets/alert_dialog.dart';
 import '../../../common/widgets/custom_button.dart';
@@ -27,6 +28,8 @@ class KitchenReprint extends ConsumerStatefulWidget {
 }
 
 class _KitchenReprintState extends ConsumerState<KitchenReprint> {
+  bool isDark = false;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +43,8 @@ class _KitchenReprintState extends ConsumerState<KitchenReprint> {
 
   @override
   Widget build(BuildContext context) {
+    isDark = ref.watch(themeProvider);
+
     // Listen state changes
     ref.listen(kitchenProvider, (previous, KitchenState next) {
       if (next.workable == Workable.failure) {
@@ -50,6 +55,7 @@ class _KitchenReprintState extends ConsumerState<KitchenReprint> {
                 onConfirm: () {},
                 title: 'Error',
                 message: next.failiure?.errMsg ?? '',
+                isDark: isDark,
               );
             });
       }
@@ -160,6 +166,7 @@ class _KitchenReprintState extends ConsumerState<KitchenReprint> {
               onConfirm: () {},
               title: 'Error',
               message: 'No item to reprint, kindly select item(s) to reprint',
+              isDark: isDark,
             );
           });
     }

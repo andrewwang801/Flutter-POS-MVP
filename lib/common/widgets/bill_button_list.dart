@@ -37,6 +37,8 @@ class BillButtonList extends ConsumerStatefulWidget {
 }
 
 class _BillButtonListState extends ConsumerState<BillButtonList> {
+  bool isDark = false;
+
   final List<String> billBtnTexts = [
     'CASH',
     'PAYMENT',
@@ -76,7 +78,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
   @override
   Widget build(BuildContext context) {
     final OrderState state = ref.watch(orderProvoder);
-    final bool isDark = ref.read(themeProvider);
+    isDark = ref.read(themeProvider);
     return SizedBox(
       width: Responsive.isMobile(context) ? 400.w : 300.w,
       height: Responsive.isMobile(context) ? 35.h : 40.h,
@@ -165,6 +167,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
             builder: (BuildContext context) {
               return AppAlertDialog(
                 title: 'Error',
+                isDark: isDark,
                 message: 'Order is empty!',
                 onConfirm: () {},
               );
@@ -193,6 +196,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
           builder: (BuildContext context) {
             return AppAlertDialog(
               title: 'Error',
+              isDark: isDark,
               message: 'Not allowed to pay!',
               onConfirm: () {},
             );
@@ -208,6 +212,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
             builder: (BuildContext context) {
               return AppAlertDialog(
                 title: 'Error',
+                isDark: isDark,
                 message: 'Order is empty!',
                 onConfirm: () {},
               );
@@ -231,6 +236,7 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
             builder: (BuildContext context) {
               return AppAlertDialog(
                 title: 'Error',
+                isDark: isDark,
                 message: 'Not allowed to pay!',
                 onConfirm: () {},
               );

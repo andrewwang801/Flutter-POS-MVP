@@ -24,4 +24,6 @@ final pluDetailsProvider = FutureProvider<List<String>>((ref) async {
   return await repository.getPLUDetails('');
 });
 
-final menuIDProvider = StateProvider<int>((ref) => 5);
+final menuIDProvider = StateProvider<int>((ref) => 0);
+
+final menuIDSearchProvider = StateProvider<String>((ref) => '');

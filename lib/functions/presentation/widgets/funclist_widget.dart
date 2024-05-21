@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:path/path.dart';
 
 import '../../../common/GlobalConfig.dart';
 import '../../../common/extension/workable.dart';

@@ -3,7 +3,6 @@ import 'package:injectable/injectable.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/int_extension.dart';
-import '../../common/utils/type_util.dart';
 import '../model/operator_model.dart';
 import '../repository/i_operator_repository.dart';
 import 'auth_state.dart';

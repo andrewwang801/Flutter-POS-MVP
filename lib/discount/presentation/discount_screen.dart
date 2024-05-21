@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/common/extension/color_extension.dart';
 import 'package:raptorpos/common/extension/workable.dart';
@@ -12,16 +10,12 @@ import 'package:raptorpos/discount/application/discount_provider.dart';
 import 'package:raptorpos/discount/application/discount_state.dart';
 import 'package:raptorpos/discount/model/discount_model.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
-import 'package:raptorpos/home/repository/order/i_order_repository.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 import '../../common/widgets/appbar.dart';
-import '../../common/widgets/bill_button_list.dart';
 import '../../common/widgets/checkout.dart';
 
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
-import '../../payment/repository/i_payment_repository.dart';
-import '../../theme/theme_model.dart';
 
 class DiscountScreen extends ConsumerStatefulWidget {
   DiscountScreen({Key? key}) : super(key: key);
@@ -31,7 +25,7 @@ class DiscountScreen extends ConsumerStatefulWidget {
 }
 
 class _DiscountScreenState extends ConsumerState<DiscountScreen> {
-  bool isDark = true;
+  bool isDark = false;
 
   @override
   void initState() {
@@ -55,6 +49,7 @@ class _DiscountScreenState extends ConsumerState<DiscountScreen> {
             builder: (context) {
               return AppAlertDialog(
                 onConfirm: () {},
+                isDark: isDark,
                 title: 'Error',
                 message: next.failiure!.errMsg,
               );
@@ -75,16 +70,16 @@ class _DiscountScreenState extends ConsumerState<DiscountScreen> {
               SizedBox(
                 height: 5.h,
               ),
-              CheckOut(320.h, Callback: (OrderItemModel orderItem) {
+              CheckOut(Callback: (OrderItemModel orderItem) {
                 salesRef = orderItem.SalesRef;
               }),
               SizedBox(
                 height: 10.h,
               ),
-              BillButtonList(
-                paymentRepository: GetIt.I<IPaymentRepository>(),
-                orderRepository: GetIt.I<IOrderRepository>(),
-              ),
+              // BillButtonList(
+              //   paymentRepository: GetIt.I<IPaymentRepository>(),
+              //   orderRepository: GetIt.I<IOrderRepository>(),
+              // ),
             ],
           ),
           SizedBox(

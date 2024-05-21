@@ -66,6 +66,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               return AppAlertDialog(
                 onConfirm: () {},
                 title: 'Error',
+                isDark: isDark,
                 message: next.failiure!.errMsg,
               );
             });
@@ -80,6 +81,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               return AppAlertDialog(
                 onConfirm: () {},
                 title: 'Error',
+                isDark: isDark,
                 message: next.failiure!.errMsg,
               );
             });
@@ -96,6 +98,10 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               return IntrinsicHeight(
                 child: IntrinsicWidth(
                   child: Dialog(
+                    backgroundColor:
+                        isDark ? primaryDarkColor : backgroundColorVariant,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(Spacing.sm)),
                     child: CoverWidget(
                       callback: (int tableNo) {
                         ref
@@ -131,13 +137,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: CheckOut(428.h -
-                    10.h -
-                    10.h -
-                    (Responsive.isMobile(context) ? 35.h : 40.h) -
-                    appBarHeight -
-                    ScreenUtil().statusBarHeight -
-                    16),
+                child: CheckOut(),
               ),
               SizedBox(
                 height: 10.h,

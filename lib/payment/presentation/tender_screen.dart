@@ -3,16 +3,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:raptorpos/common/extension/workable.dart';
+import 'package:raptorpos/common/widgets/checkout_list.dart';
+import 'package:raptorpos/common/widgets/checkout_summary.dart';
+import 'package:raptorpos/common/widgets/drawer.dart';
+import 'package:raptorpos/common/widgets/order_header.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
+import 'package:raptorpos/functions/application/function_provider.dart';
+import 'package:raptorpos/functions/application/function_state.dart';
+import 'package:raptorpos/home/provider/order/order_state.dart';
 
 import '../../common/GlobalConfig.dart';
 import '../../common/extension/string_extension.dart';
 import '../../common/keyboard/virtual_keyboard_2.dart';
 import '../../common/utils/type_util.dart';
 import '../../common/widgets/alert_dialog.dart';
-import '../../common/widgets/appbar.dart';
-import '../../common/widgets/checkout.dart';
-import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/numpad.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/dimension_constant.dart';
@@ -38,8 +43,9 @@ class TenderScreen extends ConsumerStatefulWidget {
 
 class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
   late IPaymentRepository paymentRepository;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  bool isDark = true;
+  bool isDark = false;
   // Total Remaining
   double gtAmount = 0;
   // Partial Payment Value
@@ -96,6 +102,29 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
     isDark = ref.watch(themeProvider);
     PaymentState state = ref.watch(paymentProvider);
 
+    OrderState orderState = ref.watch(orderProvoder);
+
+    double totalTax = 0.0;
+    if (orderState.workable == Workable.ready && orderState.bills != null) {
+      for (var i = 4; i < orderState.bills!.length; i++) {
+        totalTax += orderState.bills![i];
+      }
+    }
+
+    ref.listen(functionProvider, (previous, FunctionState next) {
+      if (next.failiure != null) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AppAlertDialog(
+                onConfirm: () {},
+                title: 'Error',
+                isDark: isDark,
+                message: next.failiure!.errMsg,
+              );
+            });
+      }
+    });
     ref.listen(printProvider, (previous, next) {
       if (next is PrintSuccessState) {
       } else if (next is PrintErrorState) {
@@ -105,6 +134,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               return AppAlertDialog(
                 insetPadding: EdgeInsets.all(20),
                 title: 'Error',
+                isDark: isDark,
                 message: next.errMsg,
                 onConfirm: () {},
               );
@@ -135,6 +165,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                   return AppAlertDialog(
                     insetPadding: EdgeInsets.all(20),
                     title: 'Tender Payment',
+                    isDark: isDark,
                     message:
                         'Payment: $payValue, Total Bill: $gtAmount, Change: ${change.toStringAsFixed(2)}',
                     onCancel: () {},
@@ -156,6 +187,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                   return AppAlertDialog(
                     insetPadding: EdgeInsets.all(20),
                     title: 'Remove Payment',
+                    isDark: isDark,
                     message: 'Not Enough Permission to Remove Payment',
                     onConfirm: () {},
                   );
@@ -172,6 +204,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               return AppAlertDialog(
                 insetPadding: EdgeInsets.all(20),
                 title: 'Error',
+                isDark: isDark,
                 message: next.msg,
                 onConfirm: () {},
               );
@@ -183,25 +216,97 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
       gtAmount = widget.gTotal - (state.paidValue ?? 0);
 
     return Scaffold(
-      backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(appBarHeight),
-        child: AppBarWidget(true),
+      key: _scaffoldKey,
+      backgroundColor: isDark ? backgroundDarkColor : backgroundColorVariant,
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: false,
+        leading: Container(
+          padding: EdgeInsets.all(Spacing.sm),
+          child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: CircleBorder(),
+              ),
+              onPressed: () {
+                _scaffoldKey.currentState!.openDrawer();
+              },
+              child: const Icon(
+                Icons.menu,
+                size: smiconSize,
+              )),
+        ),
+        title: Text(
+          'Table: ${GlobalConfig.tableNo}   Cover: ${GlobalConfig.cover}   Mode: ${GlobalConfig.TransMode}   Rcp: ${GlobalConfig.rcptNo}',
+          style: isDark ? listItemTextDarkStyle : listItemTextLightStyle,
+          textAlign: TextAlign.left,
+        ),
+        actions: [
+          Container(
+            padding: EdgeInsets.all(Spacing.sm),
+            child: ElevatedButton(
+              onPressed: () {},
+              child: Text('close'),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(lightRed),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(Spacing.sm)),
+                ),
+              ),
+            ),
+          ),
+          // IconButton(
+          //     icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
+          //     onPressed: () {
+          //       isDark ? isDark = false : isDark = true;
+          //       ref.read(themeProvider.notifier).setTheme(isDark);
+          //     })
+        ],
       ),
       body: Row(
         children: [
-          _leftSide(),
           SizedBox(
-            width: 26.w,
-          ),
+              width: Responsive.isMobile(context) ? 400.w : 320.w,
+              child: Container(
+                padding: EdgeInsets.all(Spacing.xs),
+                color: isDark
+                    ? primaryDarkColor.withOpacity(0.9)
+                    : Colors.white.withOpacity(1.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Order(),
+                    OrderHeader(),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isDark ? primaryDarkColor : Colors.white,
+                        ),
+                        child: CheckoutList(),
+                      ),
+                    ),
+                    verticalSpaceSmall,
+                    checkout_summary(
+                        isDark: isDark, state: orderState, totalTax: totalTax),
+                    _paymentEdit(),
+                    NumPad(
+                      buttonColor:
+                          isDark ? primaryButtonDarkColor : Colors.white,
+                      delete: () {},
+                      onSubmit: () {},
+                      controller: _controller,
+                      onlyNum: true,
+                    ),
+                  ],
+                ),
+              )),
           Expanded(child: _rightSide(state)),
         ],
       ),
+      drawer: SideBarDrawer(),
     );
-  }
-
-  Widget _leftSide() {
-    return CheckOut(380.h);
   }
 
   Widget _rightSide(PaymentState state) {
@@ -212,165 +317,191 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
       tenderDetail = state.tenderDetail ?? [];
       return Column(
         children: [
-          SizedBox(
-            height: 5.h,
-          ),
-          Container(
-            decoration: BoxDecoration(
-                border: Border.all(
-                    color: isDark ? primaryDarkColor : primaryLightColor,
-                    width: 1.0)),
-            padding: const EdgeInsets.all(0.0),
-            width: Responsive.isMobile(context) ? 520.w : 600.w,
-            height: 100.h,
-            child: GridView.builder(
-              itemCount: tenderArray.length,
-              itemBuilder: (BuildContext context, int index) {
-                MediaData mediaData = tenderArray[index];
-                return Container(
-                  color: mediaData.title == 'Back'
-                      ? Colors.red
-                      : isDark
-                          ? primaryDarkColor
-                          : primaryLightColor,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        mediaSelect(mediaData);
-                      },
-                      child: Center(
-                        child: Text(mediaData.title,
-                            textAlign: TextAlign.center,
-                            style: bodyTextDarkStyle),
-                      ),
-                    ),
-                  ),
-                );
-              },
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 5,
-                  mainAxisSpacing: 1,
-                  mainAxisExtent: 49.h,
-                  crossAxisSpacing: 1),
-            ),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: Responsive.isMobile(context)
-                    ? 428.h -
-                        165.h -
-                        ScreenUtil().bottomBarHeight -
-                        ScreenUtil().statusBarHeight -
-                        appBarHeight
-                    : 205.h,
-                child: Column(
-                  children: [
-                    Container(
-                      color: isDark
-                          ? primaryDarkColor.withOpacity(0.8)
-                          : primaryLightColor.withOpacity(0.8),
-                      width: Responsive.isMobile(context) ? 260.w : 300.w,
-                      child: ListTile(
-                        dense: true,
-                        title: Text(
-                          'Media Type',
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-                        ),
-                        trailing: Text(
-                          'Amount',
-                          style:
-                              isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                          color: isDark
-                              ? primaryDarkColor.withOpacity(0.6)
-                              : primaryLightColor.withOpacity(0.6),
-                          width: Responsive.isMobile(context) ? 260.w : 300.w,
-                          // height: 130.h,
-                          child: ListView.builder(
-                              itemCount: tenderDetail.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return _payentDetailListItem(index);
-                              })),
-                    ),
-                    Container(
-                      height: 30.h,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            'Amount Due: ${gtAmount.toStringAsFixed(2)}',
-                            style: titleTextDarkStyle.copyWith(
-                                color: Colors.red, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Column(
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.all(Spacing.sm),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: Responsive.isMobile(context) ? 210.w : 250.w,
-                    height: Responsive.isMobile(context) ? 30.h : 25.h,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? primaryDarkColor.withOpacity(0.8)
-                          : primaryLightColor.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(Spacing.xs),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '$payValue',
-                        style:
-                            isDark ? titleTextDarkStyle : titleTextLightStyle,
+                  Text(
+                    'Tender Modes',
+                    style: isDark ? titleTextDarkStyle : titleTextLightStyle,
+                  ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Expanded(
+                    // height: 200.h,
+                    child: GridView.builder(
+                      physics: ClampingScrollPhysics(),
+                      itemCount: tenderArray.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        MediaData mediaData = tenderArray[index];
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(Spacing.sm),
+                            onTap: () {
+                              mediaSelect(mediaData);
+                            },
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(Spacing.sm),
+                                color: mediaData.title == 'Back'
+                                    ? Colors.red
+                                    : isDark
+                                        ? primaryDarkColor
+                                        : Colors.white,
+                              ),
+                              child: Center(
+                                child: Text(mediaData.title,
+                                    textAlign: TextAlign.center,
+                                    style: isDark
+                                        ? listItemTextDarkStyle
+                                        : listItemTextLightStyle),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        mainAxisExtent: 50.h - 10,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
                       ),
                     ),
-                  ),
-                  Container(
-                    width: Responsive.isMobile(context) ? 210.w : 250.w,
-                    height: Responsive.isMobile(context)
-                        ? 428.h -
-                            165.h -
-                            ScreenUtil().bottomBarHeight -
-                            30.h -
-                            ScreenUtil().statusBarHeight -
-                            appBarHeight
-                        : 150.h,
-                    color: Colors.transparent,
-                    child: NumPad(
-                        buttonColor: isDark
-                            ? primaryButtonDarkColor
-                            : primaryButtonColor,
-                        delete: () {},
-                        onSubmit: () {},
-                        controller: _controller),
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-          SizedBox(
-            height: 10.h,
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.all(Spacing.sm),
+              color: Colors.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(Spacing.sm),
+                child: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  color: backgroundColorVariant,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Payment Detail'),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(Spacing.sm),
+                            child: Column(
+                              children: [
+                                Container(
+                                  color: isDark
+                                      ? primaryDarkColor.withOpacity(0.8)
+                                      : orange.withOpacity(0.8),
+                                  child: ListTile(
+                                    tileColor: red,
+                                    dense: true,
+                                    title: Text(
+                                      'Media Type',
+                                      style: isDark
+                                          ? bodyTextDarkStyle
+                                          : bodyTextLightStyle,
+                                    ),
+                                    trailing: Text(
+                                      'Amount',
+                                      style: isDark
+                                          ? bodyTextDarkStyle
+                                          : bodyTextLightStyle,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                      color: isDark
+                                          ? primaryDarkColor.withOpacity(0.6)
+                                          : Colors.white.withOpacity(0.6),
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: ListView.builder(
+                                                itemCount: tenderDetail.length,
+                                                itemBuilder:
+                                                    (BuildContext context,
+                                                        int index) {
+                                                  return _payentDetailListItem(
+                                                      index);
+                                                }),
+                                          ),
+                                        ],
+                                      )),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Amount Due: ',
+                              style: isDark
+                                  ? normalTextDarkStyle
+                                  : normalTextLightStyle,
+                            ),
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.all(Spacing.sm),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.circular(Spacing.sm),
+                                  border: Border.all(width: 1.0, color: orange),
+                                ),
+                                child: Text(
+                                  '${gtAmount.toStringAsFixed(2)}',
+                                  style: isDark
+                                      ? normalTextDarkStyle
+                                      : normalTextLightStyle,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
           _rightBottomBtnGroup(),
         ],
       );
     }
+  }
+
+  Widget _paymentEdit() {
+    return Container(
+      padding: EdgeInsets.all(Spacing.sm),
+      margin: EdgeInsets.only(bottom: Spacing.sm),
+      decoration: BoxDecoration(
+        color: isDark
+            ? primaryDarkColor.withOpacity(0.8)
+            : Colors.white.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(Spacing.xs),
+        border: Border.all(width: 1, color: orange),
+      ),
+      child: Center(
+        child: Text(
+          '$payValue',
+          style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+        ),
+      ),
+    );
   }
 
   Widget _payentDetailListItem(int index) {
@@ -382,21 +513,19 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: index.isEven
-              ? primaryDarkColor
-              : primaryDarkColor.withOpacity(0.6),
           border: (selectedPayment != null && selectedPayment == index)
-              ? Border.all(width: 2, color: Colors.green)
+              ? Border.all(width: 1, color: orange)
               : Border.all(width: 0, color: Colors.transparent),
         ),
         child: ListTile(
+          dense: true,
           title: Text(
             '${tenderDetail[index].name}',
-            style: bodyTextDarkStyle,
+            style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
           ),
           trailing: Text(
             '${tenderDetail[index].amount}',
-            style: bodyTextDarkStyle,
+            style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
           ),
         ),
       ),
@@ -404,53 +533,67 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
   }
 
   Widget _rightBottomBtnGroup() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        CustomButton(
-          callback: () {},
-          text: 'FOC',
-          fillColor: isDark ? primaryDarkColor : Colors.white,
-          borderColor: isDark ? primaryDarkColor : Colors.green,
-          width: 125.w,
-          height: 40.h,
-        ),
-        CustomButton(
-          callback: () {
-            if (selectedPayment != null)
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          ElevatedButton(
+            onPressed: () {
               ref
-                  .read(paymentProvider.notifier)
-                  .removePayment(tenderDetail[selectedPayment!]);
-          },
-          text: 'REMOVE PAYMENT',
-          fillColor: isDark ? primaryDarkColor : Colors.white,
-          borderColor: isDark ? primaryDarkColor : Colors.green,
-          width: 125.w,
-          height: 40.h,
-        ),
-        CustomButton(
-          callback: () {
-            Get.back();
-          },
-          text: 'BACK TO MAIN',
-          fillColor: isDark ? primaryDarkColor : Colors.white,
-          borderColor: isDark ? primaryDarkColor : Colors.green,
-          width: 125.w,
-          height: 40.h,
-        )
-      ],
+                  .read(printProvider.notifier)
+                  .printBill(GlobalConfig.salesNo, '');
+            },
+            child: Text('Print Bill'),
+            style: ElevatedButton.styleFrom(
+              primary: orange,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Spacing.sm),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text('FOC Payment'),
+            style: ElevatedButton.styleFrom(
+              primary: red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Spacing.sm),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (selectedPayment != null)
+                ref
+                    .read(paymentProvider.notifier)
+                    .removePayment(tenderDetail[selectedPayment!]);
+            },
+            child: Text('Remove Payment'),
+            style: ElevatedButton.styleFrom(
+              primary: red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Spacing.sm),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: Text('BACK TO MAIN'),
+            style: ElevatedButton.styleFrom(
+              primary: red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Spacing.sm),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
-
-  // Widget _header() {
-  //   return const Header(
-  //       transID: 'POS001',
-  //       operator: 'EMENU',
-  //       mode: 'REG',
-  //       order: '4',
-  //       cover: '1',
-  //       rcp: 'A2200000082');
-  // }
 
 // Do partial Payment when tap Media
   Future<void> mediaSelect(MediaData list) async {
@@ -476,6 +619,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               builder: (context) {
                 return AppAlertDialog(
                   title: 'Payment Not Appropriate',
+                  isDark: isDark,
                   message:
                       'Min value required for ${list.title} payment is $minimum',
                   onConfirm: () {},
@@ -487,6 +631,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               builder: (context) {
                 return AppAlertDialog(
                   title: 'Payment Not Appropriate',
+                  isDark: isDark,
                   message:
                       'Max value required for ${list.title} payment is $maxmimum',
                   onConfirm: () {},
@@ -498,6 +643,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               builder: (context) {
                 return AppAlertDialog(
                   title: 'Insufficent Amount',
+                  isDark: isDark,
                   message: 'Paid amount is not enough to settle the Bill!',
                   onConfirm: () {},
                 );
@@ -579,6 +725,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                         message:
                             'Amount Due: $billTotalAmount,  Paid: $totalPaidAmount,  Change: $changesAmount',
                         title: 'Payment',
+                        isDark: isDark,
                         onConfirm: () {
                           // payment notify
                           ref
@@ -603,6 +750,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                   builder: (context) {
                     return AppAlertDialog(
                       title: 'Transaction Failed',
+                      isDark: isDark,
                       message: GlobalConfig.ErrMsg,
                       onConfirm: () {},
                     );
@@ -643,6 +791,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
           builder: (context) {
             return AppAlertDialog(
               title: 'Error',
+              isDark: isDark,
               message: 'Transaction Failed!',
               onConfirm: () {},
             );

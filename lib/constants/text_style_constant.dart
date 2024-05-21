@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-final TextStyle bodyTextLightStyle =
-    TextStyle(fontSize: ScreenUtil().setSp(14), color: Colors.black);
-final TextStyle bodyTextDarkStyle =
-    TextStyle(fontSize: ScreenUtil().setSp(14), color: Colors.white);
+final TextStyle bodyTextLightStyle = TextStyle(
+    fontSize: ScreenUtil().orientation == Orientation.landscape
+        ? ScreenUtil().setSp(10)
+        : ScreenUtil().setSp(14),
+    color: Colors.black);
+final TextStyle bodyTextDarkStyle = TextStyle(
+    fontSize: ScreenUtil().orientation == Orientation.landscape
+        ? ScreenUtil().setSp(10)
+        : ScreenUtil().setSp(14),
+    color: Colors.white);
 
 final TextStyle listItemTextLightStyle =
-    TextStyle(fontSize: ScreenUtil().setSp(14), color: Colors.black);
+    TextStyle(fontSize: ScreenUtil().setSp(12), color: Colors.black);
 final TextStyle listItemTextDarkStyle =
-    TextStyle(fontSize: ScreenUtil().setSp(14), color: Colors.white);
+    TextStyle(fontSize: ScreenUtil().setSp(12), color: Colors.white);
 
 final TextStyle modalTextLightStyle =
     TextStyle(fontSize: ScreenUtil().setSp(16), color: Colors.black);

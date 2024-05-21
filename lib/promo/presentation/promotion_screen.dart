@@ -3,14 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
-import 'package:raptorpos/common/extension/color_extension.dart';
 import 'package:raptorpos/common/extension/workable.dart';
 import 'package:raptorpos/common/widgets/alert_dialog.dart';
-import 'package:raptorpos/discount/application/discount_provider.dart';
-import 'package:raptorpos/discount/application/discount_state.dart';
-import 'package:raptorpos/discount/model/discount_model.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
 import 'package:raptorpos/home/repository/order/i_order_repository.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
@@ -21,7 +16,6 @@ import '../../common/widgets/checkout.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
 import '../../payment/repository/i_payment_repository.dart';
-import '../../theme/theme_model.dart';
 import '../application/promo_provider.dart';
 import '../application/promo_state.dart';
 import '../model/promotion_model.dart';
@@ -60,6 +54,7 @@ class _PromotionScreenState extends ConsumerState<PromotionScreen> {
                 onConfirm: () {},
                 title: 'Error',
                 message: next.failiure!.errMsg,
+                isDark: isDark,
               );
             });
       }
@@ -78,7 +73,7 @@ class _PromotionScreenState extends ConsumerState<PromotionScreen> {
               SizedBox(
                 height: 5.h,
               ),
-              CheckOut(320.h, Callback: (OrderItemModel orderItem) {
+              CheckOut(Callback: (OrderItemModel orderItem) {
                 salesRef = orderItem.SalesRef;
               }),
               SizedBox(

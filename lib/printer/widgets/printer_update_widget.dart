@@ -41,6 +41,7 @@ class PrinterUpdateWidget extends ConsumerWidget {
               builder: (context) {
                 return AppAlertDialog(
                   title: 'Success',
+                  isDark: isDark,
                   message: 'Printer Updated!',
                   onConfirm: () {},
                 );
@@ -52,6 +53,7 @@ class PrinterUpdateWidget extends ConsumerWidget {
                 return AppAlertDialog(
                   title: 'Error',
                   message: next.errMsg,
+                  isDark: isDark,
                 );
               });
         }

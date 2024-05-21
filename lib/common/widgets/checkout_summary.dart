@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
 
+import '../../constants/color_constant.dart';
+import '../../constants/dimension_constant.dart';
 import '../extension/string_extension.dart';
 
 import 'package:raptorpos/common/i18n/en.dart';
@@ -20,116 +22,114 @@ class checkout_summary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double gTotal = 0.0;
+    if (state.bills?.isNotEmpty ?? false) {
+      gTotal = state.bills![0].toDouble();
+    }
+    double discount = 0.0;
+    if (state.bills?.isNotEmpty ?? false) {
+      discount = state.bills![3].toDouble();
+    }
+    double stotal = 0.0;
+    if (state.bills?.isNotEmpty ?? false) {
+      stotal = state.bills![2].toDouble();
+    }
+
     return SafeArea(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 15.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        padding: EdgeInsets.all(15.0),
+        decoration: BoxDecoration(
+          color: backgroundColorVariant,
+          borderRadius: BorderRadius.circular(Spacing.sm),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            Text('Payment Summary'),
+            SizedBox(
+              height: 5.0,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    kSubTotal,
-                    style: isDark
-                        ? normalTextDarkStyle.copyWith(
-                            fontWeight: FontWeight.bold)
-                        : normalTextLightStyle.copyWith(
-                            fontWeight: FontWeight.bold),
-                  ),
+                Text(
+                  kSubTotal,
+                  style: isDark
+                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                      : bodyTextLightStyle.copyWith(
+                          fontWeight: FontWeight.bold),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    kDiscount,
-                    style: isDark
-                        ? normalTextDarkStyle.copyWith(
-                            fontWeight: FontWeight.bold)
-                        : normalTextLightStyle.copyWith(
-                            fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    kTax,
-                    style: isDark
-                        ? normalTextDarkStyle.copyWith(
-                            fontWeight: FontWeight.bold)
-                        : normalTextLightStyle.copyWith(
-                            fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(kTotal,
-                      style: isDark
-                          ? normalTextDarkStyle.copyWith(
-                              color: Colors.red, fontWeight: FontWeight.bold)
-                          : normalTextLightStyle.copyWith(
-                              color: Colors.red, fontWeight: FontWeight.bold)),
+                Text(
+                  stotal.currencyString('\$'),
+                  style: isDark
+                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                      : bodyTextLightStyle.copyWith(
+                          fontWeight: FontWeight.bold),
                 ),
               ],
             ),
-            const SizedBox(
-              width: 20,
+            SizedBox(
+              height: 5.0,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    (state.bills?.isNotEmpty ?? false)
-                        ? '\$ ${state.bills![2].toStringAsFixed(2)}'
-                        : double.minPositive.currencyString('\$'),
+                Text(
+                  kDiscount,
+                  style: isDark
+                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                      : bodyTextLightStyle.copyWith(
+                          fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  discount.currencyString('\$'),
+                  style: isDark
+                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                      : bodyTextLightStyle.copyWith(
+                          fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 5.0,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  kTax,
+                  style: isDark
+                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                      : bodyTextLightStyle.copyWith(
+                          fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  '\$ ${totalTax.toStringAsFixed(2)}',
+                  style: isDark
+                      ? bodyTextDarkStyle.copyWith(fontWeight: FontWeight.bold)
+                      : bodyTextLightStyle.copyWith(
+                          fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 5.0,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(kTotal,
                     style: isDark
-                        ? normalTextDarkStyle.copyWith(
-                            fontWeight: FontWeight.bold)
-                        : normalTextLightStyle.copyWith(
-                            fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    (state.bills?.isNotEmpty ?? false)
-                        ? '\$ ${state.bills![3].toStringAsFixed(2)}'
-                        : double.minPositive.currencyString('\$'),
+                        ? bodyTextDarkStyle.copyWith(
+                            color: Colors.red, fontWeight: FontWeight.bold)
+                        : bodyTextLightStyle.copyWith(
+                            color: Colors.red, fontWeight: FontWeight.bold)),
+                Text(gTotal.currencyString('\$'),
                     style: isDark
-                        ? normalTextDarkStyle.copyWith(
-                            fontWeight: FontWeight.bold)
-                        : normalTextLightStyle.copyWith(
-                            fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    (state.bills?.isNotEmpty ?? false)
-                        ? '\$ ${totalTax.toStringAsFixed(2)}'
-                        : double.minPositive.currencyString('\$'),
-                    style: isDark
-                        ? normalTextDarkStyle.copyWith(
-                            fontWeight: FontWeight.bold)
-                        : normalTextLightStyle.copyWith(
-                            fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                      (state.bills?.isNotEmpty ?? false)
-                          ? '\$ ${state.bills![0].toStringAsFixed(2)}'
-                          : double.minPositive.currencyString('\$'),
-                      style: isDark
-                          ? normalTextDarkStyle.copyWith(
-                              color: Colors.red, fontWeight: FontWeight.bold)
-                          : normalTextLightStyle.copyWith(
-                              color: Colors.red, fontWeight: FontWeight.bold)),
-                ),
+                        ? bodyTextDarkStyle.copyWith(
+                            color: Colors.red, fontWeight: FontWeight.bold)
+                        : bodyTextLightStyle.copyWith(
+                            color: Colors.red, fontWeight: FontWeight.bold)),
               ],
             ),
           ],

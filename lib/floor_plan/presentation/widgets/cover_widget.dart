@@ -8,7 +8,6 @@ import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
-import 'package:raptorpos/floor_plan/provider/table_provider.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 
 import '../../../common/extension/string_extension.dart';
@@ -42,37 +41,39 @@ class _CoverWidgetState extends ConsumerState<CoverWidget> {
     isDark = ref.watch(themeProvider);
 
     return Container(
-      padding: const EdgeInsets.all(Spacing.md),
+      padding: EdgeInsets.all(Spacing.md),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: Responsive.isMobile(context) ? 220.h : 130.h,
-            height: Responsive.isMobile(context) ? 40.h : 25.h,
+            width: Responsive.isMobile(context) ? 300.w : 300.w,
+            padding: EdgeInsets.all(Spacing.xs),
             decoration: BoxDecoration(
               color: isDark
                   ? primaryDarkColor.withOpacity(0.8)
-                  : primaryLightColor.withOpacity(0.8),
+                  : backgroundColorVariant.withOpacity(0.8),
+              border: Border.all(width: 1, color: orange),
+              borderRadius: BorderRadius.circular(Spacing.sm),
             ),
             child: Center(
               child: Text(
                 cover,
-                style: titleTextDarkStyle,
+                style: isDark ? titleTextDarkStyle : titleTextLightStyle,
               ),
             ),
           ),
           verticalSpaceSmall,
           Container(
-            height: Responsive.isMobile(context) ? 220.h : 130.h,
-            width: Responsive.isMobile(context) ? 220.h : 130.h,
+            width: Responsive.isMobile(context) ? 300.w : 300.w,
             color: Colors.transparent,
             child: NumPad(
                 buttonColor:
-                    isDark ? primaryButtonDarkColor : primaryButtonColor,
+                    isDark ? primaryButtonDarkColor : backgroundColorVariant,
                 delete: () {},
                 onSubmit: () {
                   widget.callback(cover.toInt());
                 },
+                isDark: isDark,
                 controller: _controller),
           ),
         ],

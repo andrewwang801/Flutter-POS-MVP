@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:raptorpos/common/adapters/order_data.dart';
+import 'package:get/get.dart';
 import 'package:raptorpos/common/widgets/checkout_summary.dart';
-import 'package:raptorpos/common/widgets/responsive.dart';
+import 'package:raptorpos/common/widgets/order_header.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
+import 'package:raptorpos/functions/application/function_provider.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
-import 'package:raptorpos/home/presentation/widgets/menu_item_detail.dart';
-import 'package:raptorpos/home/presentation/widgets/remark_dialog.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
+import 'package:raptorpos/payment/presentation/tender_screen.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
 import 'package:raptorpos/common/extension/workable.dart';
 
 import '../../../constants/color_constant.dart';
-import '../../../constants/text_style_constant.dart';
 import 'package:raptorpos/common/utils/presentation_util.dart';
 import 'alert_dialog.dart';
 import 'checkout_list.dart';
 
 class CheckOut extends ConsumerStatefulWidget {
-  const CheckOut(this.height, {this.Callback, Key? key}) : super(key: key);
-  final double height;
+  const CheckOut({this.Callback, Key? key}) : super(key: key);
   final Function(OrderItemModel)? Callback;
 
   @override
@@ -29,7 +27,7 @@ class CheckOut extends ConsumerStatefulWidget {
 
 class _CheckOutState extends ConsumerState<CheckOut> {
   final ScrollController _vScrollController = ScrollController();
-  bool isDark = true;
+  bool isDark = false;
   @override
   Widget build(BuildContext context) {
     ref.listen(orderProvoder, (previous, OrderState next) {
@@ -43,6 +41,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
             builder: (BuildContext context) {
               return AppAlertDialog(
                 title: 'Error',
+                isDark: isDark,
                 message: next.failure!.errMsg,
                 onConfirm: () {},
               );
@@ -59,80 +58,135 @@ class _CheckOutState extends ConsumerState<CheckOut> {
         totalTax += state.bills![i];
       }
     }
-    return Container(
-      width: Responsive.isMobile(context) ? 400.w : 320.w,
-      height: widget.height,
-      color: isDark
-          ? primaryDarkColor.withOpacity(0.9)
-          : Colors.white.withOpacity(0.8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Expanded(child: orderItemsTable()),
-          Expanded(
-              child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark ? primaryDarkColor : Colors.white,
-                  ),
-                  child: CheckoutList(
-                    callback: widget.Callback,
-                  ))),
-          checkout_summary(isDark: isDark, state: state, totalTax: totalTax),
-        ],
+    return Scaffold(
+      body: Container(
+        padding: EdgeInsets.all(Spacing.xs),
+        color: isDark
+            ? primaryDarkColor.withOpacity(0.9)
+            : Colors.white.withOpacity(1.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Order(),
+            OrderHeader(),
+            Expanded(
+                child: Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? primaryDarkColor : Colors.white,
+                    ),
+                    child: CheckoutList(
+                      callback: widget.Callback,
+                    ))),
+            verticalSpaceSmall,
+            checkout_summary(isDark: isDark, state: state, totalTax: totalTax),
+            CheckOutButtons(),
+          ],
+        ),
       ),
     );
   }
 
-  Widget orderItemsTable() {
-    OrderState state = ref.watch(orderProvoder);
-    final OrderData orderData =
-        OrderData(isDark, state.orderItems ?? <OrderItemModel>[], context);
-    return Scrollbar(
-      controller: _vScrollController,
-      isAlwaysShown: false,
-      child: SingleChildScrollView(
-          controller: _vScrollController,
-          physics: const ClampingScrollPhysics(),
-          child: Theme(
-            data: ThemeData(
-              cardColor: isDark ? primaryDarkColor : Colors.white,
-              dividerColor: isDark ? Color(0xff333333) : backgroundColor,
-              textTheme: TextTheme(
-                caption: TextStyle(color: isDark ? Colors.white : Colors.black),
-              ),
-            ),
-            child: PaginatedDataTable(
-              columnSpacing: 10.w,
-              arrowHeadColor: isDark ? Colors.white : Colors.black,
-              columns: <DataColumn>[
-                DataColumn(
-                    label: Text('QTY',
-                        style:
-                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
-                DataColumn(
-                    label: Text('Descrption',
-                        style:
-                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
-                DataColumn(
-                    label: Text('Amount',
-                        style:
-                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
-                DataColumn(
-                    label: Text('Category',
-                        style:
-                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
-                DataColumn(
-                    label: Text('Payment',
-                        style:
-                            isDark ? bodyTextDarkStyle : bodyTextLightStyle)),
-              ],
-              source: orderData,
-              horizontalMargin: 6,
-              rowsPerPage: 8,
-              showCheckboxColumn: false,
-            ),
-          )),
+  Widget Order() {
+    return ListTile(
+      title: Text('Order'),
     );
+  }
+
+  Widget CheckOutButtons() {
+    final OrderState state = ref.watch(orderProvoder);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 1,
+          child: ElevatedButton(
+            onPressed: () {
+              ref.read(functionProvider.notifier).voidAllOrder();
+            },
+            child: Text('Void'),
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(red),
+              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(Spacing.sm))),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: Spacing.sm,
+        ),
+        Expanded(
+          flex: 2,
+          child: ElevatedButton(
+            onPressed: () {},
+            child: Text('Hold'),
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(blue),
+              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(Spacing.sm))),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: Spacing.sm,
+        ),
+        Expanded(
+          flex: 3,
+          child: ElevatedButton(
+            onPressed: () {
+              doTenderPayment(state);
+            },
+            child: Text('Check Out'),
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(orange),
+              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(Spacing.sm))),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> doTenderPayment(OrderState state) async {
+    if (state.workable == Workable.ready) {
+      if (state.bills?.isEmpty ?? false) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                title: 'Error',
+                isDark: isDark,
+                message: 'Order is empty!',
+                onConfirm: () {},
+              );
+            });
+        return;
+      }
+      if (state.paymentPermission ?? false) {
+        final double sTotal = state.bills![2];
+        final double gTotal = state.bills![0];
+        // update order items in HeldItems table
+        await ref.read(orderProvoder.notifier).updateHeldItem(sTotal, gTotal);
+        // fetch updated order items
+        ref.read(orderProvoder.notifier).fetchOrderItems();
+        // Print
+        Get.to(TenderScreen(
+          gTotal: gTotal,
+        ));
+      } else {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                title: 'Error',
+                isDark: isDark,
+                message: 'Not allowed to pay!',
+                onConfirm: () {},
+              );
+            });
+      }
+    } else {}
   }
 }

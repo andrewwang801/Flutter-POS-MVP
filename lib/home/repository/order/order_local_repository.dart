@@ -1,7 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/common/utils/datetime_util.dart';
@@ -16,7 +15,6 @@ import 'package:raptorpos/common/utils/type_util.dart';
 
 import '../../../payment/repository/i_payment_repository.dart';
 import '../../model/order_prep_model.dart';
-import '../../model/prep/prep_model.dart';
 import 'i_order_repository.dart';
 
 @Injectable(as: IOrderRepository)

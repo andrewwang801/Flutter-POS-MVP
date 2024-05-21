@@ -1,8 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
-import 'package:raptorpos/home/model/prep/prep_model.dart';
 
 import '../../../common/GlobalConfig.dart';
 import '../../../common/constants/strings.dart';
@@ -10,13 +8,9 @@ import '../../../common/extension/string_extension.dart';
 import '../../../common/extension/workable.dart';
 import '../../../common/widgets/orderitem_widget.dart';
 import '../../../discount/domain/discount_repository.dart';
-import '../../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../../payment/repository/i_payment_repository.dart';
 import '../../../print/provider/print_controller.dart';
 import '../../../print/repository/i_print_repository.dart';
-import '../../../printer/provider/printer_state.dart';
-import '../../../sales_report/application/sales_report_state.dart';
-import '../../../zday_report/application/zday_report_state.dart';
 import '../../model/modifier.dart';
 import '../../model/order_item_model.dart';
 import '../../model/order_mod_model.dart';
@@ -1060,7 +1054,9 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
 
   Future<List<ParentOrderItemWidget>> configureTree(
       List<OrderItemModel> orderItems) async {
-    List<OrderItemModel> parentItems = orderItems.where((element) {
+    List<OrderItemModel> tempOrderItems = [];
+    tempOrderItems.addAll(orderItems);
+    List<OrderItemModel> parentItems = tempOrderItems.where((element) {
       return element.Preparation == 0;
     }).toList();
     final Future<List<ParentOrderItemWidget>> parentItemWidgets =
@@ -1081,7 +1077,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
           isDark: false,
           orderModList: modArr,
           orderPrepList: prepArr);
-      orderItems.removeWhere(
+      tempOrderItems.removeWhere(
           (OrderItemModel element) => element.SalesRef == e.SalesRef);
 
       // List<OrderItemModel> subOrderItems = <OrderItemModel>[];

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -45,6 +44,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               return AppAlertDialog(
                 title: 'Error',
                 message: next.failure?.errMsg,
+                isDark: isDark,
                 onConfirm: () {},
               );
             });
@@ -54,8 +54,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     return Dialog(
       child: Container(
         padding: EdgeInsets.all(Spacing.md),
-        height: 350.h,
-        width: Responsive.isMobile(context) ? 550.w : 400.w,
+        height: Responsive.isMobile(context) ? 700.h : 350.h,
+        width: Responsive.isMobile(context) ? 400.w : 400.w,
         child: Column(
           children: [
             _header(),
@@ -139,7 +139,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
             child: Container(
               height: Responsive.isMobile(context) ? 35.h : 20.h,
               decoration: BoxDecoration(
-                color: isDark ? primaryDarkColor : secondaryBackgroundColor,
+                color: isDark ? primaryDarkColor : backgroundColorVariant,
                 borderRadius: BorderRadius.circular(4.0),
               ),
               child: Center(
@@ -178,7 +178,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               padding: EdgeInsets.symmetric(horizontal: Spacing.xs),
               height: Responsive.isMobile(context) ? 35.h : 20.h,
               decoration: BoxDecoration(
-                color: isDark ? primaryDarkColor : secondaryBackgroundColor,
+                color: isDark ? primaryDarkColor : backgroundColorVariant,
                 borderRadius: BorderRadius.circular(4.0),
               ),
               child: Center(
@@ -220,7 +220,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               padding: EdgeInsets.symmetric(horizontal: Spacing.xs),
               height: Responsive.isMobile(context) ? 35.h : 20.h,
               decoration: BoxDecoration(
-                color: isDark ? primaryDarkColor : secondaryBackgroundColor,
+                color: isDark ? primaryDarkColor : backgroundColorVariant,
                 borderRadius: BorderRadius.circular(4.0),
               ),
               child: Center(
@@ -257,7 +257,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
             child: Container(
               height: Responsive.isMobile(context) ? 35.h : 20.h,
               decoration: BoxDecoration(
-                color: isDark ? primaryDarkColor : secondaryBackgroundColor,
+                color: isDark ? primaryDarkColor : backgroundColorVariant,
                 borderRadius: BorderRadius.circular(4.0),
               ),
               child: Center(

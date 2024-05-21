@@ -6,7 +6,7 @@ import 'package:esc_pos_utils/esc_pos_utils.dart';
 Future<void> main() async {
   final profile = await CapabilityProfile.load();
   final generator = Generator(PaperSize.mm80, profile);
-  List<int> bytes = [];
+  List<int> bytes = <int>[];
 
   bytes += generator.text(
       'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');

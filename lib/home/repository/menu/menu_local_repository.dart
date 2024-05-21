@@ -39,7 +39,8 @@ class MenuLocalRepository implements IMenuRepository {
     final db = await database.database;
     // Query MenuHdr table for all menus
     final String query =
-        'SELECT A.PLUNumber, ItemName, ItemName_Chinese, KPosition, RGBColour, Sell1, PLUsoldout, DisplayImage, imagename FROM Menu1 A INNER JOIN PLU B ON A.PLUNumber = B.PLUNumber WHERE MenuID = $menuid ORDER BY KPosition';
+        // 'SELECT A.MenuID, A.PLUNumber, ItemName, ItemName_Chinese, KPosition, RGBColour, Sell1, PLUsoldout, DisplayImage, imagename FROM Menu1 A INNER JOIN PLU B ON A.PLUNumber = B.PLUNumber WHERE MenuID = $menuid ORDER BY KPosition';
+        'SELECT A.MenuID, A.PLUNumber, ItemName, ItemName_Chinese, KPosition, RGBColour, Sell1, PLUsoldout, DisplayImage, imagename FROM Menu1 A INNER JOIN PLU B ON A.PLUNumber = B.PLUNumber ORDER BY KPosition';
     final List<Map<String, dynamic>> maps = await db.rawQuery(query);
     return maps.map((e) {
       return MenuItemModel.fromJson(e);

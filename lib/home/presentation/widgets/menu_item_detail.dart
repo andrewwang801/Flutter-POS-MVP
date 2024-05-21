@@ -1,14 +1,15 @@
 // ignore_for_file: prefer_relative_imports
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:raptorpos/common/extension/color_extension.dart';
 import 'package:raptorpos/common/extension/string_extension.dart';
-import 'package:raptorpos/common/widgets/custom_button.dart';
+import 'package:raptorpos/common/widgets/numpad.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/constants/color_constant.dart';
+import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
 import 'package:raptorpos/home/presentation/widgets/prep_list.dart';
@@ -44,6 +45,7 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
   String userInputModifier = '';
 
   TextEditingController _modifierController = TextEditingController();
+  TextEditingController _qtyController = TextEditingController();
 
   @override
   void initState() {
@@ -61,8 +63,8 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
 
     return Center(
       child: Container(
-        width: 320.w,
-        height: 350.h,
+        width: Responsive.isMobile(context) ? 400.w : 320.w,
+        height: Responsive.isMobile(context) ? 600.h : 350.h,
         child: pluState is PLUSuccessState ? _shoppingItem(1) : Container(),
       ),
     );
@@ -73,9 +75,12 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
     PLUSuccessState state = pluState as PLUSuccessState;
 
     price = state.pluDetails[1].toDouble() * 1.0;
+    final String itemName = state.pluDetails[0];
     int qty = (state.orderSelect?.Quantity ?? 1) + qtyAdd;
     subTotal = state.pluDetails[1].toDouble() * qty;
     _prepSelect = state.prepSelect;
+
+    _qtyController.text = '$qty';
 
     String? originModifier = state.modSelect?.ItemName?.substring(2);
     if (userInputModifier.isNotEmpty)
@@ -85,133 +90,149 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
 
     return Center(
       child: Card(
-        elevation: 1.0,
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Container(
-                  height: 80.h,
-                  padding: const EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    color: HexColor('49152').withOpacity(1),
-                    border: Border.all(
-                      color:
-                          isDark ? backgroundDarkColor : Colors.green.shade100,
-                    ),
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                  child: Center(
-                    child: Text('${state.pluDetails[0]}',
-                        textAlign: TextAlign.center,
-                        style: isDark
-                            ? bodyTextDarkStyle
-                            : bodyTextLightStyle.copyWith(color: Colors.black)),
-                  ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                FractionallySizedBox(
-                  widthFactor: 0.8,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _decrementButton(itemIndex),
-                      Text(
-                        qty.toString(),
-                        style: TextStyle(fontSize: 18.0),
+        elevation: 3.0,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Spacing.md)),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ListTile(
+                        leading: AspectRatio(
+                          aspectRatio: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: 1.0, color: backgroundColorVariant),
+                              borderRadius: BorderRadius.circular(Spacing.sm),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(Spacing.sm),
+                              child: pluImage(state.pluDetails),
+                            ),
+                          ),
+                        ),
+                        title: Text(itemName),
+                        subtitle: Text('$price'),
                       ),
-                      _incrementButton(itemIndex),
-                    ],
-                  ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _decrementButton(itemIndex),
+                        _qtyEdit(),
+                        _incrementButton(itemIndex),
+                      ],
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 20.h,
+              ),
+              FractionallySizedBox(
+                widthFactor: 0.7,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'FOC Item',
+                          style:
+                              isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                        ),
+                        Checkbox(
+                            value: foc,
+                            activeColor: Colors.white,
+                            checkColor: orange,
+                            shape: CircleBorder(),
+                            side: MaterialStateBorderSide.resolveWith(
+                              (states) {
+                                return BorderSide(width: 1.5, color: orange);
+                              },
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                foc = value!;
+                              });
+                            }),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Sub Total: ',
+                            style: isDark
+                                ? bodyTextDarkStyle
+                                : bodyTextLightStyle),
+                        Text((foc ? '0.0' : '$subTotal').currencyString('\$'),
+                            style: isDark
+                                ? bodyTextDarkStyle
+                                : bodyTextLightStyle),
+                      ],
+                    ),
+                  ],
                 ),
-                TextFormField(
+              ),
+              SizedBox(
+                width: 320.w,
+                child: NumPad(
+                  buttonColor: isDark ? primaryButtonDarkColor : Colors.white,
+                  delete: () {},
+                  onSubmit: () {},
+                  controller: _qtyController,
+                  onlyNum: true,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextFormField(
                   controller: _modifierController,
                   onChanged: (String value) {
                     userInputModifier = value;
                   },
                   decoration: const InputDecoration(
-                    hintText: 'Custome Modifer',
+                    label: Text('Custom Modifier'),
+                    labelStyle: TextStyle(color: orange),
+                    hintText: 'Custom Modifer',
                     hintStyle: TextStyle(fontStyle: FontStyle.italic),
                     fillColor: Colors.white,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                      borderSide: BorderSide(color: orange, width: 1.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                      borderSide: BorderSide(color: orange, width: 1.0),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                      borderSide: BorderSide(color: orange, width: 1.0),
                     ),
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                   ),
-                  minLines: 3,
-                  maxLines: 5,
+                  minLines: 1,
+                  maxLines: 2,
                 ),
-                SizedBox(
-                  height: 20.h,
-                ),
-                FractionallySizedBox(
-                  widthFactor: 0.7,
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'FOC Item',
-                            style:
-                                isDark ? bodyTextDarkStyle : bodyTextLightStyle,
-                          ),
-                          Checkbox(
-                              value: foc,
-                              onChanged: (value) {
-                                setState(() {
-                                  foc = value!;
-                                });
-                              }),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Sub Total ',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle),
-                          Text((foc ? '0.0' : '$subTotal').currencyString('\$'),
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 5.h,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Price ',
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle),
-                          Text((foc ? '0.0' : '$price').currencyString('\$'),
-                              style: isDark
-                                  ? bodyTextDarkStyle
-                                  : bodyTextLightStyle),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                if (state.preps.isNotEmpty)
-                  CustomButton(
-                    callback: () {
+              ),
+              if (state.preps.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: orange,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Spacing.sm)),
+                      minimumSize: Size.fromHeight(
+                          40), // fromHeight use double.infinity as width and 40 is the height
+                    ),
+                    onPressed: () {
                       showGeneralDialog(
                         context: context,
                         barrierColor: Colors.black38,
@@ -224,17 +245,20 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                         ),
                       );
                     },
-                    text: 'Prep Item',
-                    borderColor: isDark ? primaryDarkColor : primaryLightColor,
-                    fillColor: isDark ? primaryDarkColor : primaryLightColor,
-                    width: 200.w,
-                    height: Responsive.isMobile(context) ? 35.h : 25.h,
+                    child: Text('Add Prep Items'),
                   ),
-                SizedBox(
-                  height: 5.h,
                 ),
-                CustomButton(
-                  callback: () {
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: orange,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(Spacing.sm)),
+                    minimumSize: Size.fromHeight(
+                        40), // fromHeight use double.infinity as width and 40 is the height
+                  ),
+                  onPressed: () {
                     // create order item && modifier
                     if (widget.update) {
                       ref.read(orderProvoder.notifier).updateOrderItem(
@@ -255,14 +279,10 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
                     }
                     Get.back();
                   },
-                  text: 'ORDER',
-                  borderColor: isDark ? primaryDarkColor : primaryLightColor,
-                  fillColor: isDark ? primaryDarkColor : primaryLightColor,
-                  width: 200.w,
-                  height: Responsive.isMobile(context) ? 35.h : 25.h,
+                  child: Text('Save Changes'),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -270,37 +290,101 @@ class _MenuItemDetailState extends ConsumerState<MenuItemDetail> {
   }
 
   Widget _decrementButton(int index) {
-    return SizedBox(
-      width: 36.w,
-      height: 36.w,
-      child: FloatingActionButton(
-          onPressed: () {
-            if (qtyAdd > 0) {
-              setState(() {
-                qtyAdd--;
-              });
-            }
-          },
-          child: new Icon(Icons.remove,
-              color: isDark ? Colors.black : Colors.white),
-          backgroundColor: isDark ? Colors.white : primaryLightColor),
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(width: 1.0, color: red),
+        borderRadius: BorderRadius.circular(Spacing.xs),
+      ),
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        constraints: BoxConstraints(),
+        onPressed: () {
+          if (qtyAdd > 0) {
+            setState(() {
+              qtyAdd--;
+              _qtyController.text = '$qtyAdd';
+            });
+          }
+        },
+        icon: Icon(
+          Icons.remove,
+          color: red,
+          size: Spacing.md,
+        ),
+      ),
     );
   }
 
   Widget _incrementButton(int index) {
-    return SizedBox(
-      width: 36.w,
-      height: 36.w,
-      child: FloatingActionButton(
-        child: Icon(Icons.add, color: isDark ? Colors.black : Colors.white),
-        backgroundColor: isDark ? Colors.white : primaryLightColor,
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(width: 1.0, color: greenVariant1),
+        borderRadius: BorderRadius.circular(Spacing.xs),
+      ),
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        constraints: BoxConstraints(),
         onPressed: () {
           setState(() {
             qtyAdd++;
+            _qtyController.text = '$qtyAdd';
           });
         },
+        icon: Icon(
+          Icons.add,
+          color: greenVariant1,
+          size: Spacing.md,
+        ),
       ),
     );
+  }
+
+  Widget _qtyEdit() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
+      width: Responsive.isMobile(context) ? 60.w : 40.w,
+      child: TextFormField(
+        controller: _qtyController,
+        textAlign: TextAlign.center,
+        decoration: InputDecoration(
+          isDense: true,
+          focusColor: red,
+          hoverColor: red,
+          contentPadding: EdgeInsets.symmetric(
+              vertical: Spacing.xs, horizontal: Spacing.xs),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(width: 1.0, color: red),
+            borderRadius: BorderRadius.circular(Spacing.xs),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget pluImage(List<String> pluDetails) {
+    if (!pluDetails[3].toBool()) {
+      return Image.asset(
+        "assets/images/placeholder.png",
+        fit: BoxFit.cover,
+      );
+    } else {
+      return CachedNetworkImage(
+        imageUrl: pluDetails[4],
+        errorWidget: (_, __, ___) {
+          return Image.asset(
+            "assets/images/placeholder.png",
+            fit: BoxFit.cover,
+          );
+        },
+        fit: BoxFit.cover,
+        placeholder: (_, __) {
+          return Image.asset(
+            "assets/images/placeholder.png",
+            fit: BoxFit.cover,
+          );
+        },
+      );
+    }
   }
 
   void callback(Map<String, Map<String, String>> value) {
