@@ -113,7 +113,7 @@ class _SideBarDrawerState extends ConsumerState<SideBarDrawer> {
                 Expanded(
                   child: Text(
                     'Function',
-                    style: titleTextLightStyle,
+                    style: isDark ? titleTextDarkStyle : titleTextLightStyle,
                   ),
                 ),
                 CloseButton(
@@ -275,6 +275,7 @@ class CloseButton extends StatelessWidget {
           child: const Icon(
             Icons.close,
             size: smiconSize,
+            color: red,
           )),
     );
   }

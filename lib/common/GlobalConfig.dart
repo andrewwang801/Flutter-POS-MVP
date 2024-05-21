@@ -4,6 +4,7 @@ import 'dart:core';
 
 import 'package:get_it/get_it.dart';
 import 'package:raptorpos/functions/model/function_model.dart';
+import 'package:raptorpos/sales_category/model/sales_category_model.dart';
 
 import '../auth/model/operator_model.dart';
 import 'extension/string_extension.dart';
@@ -13,6 +14,7 @@ import 'utils/type_util.dart';
 // ignore: avoid_classes_with_only_static_members
 class GlobalConfig {
   static List<FunctionModel> functions = <FunctionModel>[];
+  static List<SalesCategoryModel> salesCategoryList = <SalesCategoryModel>[];
 
   static bool kDebugMode = false;
   static OperatorModel? operator;
@@ -71,6 +73,11 @@ class GlobalConfig {
   static int ChangeLayout = 1; //1:Pay Layout, 2:FOC Bill Layout
   static int CoverView = 0; //1:Table Management, 2:Quick Service
   static bool IsPrintInit = false;
+
+  static Future<void> getSalesCategory() async {
+    GlobalConfigRepository configRepository = GetIt.I<GlobalConfigRepository>();
+    salesCategoryList = await configRepository.getSalesCategory();
+  }
 }
 
 // ignore: avoid_classes_with_only_static_members

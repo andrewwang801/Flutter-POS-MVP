@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:raptorpos/sales_category/model/sales_category_model.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 import 'helper/db_helper.dart';
@@ -24,5 +25,16 @@ class GlobalConfigRepository with TypeUtil {
     const String query = 'SELECT * FROM POSDefaults';
     List<Map<String, dynamic>> maps = await db.rawQuery(query);
     return mapListToString2D(maps);
+  }
+
+  Future<List<SalesCategoryModel>> getSalesCategory() async {
+    final Database db = await dbHelper.database;
+
+    const String query =
+        'SELECT CategoryName, Categoryname_Chinese, CategoryID FROM SalesCategory';
+    List<Map<String, dynamic>> maps = await db.rawQuery(query);
+    return maps.map((e) {
+      return SalesCategoryModel.fromJson(e);
+    }).toList();
   }
 }

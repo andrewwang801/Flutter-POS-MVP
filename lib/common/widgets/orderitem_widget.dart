@@ -92,7 +92,7 @@ class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
           padding: EdgeInsets.symmetric(
               horizontal: Spacing.sm,
               vertical: Responsive.isMobile(context) ? Spacing.sm : 0.0),
-          color: (isDark ? primaryDarkColor : Colors.white),
+          // color: (isDark ? primaryDarkColor : Colors.white),
           child: Row(
             children: [
               Container(

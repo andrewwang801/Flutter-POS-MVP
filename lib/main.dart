@@ -21,6 +21,7 @@ void main() async {
   // Dependency Injection
   await configureInjection();
 
+  await GlobalConfig.getSalesCategory();
   await POSDtls.initPOSDtls();
   await POSDefault.initPOSDefaults();
 

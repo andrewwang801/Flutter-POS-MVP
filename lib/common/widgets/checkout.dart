@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:raptorpos/common/widgets/checkout_summary.dart';
 import 'package:raptorpos/common/widgets/order_header.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
+import 'package:raptorpos/floor_plan/provider/table_provider.dart';
 import 'package:raptorpos/functions/application/function_provider.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
@@ -59,11 +60,12 @@ class _CheckOutState extends ConsumerState<CheckOut> {
       }
     }
     return Scaffold(
+      backgroundColor: isDark ? primaryDarkColor : Colors.white,
       body: Container(
         padding: EdgeInsets.all(Spacing.xs),
-        color: isDark
-            ? primaryDarkColor.withOpacity(0.9)
-            : Colors.white.withOpacity(1.0),
+        // color: isDark
+        //     ? primaryDarkColor.withOpacity(0.9)
+        //     : Colors.white.withOpacity(1.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -73,7 +75,7 @@ class _CheckOutState extends ConsumerState<CheckOut> {
             Expanded(
                 child: Container(
                     decoration: BoxDecoration(
-                      color: isDark ? primaryDarkColor : Colors.white,
+                      color: isDark ? primaryDarkColor : backgroundColor,
                     ),
                     child: CheckoutList(
                       callback: widget.Callback,
@@ -119,7 +121,9 @@ class _CheckOutState extends ConsumerState<CheckOut> {
         Expanded(
           flex: 2,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              ref.read(tableProvider.notifier).holdTable();
+            },
             child: Text('Hold'),
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(blue),

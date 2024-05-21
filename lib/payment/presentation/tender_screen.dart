@@ -256,6 +256,15 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
               ),
             ),
           ),
+          IconButton(
+              icon: Icon(
+                isDark ? Icons.wb_sunny : Icons.nightlight_round,
+              ),
+              color: isDark ? backgroundColor : primaryDarkColor,
+              onPressed: () {
+                isDark ? isDark = false : isDark = true;
+                ref.read(themeProvider.notifier).setTheme(isDark);
+              }),
           // IconButton(
           //     icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
           //     onPressed: () {
@@ -294,6 +303,8 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                     NumPad(
                       buttonColor:
                           isDark ? primaryButtonDarkColor : Colors.white,
+                      backgroundColor:
+                          isDark ? backgroundDarkColor : backgroundColorVariant,
                       delete: () {},
                       onSubmit: () {},
                       controller: _controller,
@@ -379,12 +390,12 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
           Expanded(
             child: Container(
               padding: EdgeInsets.all(Spacing.sm),
-              color: Colors.white,
+              color: isDark ? backgroundDarkColor : Colors.white,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(Spacing.sm),
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
-                  color: backgroundColorVariant,
+                  color: isDark ? primaryDarkColor : backgroundColorVariant,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -398,7 +409,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                               children: [
                                 Container(
                                   color: isDark
-                                      ? primaryDarkColor.withOpacity(0.8)
+                                      ? backgroundDarkColor.withOpacity(0.8)
                                       : orange.withOpacity(0.8),
                                   child: ListTile(
                                     tileColor: red,
@@ -420,7 +431,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                                 Expanded(
                                   child: Container(
                                       color: isDark
-                                          ? primaryDarkColor.withOpacity(0.6)
+                                          ? backgroundDarkColor.withOpacity(0.6)
                                           : Colors.white.withOpacity(0.6),
                                       child: Column(
                                         children: [
@@ -456,7 +467,8 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
                               child: Container(
                                 padding: EdgeInsets.all(Spacing.sm),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color:
+                                      isDark ? primaryDarkColor : Colors.white,
                                   borderRadius:
                                       BorderRadius.circular(Spacing.sm),
                                   border: Border.all(width: 1.0, color: orange),
@@ -534,7 +546,7 @@ class _CashScreenState extends ConsumerState<TenderScreen> with TypeUtil {
 
   Widget _rightBottomBtnGroup() {
     return Container(
-      color: Colors.white,
+      color: isDark ? backgroundDarkColor : Colors.white,
       padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

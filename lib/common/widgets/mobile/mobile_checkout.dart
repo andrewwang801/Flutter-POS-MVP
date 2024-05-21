@@ -9,6 +9,9 @@ import 'package:raptorpos/common/widgets/checkout_summary.dart';
 import 'package:raptorpos/common/widgets/order_header.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
 import 'package:raptorpos/floor_plan/presentation/floor_plan_screen.dart';
+import 'package:raptorpos/floor_plan/presentation/widgets/cover_widget.dart';
+import 'package:raptorpos/floor_plan/provider/table_provider.dart';
+import 'package:raptorpos/floor_plan/provider/table_state.dart';
 import 'package:raptorpos/functions/application/function_provider.dart';
 import 'package:raptorpos/functions/application/function_state.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
@@ -57,6 +60,48 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
         billTotal = state.bills![0];
       }
     }
+
+    ref.listen(tableProvider, (Object? previous, Object? next) {
+      if (next is TableSuccessState) {
+        if (next.notify_type == NOTIFY_TYPE.SHOW_COVER) {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return IntrinsicHeight(
+                  child: IntrinsicWidth(
+                    child: Dialog(
+                      backgroundColor:
+                          isDark ? primaryDarkColor : backgroundColorVariant,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Spacing.sm)),
+                      child: CoverWidget(
+                        callback: (int tableNo) {
+                          ref
+                              .read(tableProvider.notifier)
+                              .tableNoNotify(tableNo.toString());
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              });
+        } else if (next.notify_type == NOTIFY_TYPE.GOTO_TABLE_LAYOUT) {
+          Get.to(FloorPlanScreen());
+        }
+      }
+      if (next is TableErrorState) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AppAlertDialog(
+                title: 'Error',
+                isDark: isDark,
+                message: next.errMsg,
+                onConfirm: () {},
+              );
+            });
+      }
+    });
 
     ref.listen(functionProvider, (previous, FunctionState next) {
       if (next.failiure != null) {
@@ -188,12 +233,12 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
             },
             child: Container(
               padding: EdgeInsets.all(16),
-              width: 60,
+              width: 55,
               height: 60,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(width: 1, color: red),
-                  borderRadius: BorderRadius.circular(Spacing.sm),
+                  borderRadius: BorderRadius.circular(Spacing.xs),
                 ),
                 child: Icon(
                   Icons.close,
@@ -203,26 +248,71 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
               ),
             ),
           ),
+          IconButton(
+              icon: Icon(
+                isDark ? Icons.wb_sunny : Icons.nightlight_round,
+              ),
+              color: isDark ? backgroundColor : primaryDarkColor,
+              onPressed: () {
+                isDark ? isDark = false : isDark = true;
+                ref.read(themeProvider.notifier).setTheme(isDark);
+              }),
         ],
       ),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
+            Padding(
+              padding: EdgeInsets.all(Spacing.sm),
+              child: Row(
+                children: [
+                  horizontalSpaceSmall,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${GlobalConfig.TransMode}',
+                        style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                      verticalSpaceTiny,
+                      Text(
+                        'Table ${GlobalConfig.tableNo}',
+                        style: isDark
+                            ? normalTextDarkStyle.copyWith(
+                                fontWeight: FontWeight.bold)
+                            : normalTextLightStyle.copyWith(
+                                fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.left,
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Text(
+                      '${GlobalConfig.rcptNo}',
+                      style: isDark ? bodyTextDarkStyle : bodyTextLightStyle,
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Expanded(
               child: Container(
                 padding: EdgeInsets.all(Spacing.xs),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Order(),
                     OrderHeader(),
                     Expanded(
                         child: Container(
                             decoration: BoxDecoration(
-                              color: isDark ? primaryDarkColor : Colors.white,
+                              color:
+                                  isDark ? backgroundDarkColor : Colors.white,
                             ),
                             child: CheckoutList(
                               callback: widget.Callback,
@@ -236,7 +326,7 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
             ),
             CheckOutButtons(),
             Container(
-              color: isDark ? backgroundDarkColor : backgroundColorVariant,
+              color: isDark ? primaryDarkColor : backgroundColorVariant,
               height: MediaQuery.of(context).padding.bottom,
             ),
           ],
@@ -263,15 +353,15 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
             color: isDark ? backgroundDarkColor : backgroundColorVariant,
             borderRadius: BorderRadius.circular(Spacing.xs),
             child: ListTile(
-              leading: Checkbox(
-                value: true,
-                onChanged: (bool? value) {},
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Spacing.xs),
-                ),
-                activeColor: lightBlue,
-                checkColor: blue,
-              ),
+              // leading: Checkbox(
+              //   value: true,
+              //   onChanged: (bool? value) {},
+              //   shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(Spacing.xs),
+              //   ),
+              //   activeColor: lightBlue,
+              //   checkColor: blue,
+              // ),
               title: Text('Tender'),
               trailing: Icon(Icons.edit),
               dense: true,
@@ -293,7 +383,9 @@ class _MobileCheckoutState extends ConsumerState<MobileCheckout> {
                 child: SizedBox(
                   height: 65.h,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ref.read(tableProvider.notifier).holdTable();
+                    },
                     child: Text('Hold'),
                     style: ElevatedButton.styleFrom(
                       primary: blue,
