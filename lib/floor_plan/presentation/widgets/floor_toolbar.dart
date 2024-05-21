@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 
 import '../../../constants/color_constant.dart';
 import '../../../constants/text_style_constant.dart';
@@ -36,73 +37,103 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
     isDark = ref.watch(themeProvider);
     return Container(
       width: 926.w,
-      height: 70.h,
+      height: Responsive.isMobile(context) ? 78.h : 70.h,
       child: Column(
         children: [
           SizedBox(
             height: 5.h,
           ),
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 40.0),
-                  child: Row(
-                    children: [
-                      ...List.generate(status.length, (index) {
-                        return Expanded(
-                          child: Row(
-                            children: [
-                              Radio<int>(
-                                groupValue: 0,
-                                value: index,
-                                onChanged: (value) {},
-                              ),
-                              FittedBox(
-                                fit: BoxFit.contain,
-                                child: Text(status[index],
-                                    style: isDark
-                                        ? bodyTextDarkStyle
-                                        : bodyTextLightStyle),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                    ],
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 40.0),
+                    child: Row(
+                      children: [
+                        ...List.generate(status.length, (index) {
+                          return Expanded(
+                            child: Row(
+                              children: [
+                                Radio<int>(
+                                  groupValue: 0,
+                                  value: index,
+                                  onChanged: (value) {},
+                                ),
+                                FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: Text(status[index],
+                                      style: isDark
+                                          ? bodyTextDarkStyle
+                                          : bodyTextLightStyle),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _button(100.w, 25.h, 'Refresh', () {}),
-                      SizedBox(width: 5.w),
-                      _button(100.w, 25.h, 'Functions', () {}),
-                      SizedBox(width: 5.w),
-                      _button(100.w, 25.h, 'View Open Table OFF', () {}),
-                      SizedBox(width: 5.w),
-                      _button(100.w, 25.h, 'View Details OFF', () {}),
-                      SizedBox(width: 5.w),
-                      _button(100.w, 25.h, 'OP/SIGN-OUT', () {}),
-                      SizedBox(width: 5.w),
-                      _button(100.w, 25.h, 'Close', () {}),
-                      SizedBox(width: 5.w),
-                      _button(100.w, 25.h, 'Hide', () {})
-                    ],
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _button(
+                            100.w,
+                            Responsive.isMobile(context) ? 40.h : 25.h,
+                            'Refresh',
+                            () {}),
+                        SizedBox(width: 5.w),
+                        _button(
+                            100.w,
+                            Responsive.isMobile(context) ? 40.h : 25.h,
+                            'Functions',
+                            () {}),
+                        SizedBox(width: 5.w),
+                        _button(
+                            100.w,
+                            Responsive.isMobile(context) ? 40.h : 25.h,
+                            'View Open Table OFF',
+                            () {}),
+                        SizedBox(width: 5.w),
+                        _button(
+                            100.w,
+                            Responsive.isMobile(context) ? 40.h : 25.h,
+                            'View Details OFF',
+                            () {}),
+                        SizedBox(width: 5.w),
+                        _button(
+                            100.w,
+                            Responsive.isMobile(context) ? 40.h : 25.h,
+                            'OP/SIGN-OUT',
+                            () {}),
+                        SizedBox(width: 5.w),
+                        _button(
+                            100.w,
+                            Responsive.isMobile(context) ? 40.h : 25.h,
+                            'Close',
+                            () {}),
+                        SizedBox(width: 5.w),
+                        _button(
+                            100.w,
+                            Responsive.isMobile(context) ? 40.h : 25.h,
+                            'Hide',
+                            () {})
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
           SizedBox(
-            height: 10.h,
+            height: 3.h,
           ),
           Container(
             width: 926.w,
-            height: 20.h,
+            height: Responsive.isMobile(context) ? 25.h : 20.h,
             child: Row(
               children: [
                 ..._tableStatus.map((e) {
@@ -121,6 +152,7 @@ class _FloorToolBarState extends ConsumerState<FloorToolBar> {
     return Container(
         width: width,
         height: height,
+        padding: EdgeInsets.all(4.0),
         decoration: BoxDecoration(
           color: isDark ? primaryDarkColor : Colors.white,
           boxShadow: [

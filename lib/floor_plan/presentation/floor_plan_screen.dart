@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:raptorpos/common/widgets/appbar.dart';
 import 'package:raptorpos/constants/color_constant.dart';
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/floor_plan/presentation/widgets/floor_layout.dart';
@@ -29,15 +31,10 @@ class _FloorPlanScreenState extends ConsumerState<FloorPlanScreen> {
     bool isDark = ref.watch(themeProvider);
     return Scaffold(
       backgroundColor: isDark ? backgroundDarkColor : backgroundColor,
-      appBar: AppBar(
-        title: Text('Raptor POS', style: titleTextDarkStyle),
-        actions: [
-          IconButton(
-              icon: Icon(isDark ? Icons.nightlight_round : Icons.wb_sunny),
-              onPressed: () {
-                isDark ? isDark = false : isDark = true;
-              })
-        ],
+      appBar: PreferredSize(
+        child: AppBarWidget(false),
+        preferredSize:
+            Size(926.w, 53.h - MediaQuery.of(context).padding.top - 5.h),
       ),
       body: Column(
         children: [

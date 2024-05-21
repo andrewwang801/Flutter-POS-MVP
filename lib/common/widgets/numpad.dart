@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/color_constant.dart';
+import '../../constants/dimension_constant.dart';
 import '../../constants/text_style_constant.dart';
 
 // KeyPad widget
@@ -58,7 +59,7 @@ class NumPad extends StatelessWidget {
                 controller: controller,
               ),
               NumberButton(
-                icon: const Icon(Icons.cancel),
+                icon: Icon(Icons.cancel, size: iconSize),
                 type: ButtonType.RESET,
                 width: buttonWidth,
                 height: buttonHeight,
@@ -93,7 +94,10 @@ class NumPad extends StatelessWidget {
                 controller: controller,
               ),
               NumberButton(
-                icon: const Icon(Icons.restart_alt),
+                icon: Icon(
+                  Icons.restart_alt,
+                  size: iconSize,
+                ),
                 type: ButtonType.RESET,
                 width: buttonWidth,
                 height: buttonHeight,
@@ -128,7 +132,10 @@ class NumPad extends StatelessWidget {
                 controller: controller,
               ),
               NumberButton(
-                icon: const Icon(Icons.done_rounded),
+                icon: Icon(
+                  Icons.done_rounded,
+                  size: iconSize,
+                ),
                 type: ButtonType.CONFIRM,
                 submit: onSubmit,
                 width: buttonWidth,
@@ -204,7 +211,7 @@ class NumberButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(4.0),
       width: width,
       height: height,
       child: ElevatedButton(
@@ -213,6 +220,7 @@ class NumberButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
+          padding: EdgeInsets.zero,
         ),
         onPressed: () {
           if (number != null) {
@@ -238,9 +246,7 @@ class NumberButton extends StatelessWidget {
             controller.text += text!;
           }
         },
-        child: Center(
-          child: _buttonWidget(),
-        ),
+        child: _buttonWidget(),
       ),
     );
   }

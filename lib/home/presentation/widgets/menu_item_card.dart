@@ -8,6 +8,7 @@ import 'package:raptorpos/theme/theme_state_notifier.dart';
 import '../../model/menu_item_model.dart';
 import '../../../constants/color_constant.dart';
 import '../../../constants/text_style_constant.dart';
+import '../../provider/order/order_provider.dart';
 
 List<MaterialColor> menuItemColors = <MaterialColor>[
   Colors.grey,
@@ -36,6 +37,25 @@ class _MenuItemCardState extends ConsumerState<MenuItemCard> {
     bool isDark = ref.watch(themeProvider);
     return GestureDetector(
       onTap: () {
+        // create order item && modifier
+        ref
+            .read(orderProvoder.notifier)
+            .createOrderItem(widget.menuItem.pluNumber ?? '', '', 1, false, {});
+        // foc item
+
+        // showGeneralDialog(
+        //   context: context,
+        //   barrierColor: Colors.black38,
+        //   barrierLabel: 'Label',
+        //   barrierDismissible: true,
+        //   pageBuilder: (_, __, ___) => MenuItemDetail(
+        //     widget.menuItem.pluNumber ?? '',
+        //     0,
+        //     false,
+        //   ),
+        // );
+      },
+      onLongPress: () {
         showGeneralDialog(
           context: context,
           barrierColor: Colors.black38,

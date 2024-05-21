@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:raptorpos/common/widgets/responsive.dart';
 
 import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
@@ -35,7 +36,8 @@ class _CustomButtonState extends ConsumerState<CustomButton> {
     final Function _callback = widget.callback;
     final Color _borderColor = widget.borderColor;
     final Color _fillColor = widget.fillColor;
-    final double _height = widget.height ?? 25.h;
+    final double _height =
+        widget.height ?? (Responsive.isMobile(context) ? 40.h : 25.h);
     final double _width = widget.width ?? 80.w;
 
     return Container(
