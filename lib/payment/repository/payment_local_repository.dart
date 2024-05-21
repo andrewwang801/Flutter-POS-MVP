@@ -677,7 +677,6 @@ class PaymentLocalRepository with TypeUtil implements IPaymentRepository {
         title = tempdata1.values.elementAt(4).toString();
         appliesToNett = dynamicToBool(tempdata1.values.elementAt(5));
         salesTax = dynamicToBool(tempdata1.values.elementAt(6));
-        ;
 
         TaxRate = TPercent / 100;
         STax = 0.0;

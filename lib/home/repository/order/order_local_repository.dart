@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/common/utils/datetime_util.dart';
 import 'package:raptorpos/home/model/modifier.dart';
+import 'package:raptorpos/home/model/order_mod_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:raptorpos/common/helper/db_helper.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
@@ -12,6 +13,9 @@ import 'package:raptorpos/home/repository/order/i_order_repository.dart';
 import 'package:raptorpos/common/extension/string_extension.dart';
 
 import 'package:raptorpos/common/utils/type_util.dart';
+
+import '../../model/order_prep_model.dart';
+import '../../model/prep/prep_model.dart';
 
 @Injectable(as: IOrderRepository)
 class OrderLocalRepository
@@ -524,8 +528,8 @@ class OrderLocalRepository
 
       query =
           "SELECT IFNULL(SUM((Quantity * ItemAmount) * (CASE WHEN FunctionID = 26 THEN 1 ELSE 0 END)), 0), IFNULL(SUM((IFNULL(PromotionSaving,0) + IFNULL(Discount,0)) * (CASE WHEN FunctionID = 26 THEN 1 ELSE 0 END)), 0) FROM $TableName WHERE SalesNo = $SalesNo AND SplitNo = $SplitNo  AND (TransStatus = ' ' OR TransStatus = 'D') AND $strTax  = 1";
-      maps = await db.rawQuery(query);
-      tempData = maps[0];
+      List<Map<String, dynamic>> maps2 = await db.rawQuery(query);
+      tempData = maps2[0];
       ItemTotal = dynamicToDouble(tempData.entries.elementAt(0).value);
       ItemDisc = dynamicToDouble(tempData.entries.elementAt(1).value);
 
@@ -536,11 +540,11 @@ class OrderLocalRepository
         double Surcharge;
         query =
             "SELECT IFNULL(Feature,' ') FROM $TableName h INNER JOIN SubFunction s ON h.FunctionID = s.FunctionID AND h.SubFunctionID = s.SubFunctionID WHERE h.SalesNo = $SalesNo AND h.SplitNo = $SplitNo AND h.FunctionID = 55 AND h.TransStatus = ' '";
-        maps = await db.rawQuery(query);
-        if (maps.isEmpty) {
+        maps2 = await db.rawQuery(query);
+        if (maps2.isEmpty) {
           SurchargeFeature = ' ';
         } else {
-          tempData = maps[0];
+          tempData = maps2[0];
           final String text = tempData.entries.elementAt(0).value.toString();
           SurchargeFeature = text.substring(0, 1);
         }
@@ -548,8 +552,8 @@ class OrderLocalRepository
         if (SurchargeFeature == "2") {
           query =
               "SELECT IFNULL(Discount,0) FROM  TableName  WHERE SalesNo = $SalesNo AND SplitNo = $SplitNo AND FunctionID = 55 AND TransStatus = ' '";
-          maps = await db.rawQuery(query);
-          tempData = maps[0];
+          maps2 = await db.rawQuery(query);
+          tempData = maps2[0];
 
           Surcharge = cast<double>(tempData.entries.elementAt(0).value) ?? 0.00;
           ItemTotal = ItemTotal + Surcharge;
@@ -894,6 +898,98 @@ class OrderLocalRepository
     query =
         "INSERT INTO HeldItems (POSID, Covers, TableNo, SalesNo, SplitNo, PLUSalesRef, PLUNo, Department, Quantity, ItemName, ItemName_Chinese, ItemAmount, PaidAmount, ChangeAmount, Gratuity, Tax0, Tax1, Tax2, Tax3, Tax4, Tax5, Tax6, Tax7, Tax8, Tax9, Adjustment, DiscountType, DiscountPercent, Discount, PromotionId, PromotionType, PromotionSaving, TransMode, RefundID, MembershipID, LoyaltyCardNo, CustomerID, CardScheme, CreditCardNo, AvgCost, RecipeId, PriceShift, CategoryId, TransferredTable, TransferredOp, KitchenPrint1, KitchenPrint2, KitchenPrint3, RedemptionItem, PointsRedeemed, ShiftID, PrintFreePrep, PrintPrepWithPrice, Preparation, FOCItem, FOCType, ApplyTax0, ApplyTax1, ApplyTax2, ApplyTax3, ApplyTax4, ApplyTax5, ApplyTax6, ApplyTax7, ApplyTax8, ApplyTax9, LnkTo, BuyXfreeYapplied, RndingAdjustments, PostSendVoid, TblHold, DepositID, SeatNo, OperatorNo, ItemSeqNo, SDate, STime, TransStatus, FunctionID, SubFunctionID, RentalItem, RentToDate, RentToTime, MinsRented, ServerNo, comments, Switchid, TrackPrep, Instruction, SalesAreaID, SetMenu, SetMenuRef, TaxTag, KDSPrint) SELECT HeldItems.POSID, HeldItems.Covers, HeldItems.TableNo, HeldItems.SalesNo, HeldItems.SplitNo, HeldItems.SalesRef, HeldItems.PLUNo, HeldItems.Department, HeldItems.Quantity, HeldItems.ItemName, HeldItems.ItemName_Chinese, HeldItems.ItemAmount, HeldItems.PaidAmount, HeldItems.ChangeAmount, HeldItems.Gratuity, HeldItems.Tax0, HeldItems.Tax1, HeldItems.Tax2, HeldItems.Tax3, HeldItems.Tax4, HeldItems.Tax5, HeldItems.Tax6, HeldItems.Tax7, HeldItems.Tax8, HeldItems.Tax9, HeldItems.Adjustment, HeldItems.DiscountType, HeldItems.DiscountPercent, HeldItems.Discount, HeldItems.PromotionId, HeldItems.PromotionType, HeldItems.PromotionSaving, HeldItems.TransMode, HeldItems.RefundID, HeldItems.MembershipID, HeldItems.LoyaltyCardNo, HeldItems.CustomerID, HeldItems.CardScheme, HeldItems.CreditCardNo, HeldItems.AvgCost, HeldItems.RecipeId, HeldItems.PriceShift, HeldItems.CategoryId, HeldItems.TransferredTable, HeldItems.TransferredOp, HeldItems.KitchenPrint1, HeldItems.KitchenPrint2, HeldItems.KitchenPrint3, HeldItems.RedemptionItem, HeldItems.PointsRedeemed, HeldItems.ShiftID, HeldItems.PrintFreePrep, HeldItems.PrintPrepWithPrice, HeldItems.Preparation, HeldItems.FOCItem, HeldItems.FOCType, HeldItems.ApplyTax0, HeldItems.ApplyTax1, HeldItems.ApplyTax2, HeldItems.ApplyTax3, HeldItems.ApplyTax4, HeldItems.ApplyTax5, HeldItems.ApplyTax6, HeldItems.ApplyTax7, HeldItems.ApplyTax8, HeldItems.ApplyTax9, HeldItems.LnkTo, HeldItems.BuyXfreeYapplied, HeldItems.RndingAdjustments, HeldItems.PostSendVoid, HeldItems.TblHold, HeldItems.DepositID, HeldItems.SeatNo, $operatorNo, HeldItems.ItemSeqNo, '$sDate', '$sTime', 'N', HeldItems.FunctionID, HeldItems.SubFunctionID, HeldItems.RentalItem, HeldItems.RentToDate, HeldItems.RentToTime, HeldItems.MinsRented, HeldItems.ServerNo, HeldItems.comments, HeldItems.Switchid, HeldItems.TrackPrep, HeldItems.Instruction, HeldItems.SalesAreaID, 0, 0, HeldItems.TaxTag, HeldItems.KDSPrint FROM HeldItems WHERE (HeldItems.SalesRef = $salesRef OR HeldItems.PLUSalesRef = $salesRef OR HeldItems.SetMenuRef = $salesRef) AND HeldItems.SalesRef NOT IN (SELECT PLUSalesRef FROM HeldItems WHERE TransStatus = 'N' AND SalesNo = $salesNo AND SplitNo = $splitNo)";
     await dbHandler.rawQuery(query);
+  }
+
+  @override
+  Future<int> getPostVoidData(int salesRef, int salesNo) async {
+    String query;
+    if (salesRef != 0) {
+      query =
+          "SELECT COUNT(*) FROM HeldItems WHERE SalesRef = $salesRef AND SalesNo = $salesNo AND TransStatus = ' ' AND TblHold = 1";
+    } else {
+      query =
+          "SELECT COUNT(*) FROM HeldItems WHERE SalesNo = $salesNo AND TransStatus = ' ' AND TblHold = 1";
+    }
+
+    Database dbHandler = await database.database;
+    final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+
+    int postVoid = 0;
+    if (data.isNotEmpty) postVoid = dynamicToInt(data[0].get(0));
+    return postVoid;
+  }
+
+  @override
+  Future<List<List<String>>> getVoidRemarks() async {
+    Database dbHandler = await database.database;
+    const String query =
+        'SELECT rem_id, remarks, remarks_chinese FROM VoidRemarks ORDER BY remarks';
+    final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+    return mapListToString2D(data);
+  }
+
+  // Update Order Item
+  @override
+  Future<void> updateItemQuantity(int salesNo, int splitNo, String tableNo,
+      int quantity, int salesRef) async {
+    final String query =
+        "UPDATE HeldItems SET Quantity = $quantity WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo' AND SalesRef = $salesRef";
+    final Database dbHandler = await database.database;
+    await dbHandler.rawQuery(query);
+  }
+
+  @override
+  Future<void> updateItemModifier(int salesNo, int splitNo, String tableNo,
+      String modifier, int salesRef) async {
+    final String query =
+        "UPDATE HeldItems SET ItemName = '$modifier', ItemName_Chinese = '$modifier' WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo' AND SalesRef = $salesRef";
+    final Database dbHandler = await database.database;
+    await dbHandler.rawQuery(query);
+  }
+
+  Future<List<OrderPrepModel>> getOrderPrepData(
+      int salesNo, int splitNo, int salesRef, String tableNo) async {
+    List<OrderPrepModel> orderprepList = <OrderPrepModel>[];
+    final String query =
+        "SELECT PLUNo, ItemName, CASE WHEN FunctionID = 26 THEN Quantity ELSE 0 END, (Quantity * ItemAmount * CASE WHEN (FOCItem = 0 OR FOCType = 'BuyXFreeY') THEN 1 ELSE 0 END), SalesRef FROM HeldItems WHERE SalesNo = $salesNo  AND SplitNo = $splitNo AND TableNo = '%tableNo' AND ItemSeqNo NOT IN (101, 102) AND FunctionID IN (12,24,25,26,55,101) AND (TransStatus = ' ' OR TransStatus = 'D') AND PLUSalesRef = $salesRef AND Preparation = 1 ORDER BY PLUSalesRef, SalesRef";
+
+    final Database dbHandler = await database.database;
+    final List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+
+    for (int i = 0; i < data.length; i++) {
+      Map<String, dynamic> tempData = data[i];
+
+      orderprepList.add(OrderPrepModel(
+          prepNumber: tempData.get(0).toString(),
+          prepName: tempData.get(1).toString(),
+          prepQuantity: dynamicToDouble(tempData.get(2)),
+          prepAmount: dynamicToDouble(tempData.get(3)),
+          prepSalesRef: dynamicToInt(tempData.get(4))));
+    }
+
+    return orderprepList;
+  }
+
+  @override
+  Future<List<OrderModData>> getOrderModData(
+      int salesNo, int splitNo, int salesRef, String tableNo) async {
+    List<OrderModData> ordermodList = <OrderModData>[];
+    final String query =
+        "SELECT ItemName, (Quantity * ItemAmount * CASE WHEN (FOCItem = 0 OR FOCType = 'BuyXFreeY') THEN 1 ELSE 0 END), SalesRef FROM HeldItems WHERE SalesNo = $salesNo AND SplitNo = $splitNo AND TableNo = '$tableNo' AND ItemSeqNo NOT IN (101, 102) AND FunctionID IN (12, 24, 25, 26, 55, 101) AND PLUSalesRef = $salesRef AND Preparation = 1 AND TransStatus = 'M' ORDER BY PLUSalesRef, SalesRef";
+
+    final Database dbHandler = await database.database;
+    List<Map<String, dynamic>> data = await dbHandler.rawQuery(query);
+
+    for (int i = 0; i < data.length; i++) {
+      Map<String, dynamic> tempData = data[i];
+
+      ordermodList.add(OrderModData(
+          modName: tempData.get(0).toString(),
+          modPrice: dynamicToDouble(tempData.get(1)),
+          modSalesRef: dynamicToInt(tempData.get(1))));
+    }
+
+    return ordermodList;
   }
 }
 

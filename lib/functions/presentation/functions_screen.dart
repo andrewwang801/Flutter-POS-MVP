@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -149,7 +150,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
             onTap: () async {
               switch (function.functionID) {
                 case 109:
-                  Get.to(PrinterSettingScreen());
+                  Get.to(() => ProgressHUD(child: PrinterSettingScreen()));
                   break;
                 case 73:
                   String bill = await GetIt.I<PrintController>()
@@ -164,7 +165,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                       builder: (context) {
                         return Dialog(
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(32.0),
                             child: Text(bill),
                           ),
                         );

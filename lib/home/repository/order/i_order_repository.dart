@@ -1,5 +1,7 @@
 import 'package:raptorpos/home/model/modifier.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
+import 'package:raptorpos/home/model/order_mod_model.dart';
+import 'package:raptorpos/home/model/order_prep_model.dart';
 
 abstract class IOrderRepository {
   Future<List<int>> getTaxFromSC(int catID);
@@ -67,4 +69,16 @@ abstract class IOrderRepository {
 
   Future<void> voidOrder(int salesNo, int splitNo, String tableNo, int salesRef,
       String remarks, int operatorNo);
+  Future<int> getPostVoidData(int salesRef, int salesNo);
+  Future<List<List<String>>> getVoidRemarks();
+
+  Future<void> updateItemQuantity(
+      int salesNo, int splitNo, String tableNo, int quantity, int salesRef);
+  Future<void> updateItemModifier(
+      int salesNo, int splitNo, String tableNo, String modifier, int salesRef);
+
+  Future<List<OrderPrepModel>> getOrderPrepData(
+      int salesNo, int splitNo, int salesRef, String tableNo);
+  Future<List<OrderModData>> getOrderModData(
+      int salesNo, int splitNo, int salesRef, String tableNo);
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:raptorpos/common/adapters/order_data.dart';
 import 'package:raptorpos/common/widgets/responsive.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
+import 'package:raptorpos/home/presentation/widgets/remark_dialog.dart';
 import 'package:raptorpos/home/provider/order/order_provider.dart';
 import 'package:raptorpos/home/provider/order/order_state.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';
@@ -24,6 +26,13 @@ class _CheckOutState extends ConsumerState<CheckOut> {
   bool isDark = true;
   @override
   Widget build(BuildContext context) {
+    ref.listen(orderProvoder, (previous, next) {
+      if (next is OrderSuccessState &&
+          next.operation == OPERATIONS.SHOW_REMARKS) {
+        showRemarksDialog();
+      }
+    });
+
     isDark = ref.watch(themeProvider);
     OrderState state = ref.watch(orderProvoder);
 
@@ -326,7 +335,15 @@ class _CheckOutState extends ConsumerState<CheckOut> {
                 },
                 itemCount: state.orderItemTree!.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return state.orderItemTree![index].render(context, 4, isDark);
+                  return state.orderItemTree![index].render(context, 4, isDark,
+                      () {
+                    setState(() {
+                      ref
+                          .read(orderProvoder.notifier)
+                          .voidOrderItem(state.orderItemTree![index].orderItem);
+                      // state.orderItemTree!.removeAt(index);
+                    });
+                  });
                 }),
           ),
         ],
@@ -334,5 +351,14 @@ class _CheckOutState extends ConsumerState<CheckOut> {
     } else {
       return Container();
     }
+  }
+
+  // Show Remarks Dialog
+  showRemarksDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return RemarksDialog();
+        });
   }
 }

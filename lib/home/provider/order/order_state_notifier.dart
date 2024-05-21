@@ -5,19 +5,24 @@ import 'package:intl/intl.dart';
 import '../../../common/GlobalConfig.dart';
 import '../../../common/extension/string_extension.dart';
 import '../../../common/widgets/orderitem_widget.dart';
+import '../../../discount/repository/discount_repository.dart';
 import '../../../payment/repository/i_payment_repository.dart';
 import '../../../printer/provider/printer_state.dart';
 import '../../model/modifier.dart';
 import '../../model/order_item_model.dart';
+import '../../model/order_mod_model.dart';
+import '../../model/order_prep_model.dart';
 import '../../repository/order/i_order_repository.dart';
 import 'order_state.dart';
 
 @Injectable()
 class OrderStateNotifier extends StateNotifier<OrderState> {
-  OrderStateNotifier(this.orderRepository, this.paymentRepository)
+  OrderStateNotifier(
+      this.orderRepository, this.paymentRepository, this.discRepository)
       : super(OrderInitialState());
   final IOrderRepository orderRepository;
   final IPaymentRepository paymentRepository;
+  final DiscountRepository discRepository;
 
   int? _salesRef = 0;
   // create order item
@@ -212,7 +217,275 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
     }
   }
 
-  void updateOrderItem() {}
+  Future<void> updateOrderItem(
+      String pluNumber,
+      String modifier,
+      int qty,
+      bool focItem,
+      Map<String, Map<String, String>> prepSelect,
+      OrderItemModel orderItem) async {
+    tempPLUNo = orderItem.PLUNo ?? '';
+    sRef = orderItem.SalesRef ?? 0;
+    lnkTo = orderItem.LnkTo ?? '';
+    tempPLUName = orderItem.ItemName ?? '';
+    iSeqNo = orderItem.ItemSeqNo ?? 0;
+    pluSRef = orderItem.SalesRef ?? 0;
+
+    try {
+      // if (lnkTo.isEmpty) {
+      //   // TODO(smith): Update Set Menu
+      // } else {
+      await orderRepository.updateItemQuantity(GlobalConfig.salesNo,
+          GlobalConfig.splitNo, GlobalConfig.tableNo, qty, sRef);
+      // }
+
+      List<OrderPrepModel> prepArr = await orderRepository.getOrderPrepData(
+          GlobalConfig.salesNo,
+          GlobalConfig.splitNo,
+          sRef,
+          GlobalConfig.tableNo);
+      List<OrderModData> modArr = await orderRepository.getOrderModData(
+          GlobalConfig.salesNo,
+          GlobalConfig.splitNo,
+          sRef,
+          GlobalConfig.tableNo);
+
+      if (modifier.isNotEmpty) {
+        if (modArr.isNotEmpty) {
+          final String modExist = modArr[0].modName;
+          modifier = '++$modifier';
+          final int modSRef = modArr[0].modSalesRef;
+
+          if (modExist != modifier) {
+            await orderRepository.updateItemModifier(GlobalConfig.salesNo,
+                GlobalConfig.splitNo, GlobalConfig.tableNo, modifier, modSRef);
+          }
+        } else {
+          await addModifier(
+              POSDtls.deviceNo,
+              GlobalConfig.operatorNo,
+              GlobalConfig.cover,
+              GlobalConfig.tableNo,
+              GlobalConfig.salesNo,
+              GlobalConfig.splitNo,
+              modifier,
+              sRef);
+        }
+      } else if (modArr.isNotEmpty) {
+        final int modSRef = modArr[0].modSalesRef;
+        await orderRepository.voidOrder(
+            GlobalConfig.salesNo,
+            GlobalConfig.splitNo,
+            GlobalConfig.tableNo,
+            sRef,
+            '',
+            GlobalConfig.operatorNo);
+      }
+
+      List<String> prepKey = prepSelect.keys.toList();
+      if (prepArr.isNotEmpty) {
+        if (prepArr.length == prepKey.length) {
+          for (int i = 0; i < prepKey.length; i++) {
+            final String prepPLUNo = prepKey[0];
+            Map<String, String> prepDtls = prepSelect[prepPLUNo] ?? {};
+            final int prepQty = prepDtls['Quantity']?.toInt() ?? 0;
+
+            for (int j = 0; j < prepArr.length; j++) {
+              final int prepSRef = prepArr[j].prepSalesRef;
+              final String prepPLUNoExist = prepArr[j].prepNumber;
+
+              if (prepPLUNo == prepPLUNoExist) {
+                await orderRepository.updateItemQuantity(
+                    GlobalConfig.salesNo,
+                    GlobalConfig.splitNo,
+                    GlobalConfig.tableNo,
+                    prepQty,
+                    prepSRef);
+                break;
+              } else {
+                await prepOrderItem(
+                    POSDtls.deviceNo,
+                    GlobalConfig.operatorNo,
+                    GlobalConfig.tableNo,
+                    GlobalConfig.salesNo,
+                    GlobalConfig.splitNo,
+                    prepPLUNo,
+                    GlobalConfig.cover,
+                    qty,
+                    sRef);
+              }
+            }
+          }
+        }
+      } else {
+        for (int i = 0; i < prepKey.length; i++) {
+          final String prepPLUNo = prepKey[i];
+          final Map<String, String> prepDtls = prepSelect[prepPLUNo] ?? {};
+          final int prepQty = prepDtls['Quantity']?.toInt() ?? 0;
+
+          await prepOrderItem(
+              POSDtls.deviceNo,
+              GlobalConfig.operatorNo,
+              GlobalConfig.tableNo,
+              GlobalConfig.salesNo,
+              GlobalConfig.splitNo,
+              prepPLUNo,
+              GlobalConfig.cover,
+              qty,
+              sRef);
+        }
+      }
+      if (focItem) {
+        await orderRepository.doFOCItem(
+            GlobalConfig.salesNo,
+            GlobalConfig.splitNo,
+            GlobalConfig.tableNo,
+            POSDtls.deviceNo,
+            GlobalConfig.operatorNo,
+            POSDtls.PShift.toInt(),
+            iSeqNo,
+            POSDtls.categoryID,
+            GlobalConfig.PLUName,
+            sRef);
+      }
+      List<OrderItemModel> orderItems = await orderRepository.fetchOrderItems(
+          GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
+      state = OrderSuccessState(
+        orderItems,
+        await calcBill(),
+        await paymentRepository.checkPaymentPermission(
+            GlobalConfig.operatorNo, 5),
+        configureTree(orderItems),
+      );
+    } catch (e) {
+      state = OrderErrorState(errMsg: e.toString());
+    }
+  }
+
+  String tempPLUNo = '';
+  int sRef = 0;
+  String lnkTo = '';
+  String tempPLUName = '';
+  int iSeqNo = 0;
+  int pluSRef = 0;
+  int qty = 0;
+  Future<void> voidOrderItemRemarks(int status, String remarks) async {
+    try {
+      if (state is OrderSuccessState) {
+        await orderRepository.voidOrder(
+            GlobalConfig.salesNo,
+            GlobalConfig.splitNo,
+            GlobalConfig.tableNo,
+            sRef,
+            remarks,
+            GlobalConfig.operatorNo);
+        sRef = 0;
+        List<OrderItemModel> orderItems = await orderRepository.fetchOrderItems(
+            GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
+        state = OrderSuccessState(
+          orderItems,
+          await calcBill(),
+          await paymentRepository.checkPaymentPermission(
+              GlobalConfig.operatorNo, 5),
+          configureTree(orderItems),
+        );
+      }
+    } catch (e) {
+      state = OrderErrorState(errMsg: e.toString());
+    }
+  }
+
+  Future<void> voidOrderItem(OrderItemModel orderItem) async {
+    try {
+      if (state is OrderSuccessState) {
+        OrderSuccessState prevState = state as OrderSuccessState;
+        tempPLUNo = orderItem.PLUNo ?? '';
+        sRef = orderItem.SalesRef ?? 0;
+        lnkTo = orderItem.LnkTo ?? '';
+        tempPLUName = orderItem.ItemName ?? '';
+        iSeqNo = orderItem.ItemSeqNo ?? 0;
+        pluSRef = orderItem.SalesRef ?? 0;
+        qty = orderItem.Quantity ?? 0;
+
+        if (orderItem.FunctionID == 25) {
+          int voidRemarks =
+              await orderRepository.getPostVoidData(sRef, GlobalConfig.salesNo);
+          if (voidRemarks > 0) {
+            if (qty > 1) {
+              // TODO(smith): show split quantity
+            } else {
+              // TODO(smith): show remarks dialog
+              final List<List<String>> remarks =
+                  await orderRepository.getVoidRemarks();
+              state = prevState.copyWith(
+                  operation: OPERATIONS.SHOW_REMARKS, remarks: remarks);
+            }
+          } else {
+            await orderRepository.voidOrder(
+                GlobalConfig.salesNo,
+                GlobalConfig.splitNo,
+                GlobalConfig.tableNo,
+                sRef,
+                '',
+                GlobalConfig.operatorNo);
+
+            List<OrderItemModel> orderItems =
+                await orderRepository.fetchOrderItems(GlobalConfig.salesNo,
+                    GlobalConfig.splitNo, GlobalConfig.tableNo);
+            state = OrderSuccessState(
+              orderItems,
+              await calcBill(),
+              await paymentRepository.checkPaymentPermission(
+                  GlobalConfig.operatorNo, 5),
+              configureTree(orderItems),
+            );
+          }
+        } else {
+          bool isBillDisc = await discRepository.CheckDiscBill(
+              GlobalConfig.salesNo, GlobalConfig.splitNo);
+          if (isBillDisc) {
+            throw Exception(
+                'Void Item Failed! \n Void item not allowed after a "Bill Discount". Void Previous "Bill Discount" and try again');
+          } else {
+            if (qty > 1) {
+              // TODO(smith): show split qty
+            } else {
+              int voidRemarks = await orderRepository.getPostVoidData(
+                  sRef, GlobalConfig.salesNo);
+              if (voidRemarks > 0) {
+                // TODO(smith): Remarks Dialog
+                final List<List<String>> remarks =
+                    await orderRepository.getVoidRemarks();
+                state = prevState.copyWith(
+                    operation: OPERATIONS.SHOW_REMARKS, remarks: remarks);
+              } else {
+                await orderRepository.voidOrder(
+                    GlobalConfig.salesNo,
+                    GlobalConfig.splitNo,
+                    GlobalConfig.tableNo,
+                    sRef,
+                    '',
+                    GlobalConfig.operatorNo);
+
+                List<OrderItemModel> orderItems =
+                    await orderRepository.fetchOrderItems(GlobalConfig.salesNo,
+                        GlobalConfig.splitNo, GlobalConfig.tableNo);
+                state = OrderSuccessState(
+                  orderItems,
+                  await calcBill(),
+                  await paymentRepository.checkPaymentPermission(
+                      GlobalConfig.operatorNo, 5),
+                  configureTree(orderItems),
+                );
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      state = OrderErrorState(errMsg: e.toString());
+    }
+  }
 
   Future<void> addModifier(
       String posID,
@@ -601,6 +874,7 @@ class OrderStateNotifier extends StateNotifier<OrderState> {
   }
 
   // calc bill
+  // TODO
   Future<List<double>> calcBill() async {
     if (true /* checkItemOrder */) {
       var paymentData = await orderRepository.fetchAmountOrder(
