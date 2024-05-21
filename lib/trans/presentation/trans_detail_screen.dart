@@ -8,12 +8,10 @@ import '../../common/widgets/alert_dialog.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../constants/color_constant.dart';
 import '../../constants/text_style_constant.dart';
-import '../../floor_plan/presentation/widgets/area_widget.dart';
-import '../../theme/theme_model.dart';
+import '../../printer/presentation/widget/empty_printers_widget.dart';
 import '../../theme/theme_state_notifier.dart';
 import '../application/trans_detail_provider.dart';
 import '../application/trans_detail_state.dart';
-import 'adapters/trans_detail_data.dart';
 
 const List<String> btnTexts = <String>[
   'BILL ADJ',
@@ -268,6 +266,10 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
   Widget transTable() {
     List<DataRow> rows = [];
     if (state.workable == Workable.ready) {
+      if (state.transData!.transDetail.isEmpty) {
+        return EmptyPrintersWidget(
+            message: 'There are no items', icon: Icons.search);
+      }
       rows = List.generate(state.transData!.transDetail.length, (index) {
         List<String> e = state.transData!.transDetail[index];
         double amount = e[2].toDouble();
@@ -325,18 +327,18 @@ class _TransDetailScreenState extends ConsumerState<TransDetailScreen> {
           child: SizedBox(
             child: DataTable(
               columns: <DataColumn>[
-                DataColumn(label: Text('QTY', style: bodyTextLightStyle)),
-                DataColumn(label: Text('ItemName', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Amount', style: bodyTextLightStyle)),
-                DataColumn(label: Text('DiscType', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Disc', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Operator', style: bodyTextLightStyle)),
-                DataColumn(label: Text('PrmnType', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Prmn', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Mode', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Status', style: bodyTextLightStyle)),
-                DataColumn(label: Text('St No', style: bodyTextLightStyle)),
-                DataColumn(label: Text('Mem ID', style: bodyTextLightStyle)),
+                DataColumn(label: Text('QTY', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('ItemName', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('Amount', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('DiscType', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('Disc', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('Operator', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('PrmnType', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('Prmn', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('Mode', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('Status', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('St No', style: bodyTextDarkStyle)),
+                DataColumn(label: Text('Mem ID', style: bodyTextDarkStyle)),
               ],
               columnSpacing: 40,
               horizontalMargin: 10,

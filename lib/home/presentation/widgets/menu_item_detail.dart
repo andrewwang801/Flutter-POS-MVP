@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:raptorpos/common/GlobalConfig.dart';
 import 'package:raptorpos/common/extension/color_extension.dart';
 import 'package:raptorpos/common/extension/string_extension.dart';
 import 'package:raptorpos/common/widgets/custom_button.dart';

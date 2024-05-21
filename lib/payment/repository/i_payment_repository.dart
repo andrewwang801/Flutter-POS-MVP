@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:raptorpos/payment/model/foc_bill_data_model.dart';
 import 'package:raptorpos/payment/model/media_data_model.dart';
 import 'package:raptorpos/payment/model/payment_details_data_model.dart';

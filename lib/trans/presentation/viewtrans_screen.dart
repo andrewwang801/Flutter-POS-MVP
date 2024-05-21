@@ -14,6 +14,7 @@ import '../../constants/text_style_constant.dart';
 import '../../home/presentation/home_screen.dart';
 import '../../print/provider/print_provider.dart';
 import '../../print/provider/print_state.dart';
+import '../../printer/presentation/widget/empty_printers_widget.dart';
 import '../application/trans_provider.dart';
 import '../application/trans_state.dart';
 import '../data/trans_sales_data_model.dart';
@@ -175,6 +176,12 @@ class _ViewTransScreenState extends ConsumerState<ViewTransScreen> {
           transArray.addAll(data.transArrayOpened);
           transArray.addAll(data.transArrayClosed);
         }
+      }
+      if (transArray.isEmpty) {
+        return EmptyPrintersWidget(
+          message: 'There are no transactions',
+          icon: Icons.search,
+        );
       }
       return Padding(
         padding: const EdgeInsets.all(24.0),

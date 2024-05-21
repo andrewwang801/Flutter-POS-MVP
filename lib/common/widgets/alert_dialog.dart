@@ -77,7 +77,7 @@ class AppAlertDialog extends StatelessWidget {
                                     onConfirm!();
                                   }
                                 },
-                                child: const Text('Yes'),
+                                child: const Text('Ok'),
                               ),
                             ),
                             const SizedBox(width: Spacing.sm),

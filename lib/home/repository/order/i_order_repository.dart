@@ -64,4 +64,7 @@ abstract class IOrderRepository {
       int salesNo, int splitNo, String tableNo, int cover);
 
   Future<void> updateOpenHoldTrans(int salesNo, int splitNo, String tableNo);
+
+  Future<void> voidOrder(int salesNo, int splitNo, String tableNo, int salesRef,
+      String remarks, int operatorNo);
 }

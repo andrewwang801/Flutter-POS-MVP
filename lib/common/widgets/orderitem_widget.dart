@@ -1,13 +1,12 @@
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_progress_hud/flutter_progress_hud.dart';
-import 'package:get/get.dart';
 import 'package:raptorpos/common/widgets/orderitem_interface.dart';
 import 'package:raptorpos/constants/dimension_constant.dart';
 
 import '../../constants/text_style_constant.dart';
 import '../../home/model/order_item_model.dart';
 
+@immutable
 class ParentOrderItemWidget extends StatelessWidget implements IOrderItem {
   ParentOrderItemWidget({required this.orderItem, required this.isDark});
 

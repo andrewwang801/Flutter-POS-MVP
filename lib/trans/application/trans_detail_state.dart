@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import '../data/trans_sales_data_model.dart';
-
 enum Operation { NONE, BILL_ADJUST, CHECK_BILL }
 // common part
 enum Workable { initial, loading, ready, failure }

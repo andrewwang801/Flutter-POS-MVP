@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:injectable/injectable.dart';
-import 'package:raptorpos/home/model/menu_item_model.dart';
 import 'package:raptorpos/home/model/order_item_model.dart';
 import 'package:raptorpos/home/model/prep/prep_model.dart';
 

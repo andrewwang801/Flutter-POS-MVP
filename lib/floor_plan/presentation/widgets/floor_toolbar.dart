@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 
 import '../../../constants/color_constant.dart';
 import '../../../constants/text_style_constant.dart';
-import '../../../theme/theme_model.dart';
 import '../../../theme/theme_state_notifier.dart';
 
 class FloorToolBar extends ConsumerStatefulWidget {

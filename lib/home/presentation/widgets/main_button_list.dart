@@ -5,15 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../common/GlobalConfig.dart';
-import '../../../common/widgets/alert_dialog.dart';
 import '../../../common/widgets/custom_button.dart';
 import '../../../common/widgets/numpad.dart';
 import '../../../constants/color_constant.dart';
-import '../../../discount/presentation/discount_screen.dart';
 import '../../../floor_plan/presentation/floor_plan_screen.dart';
 import '../../../functions/presentation/functions_screen.dart';
 import '../../../print/provider/print_provider.dart';
-import '../../../print/provider/print_state.dart';
 import '../../../printer/presentation/printer_setting_screen.dart';
 import '../../../theme/theme_state_notifier.dart';
 
@@ -73,7 +70,6 @@ class _MainButtonListState extends ConsumerState<MainButtonList> {
                       transition: Transition.rightToLeft);
                   break;
                 case 4:
-                  Get.to(DiscountScreen());
                   break;
                 default:
                   break;

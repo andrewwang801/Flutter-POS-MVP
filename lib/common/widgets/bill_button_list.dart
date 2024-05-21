@@ -138,6 +138,18 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
 
   Future<void> doCashPayment(OrderState state) async {
     if (state is OrderSuccessState) {
+      if (state.bills.isEmpty) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                title: 'Error',
+                message: 'Order is empty!',
+                onConfirm: () {},
+              );
+            });
+        return;
+      }
       if (state.paymentPermission ?? false) {
         final bool bTender = await _paymentRepository.checkTenderPayment(
             GlobalConfig.salesNo, GlobalConfig.splitNo, GlobalConfig.tableNo);
@@ -148,6 +160,8 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
         await ref.read(orderProvoder.notifier).updateHeldItem(sTotal, gTotal);
         // fetch updated order items
         ref.read(orderProvoder.notifier).fetchOrderItems();
+
+        // TODO: complete below block
         if (bTender) {
         } else {}
         Get.to(CashScreen());
@@ -156,8 +170,10 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return const AppAlertDialog(
-              content: Text('Not allowed to pay'),
+            return AppAlertDialog(
+              title: 'Error',
+              message: 'Not allowed to pay!',
+              onConfirm: () {},
             );
           });
     }
@@ -165,6 +181,18 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
 
   Future<void> doTenderPayment(OrderState state) async {
     if (state is OrderSuccessState) {
+      if (state.bills.isEmpty) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AppAlertDialog(
+                title: 'Error',
+                message: 'Order is empty!',
+                onConfirm: () {},
+              );
+            });
+        return;
+      }
       if (state.paymentPermission ?? false) {
         final double sTotal = state.bills[2];
         final double gTotal = state.bills[0];
@@ -180,8 +208,10 @@ class _BillButtonListState extends ConsumerState<BillButtonList> {
         showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const AppAlertDialog(
-                content: Text('Not allowed to pay'),
+              return AppAlertDialog(
+                title: 'Error',
+                message: 'Not allowed to pay!',
+                onConfirm: () {},
               );
             });
       }

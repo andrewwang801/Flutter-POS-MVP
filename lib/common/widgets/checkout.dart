@@ -231,18 +231,14 @@ class _CheckOutState extends ConsumerState<CheckOut> {
     } else if (hasError) {
       return Container();
     } else if (state is OrderSuccessState) {
-      if (state.orderItems == null) {
-        return Container();
-      } else {
-        return ListView.separated(
-            separatorBuilder: (context, index) {
-              return Divider();
-            },
-            itemCount: state.orderItemTree!.length,
-            itemBuilder: (BuildContext context, int index) {
-              return state.orderItemTree![index].render(context, 4, isDark);
-            });
-      }
+      return ListView.separated(
+          separatorBuilder: (context, index) {
+            return Divider();
+          },
+          itemCount: state.orderItemTree!.length,
+          itemBuilder: (BuildContext context, int index) {
+            return state.orderItemTree![index].render(context, 4, isDark);
+          });
     } else {
       return Container();
     }

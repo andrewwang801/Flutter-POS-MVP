@@ -8,7 +8,7 @@ part of 'trans_sales_data_model.dart';
 
 TransSalesData _$TransSalesDataFromJson(Map<String, dynamic> json) =>
     TransSalesData(
-      json['RcptNo'] as String? ?? json['Rcptno'] as String?,
+      json['RcptNo'] as String?,
       json['TableNo'] as String,
       json['OperatorName'] as String,
       (json['GTotal'] as num?)?.toDouble(),

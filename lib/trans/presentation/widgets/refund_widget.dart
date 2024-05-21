@@ -9,7 +9,6 @@ import '../../../constants/color_constant.dart';
 import '../../../constants/dimension_constant.dart';
 import '../../application/refund_provider.dart';
 import '../../application/refund_state.dart';
-import '../../application/trans_provider.dart';
 
 class RefundWidget extends ConsumerStatefulWidget {
   RefundWidget(
