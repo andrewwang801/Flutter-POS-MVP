@@ -35,6 +35,7 @@ class MyApp extends ConsumerWidget {
     bool isDark = ref.watch(themeProvider);
     return ScreenUtilInit(
         designSize: const Size(926, 428),
+        minTextAdapt: true,
         builder: (Widget? context) {
           return GetMaterialApp(
             title: 'Raptor POS',

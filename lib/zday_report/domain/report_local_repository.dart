@@ -137,7 +137,7 @@ class ReportLocalRepository with TypeUtil, DateTimeUtil {
     await dbHandler.rawQuery(query);
   }
 
-  Future<void> zdaySalesSummary(
+  Future<void> zDaySalesSummary(
       int reportNo, String date1, String date2, String posID) async {
     final Database dbHandler = await dbHelper.database;
 
@@ -228,7 +228,7 @@ class ReportLocalRepository with TypeUtil, DateTimeUtil {
     dbHandler.rawQuery(query);
   }
 
-  Future<void> zdayCollectionSummary(int reportNo, String posID) async {
+  Future<void> zDayCollectionSummary(int reportNo, String posID) async {
     final Database dbHandler = await dbHelper.database;
 
     List<List<String>> mediaArray = await getSalesTrans(posID);
@@ -271,7 +271,7 @@ class ReportLocalRepository with TypeUtil, DateTimeUtil {
     return mapListToString2D(maps);
   }
 
-  Future<List<List<String>>> getLastZDayData(String posID) async {
+  Future<List<List<String>>> getLastZDayDate(String posID) async {
     final Database dbHandler = await dbHelper.database;
     final String query =
         "SELECT POSTitle, ZShiftReportDt, ZShiftReportTime, ZDayReportDt, ZDayReportTime, XReportNo, ZReportNo FROM POSDtls WHERE POSID IN ('$posID') ORDER BY POSID";

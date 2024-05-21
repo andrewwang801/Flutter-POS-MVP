@@ -15,6 +15,7 @@ class XPrinterService extends IPrinterService with StringUtil, TypeUtil {
   late NetworkPrinter printer;
   late PosPrintResult res;
 
+  @override
   Future<PosPrintResult> connect(String ipAddr, int port) async {
     const PaperSize paper = PaperSize.mm80;
     final CapabilityProfile profile = await CapabilityProfile.load();
@@ -30,14 +31,17 @@ class XPrinterService extends IPrinterService with StringUtil, TypeUtil {
     return res;
   }
 
+  @override
   void disconnect() {
     printer.disconnect();
   }
 
+  @override
   bool checkConnection() {
     return res == PosPrintResult.success;
   }
 
+  @override
   String getIPAddr() {
     return printer.host ?? '';
   }
@@ -45,6 +49,7 @@ class XPrinterService extends IPrinterService with StringUtil, TypeUtil {
   void printerAddtoList(
       String modelName, String logicName, int type, String address, int port) {}
 
+  @override
   Future<void> print(String printData) async {
     printer.text(printData);
     printer.feed(2);

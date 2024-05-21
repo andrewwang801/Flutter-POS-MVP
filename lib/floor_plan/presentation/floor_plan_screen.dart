@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:raptorpos/common/widgets/appbar.dart';
 import 'package:raptorpos/constants/color_constant.dart';
-import 'package:raptorpos/constants/text_style_constant.dart';
 import 'package:raptorpos/floor_plan/presentation/widgets/floor_layout.dart';
 import 'package:raptorpos/floor_plan/presentation/widgets/floor_toolbar.dart';
 import 'package:raptorpos/theme/theme_state_notifier.dart';

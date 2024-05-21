@@ -16,20 +16,30 @@ class Failure {
 }
 
 class Data {
-  Data({required this.zDayReport});
+  Data(
+      {this.date1,
+      this.time1,
+      this.date2,
+      this.time2,
+      required this.salesReport});
 
-  final String? zDayReport;
+  final String? salesReport;
+  final String? date1;
+  final String? time1;
+  final String? date2;
+  final String? time2;
 }
 
-class ZDayReportState extends Equatable {
-  const ZDayReportState({this.workable, this.failure, this.data});
+class SalesReportState extends Equatable {
+  const SalesReportState({this.workable, this.failure, this.data});
 
   final Workable? workable;
   final Failure? failure;
   final Data? data;
 
-  ZDayReportState copyWith({Workable? workable, Failure? failure, Data? data}) {
-    return ZDayReportState(
+  SalesReportState copyWith(
+      {Workable? workable, Failure? failure, Data? data}) {
+    return SalesReportState(
         workable: workable ?? this.workable,
         failure: failure ?? this.failure,
         data: data ?? this.data);
